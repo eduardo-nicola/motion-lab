@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MOTION lab / Duration</title>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+
+    .box { width:100%; min-height: 160px; border:1px solid var(--line); background: var(--bg-3); color: var(--ink); font-family: var(--font-d); font-weight:700; font-size: 1.4rem; cursor:pointer; }
+    .fast { transition: transform 0.5s cubic-bezier(0.16,1,0.3,1); }
+    .slow { transition: transform 2s cubic-bezier(0.16,1,0.3,1); }
+    .fast:hover, .slow:hover { transform: scale(1.06); }
+    @media (prefers-reduced-motion: reduce) { .fast, .slow { transition: none; } }
+    
+  </style>
+</head>
+<body class="lab-grain">
+<main class="teach">
+    <div class="teach-head">
+      <h1>0.5s e UI. 2s e teatro.</h1>
+      <p class="formula">Quando <em>o botao responde</em>, o <em>certo</em> faz <em>scale em 0.5s</em>, porque interface vive em 0.4-0.8s. Acima de 1.2s e drama, e drama nao cabe em hover.</p>
+    </div>
+    
+    <div class="pair">
+      <div class="col ok"><p class="tag">certo / 0.5s</p><button class="box fast" type="button">Hover</button></div>
+      <div class="col no"><p class="tag">errado / 2s mush</p><button class="box slow" type="button">Hover</button></div>
+    </div>
+    
+    <div class="lesson">
+
+      <p><strong>Usar</strong> 0.4-0.8s em UI. Reserve &gt;1.2s para cortina, heroi, um take de camera.</p>
+      <p><strong>Nao usar</strong> 2s em botao. Parece lag. Reduced motion: sem scale.</p>
+    
+    </div>
+  </main>
+  <script src="/_shared/lab.js"></script>
+  <script src="/_shared/nav.js"></script>
+  
+  <script>
+  (function () {
+
+  })();
+  </script>
+</body>
+</html>

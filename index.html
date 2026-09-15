@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MOTION lab</title>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+</head>
+<body class="lab-grain">
+  <div class="index-wrap">
+    <p class="kicker">MOTION lab / dicionarios</p>
+    <h1>Nomeie o movimento.</h1>
+    <p class="lead">Lab de tecnicas para briefing de portfolio. Cada pasta e a peca. Le a formula, ve o efeito ao vivo, decide se entra na pagina. Uma camera por demo. Sem misturar eixos.</p>
+
+    <details class="index-group" id="triggers" open>
+      <summary>
+        <div>
+          <h2>Gatilhos</h2>
+          <p class="note">O que dispara o movimento. Quando, nao o que.</p>
+        </div>
+      </summary>
+      <nav>
+        <a href="/triggers/load/">
+          <span class="axis">load</span>
+          <div>
+            <h3>Load</h3>
+            <p>Coreografia de abertura. Hierarquia no primeiro frame.</p>
+          </div>
+        </a>
+        <a href="/triggers/hover/">
+          <span class="axis">hover</span>
+          <div>
+            <h3>Hover</h3>
+            <p>Cursor como gatilho. Fisica de puxao (magnet) mora em pele, nao aqui.</p>
+          </div>
+        </a>
+        <a href="/triggers/click/">
+          <span class="axis">click</span>
+          <div>
+            <h3>Click</h3>
+            <p>Acao, morph, troca de estado. Feedback de que algo mudou.</p>
+          </div>
+        </a>
+      </nav>
+    </details>
+
+    <details class="index-group" id="scroll">
+      <summary>
+        <div>
+          <h2>Scroll / a camera</h2>
+          <p class="note">Uma ideia de camera por pagina. Nao empilhar hijack + dive + stack.</p>
+        </div>
+      </summary>
+      <nav>
+        <a href="/scroll/reveal-stagger/"><span class="axis">reveal</span><div><h3>Reveal stagger</h3><p>Itens nascem ao entrar. Sequencia, nao pin.</p></div></a>
+        <a href="/scroll/pin/"><span class="axis">pin</span><div><h3>Pin</h3><p>Viewport segura o bloco. Historia acontece dentro.</p></div></a>
+        <a href="/scroll/scrub/"><span class="axis">scrub</span><div><h3>Scrub</h3><p>Playhead = scrollbar. Ease none.</p></div></a>
+        <a href="/scroll/parallax/"><span class="axis">parallax</span><div><h3>Parallax</h3><p>Planos a velocidades diferentes. Profundidade barata.</p></div></a>
+        <a href="/scroll/zoom-parallax/"><span class="axis">zoom</span><div><h3>Zoom parallax</h3><p>Imagem central cresce no scrub. Dolly falso.</p></div></a>
+        <a href="/scroll/sticky-stack/"><span class="axis">stack</span><div><h3>Sticky stack</h3><p>Pin no topo. Carta anterior scale 0.92 quando a proxima chega.</p></div></a>
+        <a href="/scroll/horizontal-hijack/"><span class="axis">hijack</span><div><h3>Horizontal hijack</h3><p>Wrapper pinado. Trilho interno anda em X.</p></div></a>
+        <a href="/scroll/split-screen/"><span class="axis">split</span><div><h3>Split screen</h3><p>Dois meios. Dois tempos. Um scroll.</p></div></a>
+        <a href="/scroll/curtain-reveal/"><span class="axis">curtain</span><div><h3>Curtain reveal</h3><p>Painel abre como cortina. Revela o que estava atras.</p></div></a>
+        <a href="/scroll/z-axis-dive/"><span class="axis">dive</span><div><h3>Z-axis dive</h3><p>Dolly no Z. Tunel de planos. Nao e zoom de hero.</p></div></a>
+        <a href="/scroll/scrollytelling/"><span class="axis">story</span><div><h3>Scrollytelling</h3><p>Progresso 0-1 dirige uma cena simples. Sem splat 3D.</p></div></a>
+      </nav>
+    </details>
+
+    <details class="index-group" id="stage">
+      <summary>
+        <div>
+          <h2>Fundo / o palco</h2>
+          <p class="note">Um sistema + grain opcional. Nunca blob + particles + mesh juntos.</p>
+        </div>
+      </summary>
+      <nav>
+        <a href="/stage/grain/"><span class="axis">grain</span><div><h3>Grain</h3><p>Overlay fixo, pointer-events none. Nunca no container que scrolla.</p></div></a>
+        <a href="/stage/mesh-gradient/"><span class="axis">mesh</span><div><h3>Mesh gradient</h3><p>Manchas organicas. Um palco, sem circo.</p></div></a>
+        <a href="/stage/noise-displacement/"><span class="axis">displace</span><div><h3>Noise displacement</h3><p>Tipo ou imagem distorce no ruido. SVG filter.</p></div></a>
+        <a href="/stage/particles/"><span class="axis">dots</span><div><h3>Particles</h3><p>Poucos pontos. Atmosfera, nao hero de particulas.</p></div></a>
+        <a href="/stage/webgl-blob/"><span class="axis">blob</span><div><h3>Blob (aprox.)</h3><p>Three.js nao esta no stack. Canvas/CSS como aproximacao honesta.</p></div></a>
+        <a href="/stage/lens-blur/"><span class="axis">lens</span><div><h3>Lens blur</h3><p>Fundo desfoca. Frente nítida. Hierarquia otica.</p></div></a>
+        <a href="/stage/light-leak/"><span class="axis">leak</span><div><h3>Light leak</h3><p>Vazamento analogico. Um acento de luz, sem video.</p></div></a>
+      </nav>
+    </details>
+
+    <details class="index-group" id="type">
+      <summary>
+        <div>
+          <h2>Tipo / texto</h2>
+          <p class="note">O tipo como objeto, nao como paragrafo. Marquee: no maximo uma por pagina.</p>
+        </div>
+      </summary>
+      <nav>
+        <a href="/type/kinetic-type/"><span class="axis">kinetic</span><div><h3>Kinetic type</h3><p>Letra como objeto. Entra, desloca, pesa.</p></div></a>
+        <a href="/type/text-mask/"><span class="axis">mask</span><div><h3>Text mask</h3><p>Tipo recorta a foto. A palavra e a janela.</p></div></a>
+        <a href="/type/scramble/"><span class="axis">scramble</span><div><h3>Scramble</h3><p>Glifo decodifica. Estado: ainda nao li / agora li.</p></div></a>
+        <a href="/type/marquee/"><span class="axis">marquee</span><div><h3>Marquee</h3><p>Uma faixa. A regra e o ponto da aula: maximo uma.</p></div></a>
+      </nav>
+    </details>
+
+    <details class="index-group" id="skin">
+      <summary>
+        <div>
+          <h2>Pele / ponteiro</h2>
+          <p class="note">Superficie que reage ao cursor: puxao, inclinacao, luz local, cortina de estado.</p>
+        </div>
+      </summary>
+      <nav>
+        <a href="/skin/magnetic-button/"><span class="axis">magnet</span><div><h3>Magnetic button</h3><p>CTA puxa o cursor. Fisica no transform, nao no React state.</p></div></a>
+        <a href="/skin/tilt-card/"><span class="axis">tilt</span><div><h3>Tilt card</h3><p>Plano 3D acompanha o ponteiro. Peca, nao grade.</p></div></a>
+        <a href="/skin/spotlight-border/"><span class="axis">spot</span><div><h3>Spotlight border</h3><p>Borda acende onde o cursor esta.</p></div></a>
+        <a href="/skin/page-transition/"><span class="axis">wipe</span><div><h3>Page transition</h3><p>Sem router. Cortina entre dois estados locais.</p></div></a>
+      </nav>
+    </details>
+
+    <details class="index-group" id="timing">
+      <summary>
+        <div>
+          <h2>Timing / as 5 palavras</h2>
+          <p class="note">Certo ao lado do errado. O olho aprende a diferenca.</p>
+        </div>
+      </summary>
+      <nav>
+        <a href="/timing/ease-out/"><span class="axis">ease-out</span><div><h3>Ease out</h3><p>cubic-bezier(0.16, 1, 0.3, 1) versus linear no hover.</p></div></a>
+        <a href="/timing/spring/"><span class="axis">spring</span><div><h3>Spring</h3><p>stiffness 100, damping 20 versus bounce de portfolio.</p></div></a>
+        <a href="/timing/scrub-none/"><span class="axis">none</span><div><h3>Scrub none</h3><p>Scrub + ease none versus scrub com bounce.</p></div></a>
+        <a href="/timing/stagger/"><span class="axis">stagger</span><div><h3>Stagger</h3><p>40-80ms versus todos juntos ou 200ms de lama.</p></div></a>
+        <a href="/timing/duration/"><span class="axis">duration</span><div><h3>Duration</h3><p>0.4-0.8s de UI versus 2s de drama em botao.</p></div></a>
+      </nav>
+    </details>
+  </div>
+  <script src="/_shared/lab.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+  (function () {
+    function openFromHash() {
+      var id = location.hash.slice(1);
+      if (!id) return;
+      var el = document.getElementById(id);
+      if (!el || el.tagName !== "DETAILS") return;
+      el.open = true;
+      el.scrollIntoView({ behavior: Lab.reduce() ? "auto" : "smooth", block: "start" });
+    }
+    openFromHash();
+    window.addEventListener("hashchange", openFromHash);
+  })();
+  </script>
+</body>
+</html>

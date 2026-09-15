@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MOTION lab / Spring</title>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+
+    .box { width: 120px; height: 120px; background: var(--accent); color: var(--ink); border:0; font-family: var(--font-d); font-weight:700; cursor: pointer; }
+    .bounce { transition: transform 0.8s cubic-bezier(0.34, 1.8, 0.64, 1); }
+    .bounce.is { transform: translateX(120px); }
+    
+  </style>
+</head>
+<body class="lab-grain">
+<main class="teach">
+    <div class="teach-head">
+      <h1>Mola, nao bounce de template.</h1>
+      <p class="formula">Quando <em>o clique solta o bloco</em>, o <em>certo</em> faz <em>spring stiffness 100 damping 20</em>, porque a peca precisa oscilar pouco e parar, nao pular como icone de 2014.</p>
+    </div>
+    
+    <div class="pair">
+      <div class="col ok"><p class="tag">certo / spring 100-20</p><button class="box" type="button" id="ok">Clique</button></div>
+      <div class="col no"><p class="tag">errado / bounce</p><button class="box bounce" type="button" id="no">Clique</button></div>
+    </div>
+    
+    <div class="lesson">
+
+      <p><strong>Usar</strong> spring 100/20 em CTA, magnet return, cards. Massa 1.</p>
+      <p><strong>Nao usar</strong> bounce elastico de portfolio template. Reduced motion: o bloco troca de lugar sem mola.</p>
+    
+    </div>
+  </main>
+  <script src="/_shared/lab.js"></script>
+  <script src="/_shared/nav.js"></script>
+  
+  <script>
+  (function () {
+
+    var ok = document.getElementById("ok");
+    var no = document.getElementById("no");
+    var on = false;
+    var x = 0;
+    ok.addEventListener("click", function () {
+      on = !on;
+      var target = on ? 120 : 0;
+      if (Lab.reduce()) { x = target; ok.style.transform = "translateX(" + x + "px)"; return; }
+      Lab.spring(function () { return x; }, function (v) { x = v; ok.style.transform = "translateX(" + v + "px)"; }, target, { stiffness: 100, damping: 20 });
+    });
+    no.addEventListener("click", function () { no.classList.toggle("is"); });
+    
+  })();
+  </script>
+</body>
+</html>

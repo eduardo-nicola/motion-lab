@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MOTION lab / Spotlight border</title>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+
+    .spot-stage { min-height: 64dvh; padding: 10vh 8vw; display:flex; align-items:flex-end; }
+    .spot {
+      width: min(420px, 100%); padding: 36px 32px; position: relative;
+      background: var(--bg-2);
+      border: 1px solid var(--line);
+    }
+    .spot::before {
+      content:""; position:absolute; inset:0; pointer-events:none;
+      background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%), rgb(226 61 40 / 0.45), transparent 55%);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .spot:hover::before { opacity: 1; }
+    .spot p { margin:0; font-family: var(--font-d); font-weight:800; font-size: 2rem; letter-spacing:-0.04em; position: relative; }
+    .spot .s { margin-top: 12px; font-family: var(--font-b); font-weight:400; font-size: 1rem; color: var(--muted); max-width: 28ch; }
+    @media (prefers-reduced-motion: reduce) {
+      .spot::before { display:none; }
+    }
+    
+  </style>
+</head>
+<body class="lab-grain">
+<main class="teach">
+    <div class="teach-head">
+      <h1>A borda acende.</h1>
+      <p class="formula">Quando <em>o cursor anda na peca</em>, a <em>borda</em> faz <em>luz local</em> com <em>custom properties no ponteiro</em>, porque o foco precisa seguir a mao, nao um hover solido.</p>
+    </div>
+    
+    <div class="stage-frame spot-stage">
+      <article class="spot" id="spot">
+        <p>Arquivo Norte</p>
+        <p class="s">Disco, cartaz, rua. A luz e o hover.</p>
+      </article>
+    </div>
+    
+    <div class="lesson">
+
+      <p>Uma das quatro peles que respondem ao ponteiro: <a href="/skin/magnetic-button/">puxao</a>, <a href="/skin/tilt-card/">inclinacao</a>, luz local (aqui), <a href="/skin/page-transition/">cortina de estado</a>.</p>
+      <p><strong>Usar</strong> em card clicavel, um ou dois. --mx e --my no estilo, sem re-render de framework.</p>
+      <p><strong>Nao usar</strong> em dezenas. Reduced motion: borda solida 1px, sem lanterna.</p>
+    
+    </div>
+  </main>
+  <script src="/_shared/lab.js"></script>
+  <script src="/_shared/nav.js"></script>
+  
+  <script>
+  (function () {
+
+    if (Lab.reduce()) return;
+    var el = document.getElementById("spot");
+    el.addEventListener("pointermove", function (e) {
+      var r = el.getBoundingClientRect();
+      el.style.setProperty("--mx", (e.clientX - r.left) + "px");
+      el.style.setProperty("--my", (e.clientY - r.top) + "px");
+    });
+    
+  })();
+  </script>
+</body>
+</html>

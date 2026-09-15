@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MOTION lab / Particles</title>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+
+    .stage-frame { position: relative; min-height: 68dvh; }
+    canvas { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+    .cap { position: relative; z-index: 2; margin:0; padding: 10vh 8vw; max-width: 42ch; color: var(--muted); line-height: 1.5; }
+    
+  </style>
+</head>
+<body class="lab-grain">
+<main class="teach">
+    <div class="teach-head">
+      <h1>Poucos pontos.</h1>
+      <p class="formula">Quando <em>o palco pede poeira</em>, o <em>canvas</em> faz <em>60 pontos lentos</em> com <em>drift continuo</em>, porque atmosfera e densidade baixa, nao hero circus.</p>
+    </div>
+    
+    <div class="stage-frame">
+      <canvas id="c"></canvas>
+      <p class="cap">Restrito. Sem ligar a blob, mesh e video no mesmo quadro.</p>
+    </div>
+    
+    <div class="lesson">
+
+      <p><strong>Usar</strong> como poeira em um palco vazio. Contagem baixa. Sem interacao de explosao.</p>
+      <p><strong>Nao usar</strong> atras de UI densa, nem em mobile se o canvas for full-bleed pesado. Reduced motion: canvas vazio, fundo solido. Grain no overlay, nao no canvas.</p>
+    
+    </div>
+  </main>
+  <script src="/_shared/lab.js"></script>
+  <script src="/_shared/nav.js"></script>
+  
+  <script>
+  (function () {
+
+    var canvas = document.getElementById("c");
+    var ctx = canvas.getContext("2d");
+    function size() {
+      canvas.width = canvas.clientWidth;
+      canvas.height = canvas.clientHeight;
+    }
+    size();
+    addEventListener("resize", size);
+    if (Lab.reduce()) return;
+    var dots = [];
+    for (var i = 0; i < 60; i++) {
+      dots.push({ x: Math.random(), y: Math.random(), r: 0.8 + Math.random() * 1.6, v: 0.00015 + Math.random() * 0.00025 });
+    }
+    function tick() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "rgba(226,61,40,0.55)";
+      dots.forEach(function (d) {
+        d.y -= d.v;
+        if (d.y < 0) d.y = 1;
+        ctx.beginPath();
+        ctx.arc(d.x * canvas.width, d.y * canvas.height, d.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+    
+  })();
+  </script>
+</body>
+</html>

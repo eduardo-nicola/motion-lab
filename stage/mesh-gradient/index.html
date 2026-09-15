@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MOTION lab / Mesh gradient</title>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+
+    .mesh { min-height: 70dvh; position: relative; overflow: hidden; display:flex; align-items:flex-end; padding: 10vh 8vw; }
+    .mesh p { position: relative; z-index: 2; margin:0; max-width: 34ch; color: var(--muted); }
+    .b { position:absolute; border-radius: 50%; filter: blur(70px); opacity: 0.55; }
+    .b1 { width: 55vw; height: 55vw; left: -10%; top: -20%; background: #6a3a28; }
+    .b2 { width: 40vw; height: 40vw; right: -8%; bottom: -10%; background: #3d4a32; }
+    body:not(.is-reduce) .b1 { animation: drift 14s ease-in-out infinite alternate; }
+    body:not(.is-reduce) .b2 { animation: drift2 18s ease-in-out infinite alternate; }
+    @keyframes drift { to { transform: translate(8%, 10%); } }
+    @keyframes drift2 { to { transform: translate(-10%, -6%); } }
+    @media (prefers-reduced-motion: reduce) { .b { animation: none; } }
+    
+  </style>
+</head>
+<body class="lab-grain">
+<main class="teach">
+    <div class="teach-head">
+      <h1>Mancha, nao circo.</h1>
+      <p class="formula">Quando <em>o palco precisa de clima</em>, o <em>fundo</em> faz <em>mesh de dois blobs</em> com <em>12s ease</em>, porque atmosfera e hierarquia de silencio, nao hero de particulas.</p>
+    </div>
+    
+    <div class="stage-frame mesh" id="mesh">
+      <span class="b b1"></span>
+      <span class="b b2"></span>
+      <p>Um sistema + grain. Sem video, sem blob WebGL por cima, sem particles.</p>
+    </div>
+    
+    <div class="lesson">
+
+      <p><strong>Usar</strong> quando a pagina e tipografica e o fundo precisa de temperatura. Poucas manchas. Saturacao baixa.</p>
+      <p><strong>Nao usar</strong> atras de foto ja densa, nem com particles. Reduced motion: manchas paradas, sem drift.</p>
+    
+    </div>
+  </main>
+  <script src="/_shared/lab.js"></script>
+  <script src="/_shared/nav.js"></script>
+  
+  <script>
+  (function () {
+if (Lab.reduce()) document.body.classList.add('is-reduce');
+  })();
+  </script>
+</body>
+</html>

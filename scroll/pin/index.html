@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MOTION lab / Pin</title>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .axis {
+      position: fixed; right: 22px; top: 50%; transform: translateY(-50%);
+      z-index: 40; font-family: ui-monospace, monospace; font-size: 10px;
+      letter-spacing: 0.18em; color: var(--accent); writing-mode: vertical-rl;
+      text-transform: uppercase; pointer-events: none;
+    }
+    @media (max-width: 700px) {
+      .axis { display: none; }
+    }
+
+    .hero, .tail { min-height: 70dvh; padding: 22vh 8vw 12vh; }
+    .hero h1, .pin-copy h2 { font-family: var(--font-d); font-weight:800; letter-spacing:-0.05em; font-size: clamp(2.6rem, 7vw, 5.5rem); line-height:0.92; margin:0 0 16px; max-width: 12ch; }
+    .hero p, .pin-copy p, .tail p { color: var(--muted); max-width: 42ch; line-height:1.45; }
+    #pin { background: var(--bg-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .pin-copy { min-height: 100dvh; padding: 22vh 8vw 12vh; }
+    .pin-rail { height: 6px; background: var(--line); max-width: 280px; margin-bottom: 28px; }
+    .pin-rail span { display:block; height:100%; width:100%; background: var(--accent); transform-origin: 0 50%; transform: scaleX(0); }
+    .pin-tag { font-family: ui-monospace, monospace; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
+    
+  </style>
+</head>
+<body class="lab-grain">
+<div class="axis">secao cola, miolo vive</div>
+  
+    <section class="hero">
+      <h1>Documento, depois residencia.</h1>
+      <p class="formula">Quando <em>o bloco atinge o topo</em>, ele faz <em>pin</em> e o <em>orbe interno pulsa no relogio</em>, porque a camera precisa parar para o olho crer no capitulo.</p>
+    </section>
+    <section id="pin">
+      <div class="pin-copy">
+        <p class="pin-tag" id="pinLabel">preso no topo</p>
+        <div class="pin-rail" aria-hidden="true"><span id="pinFill"></span></div>
+        <h2>Fica enquanto voce le.</h2>
+        <p>A barra acima e o proprio progresso do scroll dentro do pin: ela so anda porque o dedo anda.</p>
+      </div>
+    </section>
+    <section class="tail">
+      <p>Soltou. O scroll volta a ser pagina.</p>
+      <p><strong>Pin vs stack vs scrub:</strong> pin = um quadro fixo enquanto o texto e lido; sticky-stack = cartas comparativas se empilhando; scrub = camera continua amarrada ao dedo o tempo todo. Aqui: so pin.</p>
+    </section>
+    <div class="lesson lesson--bleed">
+      <p><strong>Usar</strong> para um take que precisa de tempo de leitura, uma decisao, uma virada. O pin da tempo ao olho.</p>
+      <p><strong>Nao usar</strong> para texto de artigo generico, nem empilhado com hijack ou dive na mesma pagina.</p>
+    </div>
+    
+  <script src="/_shared/lab.js"></script>
+  <script src="/_shared/nav.js"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
+  <script>
+  (function () {
+
+    gsap.registerPlugin(ScrollTrigger);
+    if (Lab.reduce()) { document.body.classList.add("is-reduce"); return; }
+    var fill = document.getElementById("pinFill");
+    var label = document.getElementById("pinLabel");
+    var labels = ["preso no topo", "ainda preso", "soltando"];
+    ScrollTrigger.create({
+      trigger: "#pin",
+      start: "top top",
+      end: "+=140%",
+      pin: true,
+      onUpdate: function (self) {
+        fill.style.transform = "scaleX(" + self.progress + ")";
+        label.textContent = labels[Math.min(2, Math.floor(self.progress * 3))];
+      }
+    });
+    
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MOTION lab / Horizontal hijack</title>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .axis {
+      position: fixed; right: 22px; top: 50%; transform: translateY(-50%);
+      z-index: 40; font-family: ui-monospace, monospace; font-size: 10px;
+      letter-spacing: 0.18em; color: var(--accent); writing-mode: vertical-rl;
+      text-transform: uppercase; pointer-events: none;
+    }
+    @media (max-width: 700px) {
+      .axis { display: none; }
+    }
+
+    .viewport { position: relative; overflow: hidden; }
+    .track { display: flex; height: 100dvh; width: max-content; will-change: transform; }
+    .panel {
+      flex: 0 0 100vw; height: 100dvh; padding: 12vh 10vw 14vh;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      border-right: 1px solid var(--line); position: relative; background: var(--bg);
+    }
+    .panel:nth-child(2) { background: #181910; }
+    .panel:nth-child(3) { background: #1e2016; }
+    .panel:nth-child(4) { background: #16170f; }
+    h1, h2 { font-family: var(--font-d); font-weight:800; letter-spacing:-0.05em; line-height:0.92; margin:0 0 18px; font-size: clamp(2.8rem, 8vw, 6.4rem); max-width: 12ch; }
+    p { margin:0; max-width: 38ch; color: var(--muted); line-height:1.45; }
+    .formula { color: var(--ink); margin-bottom: 16px; }
+    @media (prefers-reduced-motion: reduce) {
+      .viewport { overflow: visible; }
+      .track { display: block; width: auto; transform: none !important; height: auto; }
+      .panel { width: auto; min-height: 100dvh; height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+    }
+    
+  </style>
+</head>
+<body class="lab-grain">
+<div class="axis">scroll Y vira translateX</div>
+  
+    <section class="viewport" id="wrap">
+      <div class="track" id="track">
+        <article class="panel">
+          <p class="formula">Quando <em>o wrapper pina no topo</em>, o <em>trilho</em> faz <em>translateX</em> com <em>scrub 1 e ease none</em>, porque cada quadro pede a tela inteira.</p>
+          <h1>Trilho. Nao lista.</h1>
+          <p>Pin no wrapper. Distancia = largura do trilho menos a viewport. Voltar o scroll rebobina o filme.</p>
+        </article>
+        <article class="panel">
+          <h2>Quadro a quadro.</h2>
+          <p>Usar para projetos, capitulos, produtos que pedem take isolado. Marquee infinito nao e esta camera.</p>
+        </article>
+        <article class="panel">
+          <h2>Start top top.</h2>
+          <p>Se o X ja governa, Z e Y-stack ficam fora. Uma camera. Parallax de hero nao conta.</p>
+        </article>
+        <article class="panel">
+          <h2>Quando nao.</h2>
+          <p>Ruim para artigo, form, pricing. Reduced motion: os paineis empilham no Y, sem pin, sem hijack. A pagina nao explode.</p>
+        </article>
+      </div>
+    </section>
+    
+  <script src="/_shared/lab.js"></script>
+  <script src="/_shared/nav.js"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
+  <script>
+  (function () {
+
+    gsap.registerPlugin(ScrollTrigger);
+    if (Lab.reduce()) return;
+    var wrap = document.getElementById("wrap");
+    var track = document.getElementById("track");
+    var ctx = gsap.context(function () {
+      var distance = track.scrollWidth - window.innerWidth;
+      gsap.to(track, {
+        x: -distance,
+        ease: "none",
+        scrollTrigger: {
+          trigger: wrap,
+          start: "top top",
+          end: function () { return "+=" + (track.scrollWidth - window.innerWidth); },
+          pin: true,
+          scrub: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+    }, wrap);
+    window.addEventListener("pagehide", function () { ctx.revert(); });
+    
+  })();
+  </script>
+</body>
+</html>

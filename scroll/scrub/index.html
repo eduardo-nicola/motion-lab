@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MOTION lab / Scrub</title>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .axis {
+      position: fixed; right: 22px; top: 50%; transform: translateY(-50%);
+      z-index: 40; font-family: ui-monospace, monospace; font-size: 10px;
+      letter-spacing: 0.18em; color: var(--accent); writing-mode: vertical-rl;
+      text-transform: uppercase; pointer-events: none;
+    }
+    @media (max-width: 700px) {
+      .axis { display: none; }
+    }
+
+    #hold { min-height: 100dvh; padding: 22vh 8vw 12vh; display:flex; flex-direction:column; justify-content:flex-end; }
+    h1 { font-family: var(--font-d); font-weight:800; letter-spacing:-0.06em; font-size: clamp(3rem, 8vw, 6rem); line-height:0.9; margin:0 0 18px; max-width: 10ch; }
+    .big { font-family: var(--font-d); font-weight:800; font-size: clamp(4rem, 18vw, 12rem); letter-spacing:-0.08em; line-height:0.8; margin: 0 0 12px; }
+    .line { height: 3px; background: var(--accent); width: 0; max-width: 70vw; }
+    p { color: var(--muted); max-width: 40ch; }
+    
+  </style>
+</head>
+<body class="lab-grain">
+<div class="axis">playhead = scrollbar</div>
+  
+    <div id="hold">
+      <p class="formula">Quando <em>o scroll vai de 0 a 1</em>, o <em>numero</em> faz <em>contagem colada</em> com <em>ease none</em>, porque voltar o dedo precisa rebobinar o take.</p>
+      <p class="big" id="n">00</p>
+      <div class="line" id="line"></div>
+      <h1>Filme, nao easing.</h1>
+    </div>
+    <div class="lesson lesson--bleed">
+      <p><strong>Usar</strong> quando o corpo dirige o tempo: scrub de camera, contador, barra de progresso.</p>
+      <p><strong>Nao usar</strong> em botao, load ou hover. Bounce no scrub e erro de camera; ease e sempre none.</p>
+    </div>
+    
+  <script src="/_shared/lab.js"></script>
+  <script src="/_shared/nav.js"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
+  <script>
+  (function () {
+
+    gsap.registerPlugin(ScrollTrigger);
+    if (Lab.reduce()) { document.getElementById("n").textContent = "100"; document.getElementById("line").style.width = "70vw"; return; }
+    var n = document.getElementById("n");
+    gsap.fromTo("#line", { width: 0 }, {
+      width: "70vw",
+      ease: "none",
+      scrollTrigger: {
+        trigger: "#hold",
+        start: "top top",
+        end: "+=200%",
+        pin: true,
+        scrub: true,
+        onUpdate: function (self) {
+          n.textContent = String(Math.round(self.progress * 100)).padStart(2, "0");
+        }
+      }
+    });
+    
+  })();
+  </script>
+</body>
+</html>

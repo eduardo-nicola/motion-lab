@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MOTION lab / Scramble</title>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+
+    .sc { min-height: 64dvh; padding: 10vh 8vw; display:flex; flex-direction:column; justify-content:flex-end; gap: 16px; }
+    .name { background:none; border:0; color: var(--ink); font-family: var(--font-d); font-weight:800; font-size: clamp(3rem, 10vw, 7rem); letter-spacing:-0.06em; text-align:left; cursor: pointer; padding:0; line-height:0.9; }
+    .sc p { margin:0; color: var(--muted); }
+    
+  </style>
+</head>
+<body class="lab-grain">
+<main class="teach">
+    <div class="teach-head">
+      <h1>Decodifica.</h1>
+      <p class="formula">Quando <em>o ponteiro entra</em>, o <em>nome</em> faz <em>scramble</em> com <em>700ms</em>, porque o estado muda de cifrado para lido, e isso e feedback.</p>
+    </div>
+    
+    <div class="stage-frame sc">
+      <button type="button" id="n" class="name">EDUARDO</button>
+      <p>Hover ou foco. Sem loop eterno.</p>
+    </div>
+    
+    <div class="lesson">
+
+      <p><strong>Usar</strong> em nome, label de peca, um segredo que se revela. Uma vez por hover.</p>
+      <p><strong>Nao usar</strong> em corpo de texto nem em tudo que parece "hacker". Reduced motion: o nome ja e o nome, sem glifo.</p>
+    
+    </div>
+  </main>
+  <script src="/_shared/lab.js"></script>
+  <script src="/_shared/nav.js"></script>
+  
+  <script>
+  (function () {
+
+    var el = document.getElementById("n");
+    function go() { Lab.scramble(el, "EDUARDO", 700); }
+    el.addEventListener("pointerenter", go);
+    el.addEventListener("focus", go);
+    
+  })();
+  </script>
+</body>
+</html>

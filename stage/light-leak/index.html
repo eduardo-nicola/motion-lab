@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MOTION lab / Light leak</title>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+
+    .leak { position: relative; min-height: 70dvh; overflow: hidden; }
+    .leak img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter: saturate(0.75) brightness(0.72); }
+    .wash {
+      position:absolute; inset: -30% -45%; width: 170%; height: 160%; pointer-events:none;
+      background: linear-gradient(100deg,
+        transparent 32%,
+        rgb(226 61 40 / 0.55) 47%,
+        rgb(255 197 120 / 0.4) 53%,
+        transparent 66%);
+      mix-blend-mode: screen;
+      transform: translateX(-26%);
+    }
+    body:not(.is-reduce) .wash { animation: leak 9s ease-in-out infinite alternate; }
+    .leak p { position:relative; z-index:2; margin:0; padding: 10vh 8vw; max-width: 40ch; line-height: 1.5; }
+    @keyframes leak { to { transform: translateX(22%) rotate(2deg); } }
+    @media (prefers-reduced-motion: reduce) { .wash { animation: none; } }
+    
+  </style>
+</head>
+<body class="lab-grain">
+<main class="teach">
+    <div class="teach-head">
+      <h1>Vazamento analogico.</h1>
+      <p class="formula">Quando <em>o quadro pede calor</em>, uma <em>faixa diagonal</em> faz <em>light leak</em> com <em>varredura lenta em screen blend</em>, porque um acento de luz cruzando a foto substitui video de stock.</p>
+    </div>
+    
+    <div class="stage-frame leak">
+      <img src="https://picsum.photos/seed/light-leak-darkroom/1400/900" alt="Mesa escura com folhas" />
+      <span class="wash" aria-hidden="true"></span>
+      <p>Uma faixa cruzando a foto. Grain no body. Sem mesh, sem blob.</p>
+    </div>
+    
+    <div class="lesson">
+
+      <p><strong>Usar</strong> em portfolio analogico, still, um heroi fotografico. Um vazamento, canto unico.</p>
+      <p><strong>Nao usar</strong> em UI de produto, nem em loop agressivo. Reduced motion: leak parado. Overlay pointer-events none, nao no scroller.</p>
+    
+    </div>
+  </main>
+  <script src="/_shared/lab.js"></script>
+  <script src="/_shared/nav.js"></script>
+  
+  <script>
+  (function () {
+if (Lab.reduce()) document.body.classList.add('is-reduce');
+  })();
+  </script>
+</body>
+</html>

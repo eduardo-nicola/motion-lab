@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MOTION lab / Split screen</title>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .axis {
+      position: fixed; right: 22px; top: 50%; transform: translateY(-50%);
+      z-index: 40; font-family: ui-monospace, monospace; font-size: 10px;
+      letter-spacing: 0.18em; color: var(--accent); writing-mode: vertical-rl;
+      text-transform: uppercase; pointer-events: none;
+    }
+    @media (max-width: 700px) {
+      .axis { display: none; }
+    }
+
+    #split { display: grid; min-height: 100dvh; }
+    @media (min-width: 768px) { #split { grid-template-columns: 1fr 1fr; } }
+    .pane { min-height: 100dvh; overflow: hidden; position: relative; }
+    .pane-a { background: #181910; }
+    .pane-b { background: #1e2016; border-top: 1px solid var(--line); }
+    @media (min-width: 768px) { .pane-b { border-top: 0; border-left: 1px solid var(--line); } }
+    .inner { padding: 22vh 8vw 12vh; }
+    h1, h2 { font-family: var(--font-d); font-weight:800; letter-spacing:-0.05em; font-size: clamp(2.2rem, 5vw, 4rem); line-height:0.95; margin:0 0 16px; max-width: 10ch; }
+    p { color: var(--muted); max-width: 32ch; line-height:1.45; }
+    .shot { width: 100%; height: 42vh; object-fit: cover; display:block; margin-bottom: 28px; }
+    @media (max-width: 767px) { .pane { min-height: auto; } }
+    
+  </style>
+</head>
+<body class="lab-grain">
+<div class="axis">dois meios, um scroll</div>
+  
+    <section id="split">
+      <div class="pane pane-a" id="left">
+        <div class="inner">
+          <img class="shot" src="https://picsum.photos/seed/split-left-press/900/700" alt="Mesa de impressao com folhas escuras" />
+          <h1>Esquerda conta o fazer.</h1>
+          <p class="formula">Quando <em>a secao pina</em>, os <em>dois meios</em> fazem <em>translateY opostos</em> com <em>scrub none</em>, porque duas vozes precisam ocupar o mesmo tempo.</p>
+        </div>
+      </div>
+      <div class="pane pane-b" id="right">
+        <div class="inner">
+          <img class="shot" src="https://picsum.photos/seed/split-right-type/900/700" alt="Tipografia em chumbo vista de perto" />
+          <h2>Direita conta o dito.</h2>
+          <p>Usar quando ha contraste: oficio / resultado, antes / depois. Nao usar para lista. Mobile: os meios empilham, sem oposicao.</p>
+        </div>
+      </div>
+    </section>
+    <div class="lesson lesson--bleed">
+      <p>Uma camera: split. Sem hijack horizontal por cima. Reduced motion: os dois blocos estaticos, um apos o outro.</p>
+    </div>
+    
+  <script src="/_shared/lab.js"></script>
+  <script src="/_shared/nav.js"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
+  <script>
+  (function () {
+
+    gsap.registerPlugin(ScrollTrigger);
+    if (Lab.reduce() || window.innerWidth < 768) return;
+    gsap.to("#left .inner", { y: -80, ease: "none", scrollTrigger: { trigger: "#split", start: "top top", end: "+=140%", pin: true, scrub: true } });
+    gsap.fromTo("#right .inner", { y: -80 }, { y: 40, ease: "none", scrollTrigger: { trigger: "#split", start: "top top", end: "+=140%", scrub: true } });
+    
+  })();
+  </script>
+</body>
+</html>

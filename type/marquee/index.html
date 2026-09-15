@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MOTION lab / Marquee</title>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+
+    .stage-frame { overflow: hidden; min-height: 48dvh; display:flex; align-items:center; }
+    .mq p { margin:0; white-space: nowrap; font-family: var(--font-d); font-weight:800; font-size: clamp(2.4rem, 8vw, 5.5rem); letter-spacing:-0.05em; }
+    body:not(.is-reduce) .mq p { animation: mq 28s linear infinite; }
+    @keyframes mq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    @media (prefers-reduced-motion: reduce) {
+      .mq p { white-space: normal; animation: none; padding: 8vw; }
+    }
+    
+  </style>
+</head>
+<body class="lab-grain">
+<main class="teach">
+    <div class="teach-head">
+      <h1>Uma faixa. So uma.</h1>
+      <p class="formula">Quando <em>a lista e larga demais para caber</em>, a <em>faixa</em> faz <em>translateX infinito</em> com <em>28s linear</em>, porque amplitude nao pede leitura item a item.</p>
+    </div>
+    
+    <div class="stage-frame">
+      <div class="mq" id="mq">
+        <p>Arquivo Norte - Oficina 14 - Rua do Sol - Tipo que pesa - Camera que obedece - Arquivo Norte - Oficina 14 - Rua do Sol - Tipo que pesa - Camera que obedece - </p>
+      </div>
+    </div>
+    
+    <div class="lesson">
+
+      <p><strong>Usar</strong> uma vez por pagina. Logos, pecas, manifesto que nao precisa de clique individual.</p>
+      <p><strong>Nao usar</strong> duas faixas na mesma pagina. Isso e preguiça. Nao usar para nav real. Reduced motion: a faixa vira texto estatico, sem loop.</p>
+    
+    </div>
+  </main>
+  <script src="/_shared/lab.js"></script>
+  <script src="/_shared/nav.js"></script>
+  
+  <script>
+  (function () {
+if (Lab.reduce()) document.body.classList.add('is-reduce');
+  })();
+  </script>
+</body>
+</html>

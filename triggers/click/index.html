@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MOTION lab / Click</title>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+
+    .click-stage { min-height: 70dvh; padding: 10vh 8vw; position: relative; }
+    .panel {
+      position: absolute; inset: 12%;
+      background: var(--bg-3); border: 1px solid var(--line);
+      padding: 36px; display:flex; flex-direction:column; justify-content:flex-end; gap: 16px;
+    }
+    .panel[hidden] { display:none; }
+    .ph { font-family: ui-monospace, monospace; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color: var(--accent); margin:0; }
+    .panel p { margin:0; color: var(--muted); max-width: 42ch; line-height:1.45; }
+    body:not(.is-reduce) .panel.is-on {
+      animation: rise 0.55s cubic-bezier(0.16,1,0.3,1);
+    }
+    @keyframes rise { from { opacity:0; transform: translateY(16px) scale(0.96); } to { opacity:1; transform:none; } }
+    
+  </style>
+</head>
+<body class="lab-grain">
+<main class="teach">
+    <div class="teach-head">
+      <h1>Clique vira estado.</h1>
+      <p class="formula">Quando <em>o botao e acionado</em>, o <em>retangulo</em> faz <em>morph para painel</em> com <em>0.55s ease-out</em>, porque o clique precisa mostrar que o estado mudou, nao so piscar.</p>
+    </div>
+    
+    <div class="stage-frame click-stage">
+      <button class="btn" type="button" id="open">Abrir peca</button>
+      <div class="panel" id="panel" hidden>
+        <p class="ph">estado aberto</p>
+        <p>Isso substitui uma troca de rota. Sem router neste lab. O objeto continua o mesmo. So o estado muda.</p>
+        <button class="btn btn-ghost" type="button" id="close">Fechar</button>
+      </div>
+    </div>
+    
+    <div class="lesson">
+
+      <p><strong>Usar</strong> em abrir detalhe, toggle, confirmar, qualquer mutacao que o olho precisa crer. Morph (FLIP) liga origem e destino.</p>
+      <p><strong>Nao usar</strong> se a acao navega de verdade (ai e page transition) ou se o destino nao tem relacao espacial com a origem. Sem reduced-motion, o painel aparece sem viagem. Clique tambem precisa de :active scale 0.98.</p>
+    
+    </div>
+  </main>
+  <script src="/_shared/lab.js"></script>
+  <script src="/_shared/nav.js"></script>
+  
+  <script>
+  (function () {
+
+    var open = document.getElementById("open");
+    var close = document.getElementById("close");
+    var panel = document.getElementById("panel");
+    if (Lab.reduce()) document.body.classList.add("is-reduce");
+    open.addEventListener("click", function () {
+      open.hidden = true;
+      panel.hidden = false;
+      panel.classList.add("is-on");
+    });
+    close.addEventListener("click", function () {
+      panel.hidden = true;
+      panel.classList.remove("is-on");
+      open.hidden = false;
+    });
+    
+  })();
+  </script>
+</body>
+</html>

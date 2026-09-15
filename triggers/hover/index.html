@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MOTION lab / Hover</title>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+
+    .hover-stage { display:grid; grid-template-columns: 1fr; gap: 36px; padding: 40px 8vw; min-height: 44dvh; align-content: center; }
+    @media (min-width: 768px) { .hover-stage { grid-template-columns: repeat(3, 1fr); } }
+    .htest { display:flex; flex-direction:column; gap: 16px; }
+    .tag { font-family: ui-monospace, monospace; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color: var(--muted); margin: 0; }
+    #plain {
+      transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), background-color 0.3s cubic-bezier(0.16,1,0.3,1);
+    }
+    #plain:hover { transform: scale(1.04); background-color: #ff5a3c; }
+    .h-underline {
+      display: inline-flex; align-items: center; color: var(--ink); text-decoration:none;
+      font-family: var(--font-d); font-weight: 700; font-size: 1.1rem; letter-spacing:-0.02em;
+      padding-bottom: 4px; border-bottom: 2px solid var(--line);
+      width: fit-content; transition: border-color 0.3s cubic-bezier(0.16,1,0.3,1);
+    }
+    .h-underline:hover { border-color: var(--accent); }
+    .h-nudge {
+      display: inline-flex; align-items: center; gap: 8px; color: var(--ink); text-decoration:none;
+      font-family: var(--font-d); font-weight: 700; font-size: 1.1rem; letter-spacing:-0.02em;
+      width: fit-content;
+    }
+    .h-nudge .arrow { display:inline-block; transition: transform 0.3s cubic-bezier(0.16,1,0.3,1); }
+    .h-nudge:hover .arrow { transform: translateX(6px); }
+  </style>
+</head>
+<body class="lab-grain">
+<main class="teach">
+    <div class="teach-head">
+      <h1>O cursor chega.</h1>
+      <p class="formula">Quando <em>o ponteiro entra</em>, o <em>botao</em> faz <em>scale e muda de cor</em> com <em>0.3s ease-out</em>, porque o cursor precisa de resposta antes do clique.</p>
+    </div>
+
+    <div class="stage-frame hover-stage">
+      <div class="htest">
+        <p class="tag">scale + cor</p>
+        <button class="btn" type="button" id="plain">Peca</button>
+      </div>
+      <div class="htest">
+        <p class="tag">underline reveal</p>
+        <a class="h-underline" href="#">Ver arquivo</a>
+      </div>
+      <div class="htest">
+        <p class="tag">icon nudge</p>
+        <a class="h-nudge" href="#">Abrir peca <span class="arrow" aria-hidden="true">&rarr;</span></a>
+      </div>
+    </div>
+
+    <div class="lesson">
+
+      <p><strong>Usar</strong> em CTA, card clicavel, link importante. Gatilho e o cursor: transition simples em transform e cor, sem JS.</p>
+      <p><strong>Nao usar</strong> em texto corrido nem em touch-only (nao ha hover para tocar). A fisica de puxao (magnet) e outra pele, mesmo gatilho: vive em <a href="/skin/magnetic-button/">skin/magnetic-button</a>, nao aqui.</p>
+
+    </div>
+  </main>
+  <script src="/_shared/lab.js"></script>
+  <script src="/_shared/nav.js"></script>
+</body>
+</html>

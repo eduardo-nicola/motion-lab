@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MOTION lab / Stagger</title>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+
+    .col i { display:block; height: 14px; background: var(--accent); margin: 0 0 10px; transform-origin: 0 50%; }
+    .row { display:block; }
+    .mini { color: var(--muted); font-size: 0.85rem; }
+    body:not(.is-reduce) #ok i { transform: scaleX(0); animation: bar 0.6s cubic-bezier(0.16,1,0.3,1) forwards; }
+    #ok i:nth-child(2) { animation-delay: 60ms; }
+    #ok i:nth-child(3) { animation-delay: 120ms; }
+    #ok i:nth-child(4) { animation-delay: 180ms; }
+    #ok i:nth-child(5) { animation-delay: 240ms; }
+    body:not(.is-reduce) #no .row:first-of-type i { transform: scaleX(0); animation: bar 0.6s cubic-bezier(0.16,1,0.3,1) forwards; }
+    body:not(.is-reduce) #no .slow i { transform: scaleX(0); animation: bar 0.6s cubic-bezier(0.16,1,0.3,1) forwards; }
+    #no .slow i:nth-child(1) { animation-delay: 0ms; }
+    #no .slow i:nth-child(2) { animation-delay: 220ms; }
+    #no .slow i:nth-child(3) { animation-delay: 440ms; }
+    #no .slow i:nth-child(4) { animation-delay: 660ms; }
+    @keyframes bar { to { transform: scaleX(1); } }
+    @media (prefers-reduced-motion: reduce) { .col i { transform:none; animation:none; } }
+    
+  </style>
+</head>
+<body class="lab-grain">
+<main class="teach">
+    <div class="teach-head">
+      <h1>60ms e ritmo.</h1>
+      <p class="formula">Quando <em>os itens entram</em>, o <em>certo</em> faz <em>stagger 60ms</em>, porque sequencia e hierarquia. 0ms e parede. 200ms e lama.</p>
+    </div>
+    
+    <div class="pair">
+      <div class="col ok" id="ok"><p class="tag">certo / 60ms</p><i></i><i></i><i></i><i></i></div>
+      <div class="col no" id="no"><p class="tag">errado / 0ms e 220ms</p>
+        <div class="row"><i></i><i></i><i></i><i></i></div>
+        <p class="mini">acima: todos juntos. abaixo: 220ms</p>
+        <div class="row slow"><i></i><i></i><i></i><i></i></div>
+      </div>
+    </div>
+    <button class="btn btn-ghost" type="button" id="replay" style="margin-top: 24px;">Repetir</button>
+    
+    <div class="lesson">
+
+      <p><strong>Usar</strong> 40-80ms em listas, letras, cards de entrada.</p>
+      <p><strong>Nao usar</strong> stagger de 200ms+ em UI. A pessoa espera. Reduced motion: barras ja visiveis.</p>
+    
+    </div>
+  </main>
+  <script src="/_shared/lab.js"></script>
+  <script src="/_shared/nav.js"></script>
+  
+  <script>
+  (function () {
+if (Lab.reduce()) document.body.classList.add('is-reduce');
+
+    var bars = document.querySelectorAll('.col i');
+    document.getElementById('replay').addEventListener('click', function () {
+      if (Lab.reduce()) return;
+      bars.forEach(function (el) { el.style.animation = 'none'; });
+      void document.body.offsetWidth;
+      bars.forEach(function (el) { el.style.animation = ''; });
+    });
+  })();
+  </script>
+</body>
+</html>

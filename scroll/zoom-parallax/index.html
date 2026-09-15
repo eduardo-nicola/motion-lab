@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MOTION lab / Zoom parallax</title>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .axis {
+      position: fixed; right: 22px; top: 50%; transform: translateY(-50%);
+      z-index: 40; font-family: ui-monospace, monospace; font-size: 10px;
+      letter-spacing: 0.18em; color: var(--accent); writing-mode: vertical-rl;
+      text-transform: uppercase; pointer-events: none;
+    }
+    @media (max-width: 700px) {
+      .axis { display: none; }
+    }
+
+    #hold { min-height: 100dvh; overflow: hidden; position: relative; }
+    #hold img { width: 100%; height: 100dvh; object-fit: cover; display:block; transform-origin: 50% 50%; will-change: transform; }
+    .copy { position: absolute; inset: auto 8vw 14vh 8vw; }
+    .copy h1 { font-family: var(--font-d); font-weight:800; letter-spacing:-0.05em; font-size: clamp(2.4rem, 6vw, 4.6rem); line-height:0.95; margin:0 0 12px; max-width: 12ch; }
+    .copy p { color: var(--ink); max-width: 40ch; line-height:1.4; }
+    
+  </style>
+</head>
+<body class="lab-grain">
+<div class="axis">dolly falso na foto</div>
+  
+    <div id="hold">
+      <img id="shot" src="https://picsum.photos/seed/zoom-parallax-atelier/1800/1200" alt="Atelie com luz de janela e madeira" />
+      <div class="copy">
+        <h1>A foto chega perto.</h1>
+        <p class="formula">Quando <em>a secao esta pinada</em>, a <em>imagem</em> faz <em>scale 1 para 1.22</em> com <em>scrub none</em>, porque a aproximacao e o argumento, nao um Ken Burns solto.</p>
+      </div>
+    </div>
+    <div class="lesson lesson--bleed">
+      <p><strong>Usar</strong> em um heroi fotografico que precisa virar presenca. Um zoom. Sem segundo eixo.</p>
+      <p><strong>Nao usar</strong> em retrato de pessoa (distorce), nem somado a dive. Reduced motion: a foto fica em 1.0, sem pin extra.</p>
+    </div>
+    
+  <script src="/_shared/lab.js"></script>
+  <script src="/_shared/nav.js"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
+  <script>
+  (function () {
+
+    gsap.registerPlugin(ScrollTrigger);
+    if (Lab.reduce()) return;
+    gsap.fromTo("#shot", { scale: 1 }, {
+      scale: 1.22,
+      ease: "none",
+      scrollTrigger: {
+        trigger: "#hold",
+        start: "top top",
+        end: "+=160%",
+        pin: true,
+        scrub: true,
+      }
+    });
+    
+  })();
+  </script>
+</body>
+</html>

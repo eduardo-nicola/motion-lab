@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MOTION lab / Ease out</title>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+
+    .box { width: 100%; min-height: 160px; border: 1px solid var(--line); background: var(--bg-3); color: var(--ink); font-family: var(--font-d); font-weight:700; font-size: 1.4rem; cursor: pointer; }
+    .good { transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+    .good:hover { transform: scale(1.06); }
+    .bad { transition: transform 0.5s linear; }
+    .bad:hover { transform: scale(1.06); }
+    @media (prefers-reduced-motion: reduce) { .good, .bad { transition: none; } .good:hover, .bad:hover { transform: none; } }
+    
+  </style>
+</head>
+<body class="lab-grain">
+<main class="teach">
+    <div class="teach-head">
+      <h1>Chega e assenta.</h1>
+      <p class="formula">Quando <em>o hover acontece</em>, o <em>bloco certo</em> faz <em>scale</em> com <em>cubic-bezier(0.16, 1, 0.3, 1)</em>, porque UI precisa sair rapido e pousar sem linear de PowerPoint.</p>
+    </div>
+    
+    <div class="pair">
+      <div class="col ok"><p class="tag">certo</p><button class="box good" type="button">Hover</button></div>
+      <div class="col no"><p class="tag">errado</p><button class="box bad" type="button">Hover</button></div>
+    </div>
+    
+    <div class="lesson">
+
+      <p><strong>Usar</strong> 0.16, 1, 0.3, 1 em hover, enter, painel. E a curva deste lab.</p>
+      <p><strong>Nao usar</strong> linear em hover de interface. Linear e para scrub de camera, nao para botao. Reduced motion: sem scale.</p>
+    
+    </div>
+  </main>
+  <script src="/_shared/lab.js"></script>
+  <script src="/_shared/nav.js"></script>
+  
+  <script>
+  (function () {
+
+  })();
+  </script>
+</body>
+</html>

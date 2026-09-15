@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MOTION lab / Tilt card</title>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+
+    .tilt-stage { min-height: 72dvh; display:flex; align-items:flex-end; padding: 8vh 8vw; perspective: 900px; }
+    .card { width: min(420px, 100%); transform-style: preserve-3d; will-change: transform; }
+    .card img { width:100%; display:block; aspect-ratio: 4/3; object-fit:cover; }
+    .card p { margin: 12px 0 0; font-family: var(--font-d); font-weight:700; letter-spacing:-0.03em; }
+    
+  </style>
+</head>
+<body class="lab-grain">
+<main class="teach">
+    <div class="teach-head">
+      <h1>O plano segue a mao.</h1>
+      <p class="formula">Quando <em>o ponteiro atravessa a peca</em>, o <em>cartao</em> faz <em>rotateX/Y</em> com <em>follow imediato</em>, porque a peca precisa parecer objeto, nao thumbnail.</p>
+    </div>
+    
+    <div class="stage-frame tilt-stage">
+      <article class="card" id="tilt">
+        <img src="https://picsum.photos/seed/tilt-oficina14/900/640" alt="Cadeira em oficina" />
+        <p>Oficina 14</p>
+      </article>
+    </div>
+    
+    <div class="lesson">
+
+      <p>Uma das quatro peles que respondem ao ponteiro: <a href="/skin/magnetic-button/">puxao</a>, inclinacao (aqui), <a href="/skin/spotlight-border/">luz local</a>, <a href="/skin/page-transition/">cortina de estado</a>.</p>
+      <p><strong>Usar</strong> em uma peca, talvez duas. Perspectiva no pai. Transform no filho.</p>
+      <p><strong>Nao usar</strong> em grade de oito. Reduced motion: cartao plano. Sem useState no cursor.</p>
+    
+    </div>
+  </main>
+  <script src="/_shared/lab.js"></script>
+  <script src="/_shared/nav.js"></script>
+  
+  <script>
+  (function () {
+Lab.tilt(document.getElementById('tilt'), 9);
+  })();
+  </script>
+</body>
+</html>
