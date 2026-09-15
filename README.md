@@ -29,7 +29,6 @@ Three.js is not in the stack. Gaussian splat / 3D-to-2D (Oryzo-level) is skipped
 ## Run
 
 ```bash
-cd exemples
 npm install
 npm run dev
 ```
@@ -42,7 +41,6 @@ The lab has no build step and no server-side code: every path resolves to a stat
 
 ```bash
 # quick check of the production file set, no dev reload
-cd exemples
 npx serve . -l 4173
 
 # Netlify / any static host: publish directory = exemples/, no build command
