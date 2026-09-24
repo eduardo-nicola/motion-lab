@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="/_shared/lab.css" />
+  <link rel="stylesheet" href="../../_shared/lab.css" />
   <style>
     /* intro e o que vem depois ficam ACIMA do viewport fixo, com fundo opaco */
     .intro, .outro { position: relative; z-index: 2; background: var(--color-bg); min-height: 70dvh; padding: 20vh var(--pad) 12vh; display: grid; gap: 20px; align-content: end; }
@@ -62,25 +62,25 @@
     <div class="viewport" id="viewport">
       <div class="world" id="world">
         <article class="plane" data-z="0">
-          <img src="/_shared/media/plate-table.svg" alt="Mesa escura de madeira com um porta-copos de cortiça sob luz lateral quente" width="1600" height="1000" />
+          <img src="../../_shared/media/plate-table.svg" alt="Mesa escura de madeira com um porta-copos de cortiça sob luz lateral quente" width="1600" height="1000" />
           <span class="depth">z 0 · a mesa</span>
           <h2 class="display">Tudo começa <em>na superfície</em>.</h2>
           <p>Base nº 7 sobre a mesa. Role: a câmera não desce, ela entra.</p>
         </article>
         <article class="plane" data-z="-900">
-          <img src="/_shared/media/plate-atelier.svg" alt="Blocos de arquitetura em tons quentes com janelas acesas, o ateliê à noite" width="1600" height="1000" loading="lazy" />
+          <img src="../../_shared/media/plate-atelier.svg" alt="Blocos de arquitetura em tons quentes com janelas acesas, o ateliê à noite" width="1600" height="1000" loading="lazy" />
           <span class="depth">z −900 · o ateliê</span>
           <h2 class="display">Atrás dela, <em>o ateliê</em>.</h2>
           <p>Cada plano está estacionado mais fundo. É o mundo que avança até você.</p>
         </article>
         <article class="plane" data-z="-1800">
-          <img src="/_shared/media/plate-cork.svg" alt="Textura de cortiça prensada vista de perto, grãos em tons de mel" width="1600" height="1000" loading="lazy" />
+          <img src="../../_shared/media/plate-cork.svg" alt="Textura de cortiça prensada vista de perto, grãos em tons de mel" width="1600" height="1000" loading="lazy" />
           <span class="depth">z −1800 · o material</span>
           <h2 class="display">Mais perto: <em>cortiça</em>.</h2>
           <p>Opacidade por distância: o plano acende ao chegar e se apaga ao passar pela lente.</p>
         </article>
         <article class="plane" data-z="-2700">
-          <img src="/_shared/media/plate-cork-macro.svg" alt="Macro da cortiça no mesmo enquadramento, com uma pequena criatura escondida entre os grãos" width="1600" height="1000" loading="lazy" />
+          <img src="../../_shared/media/plate-cork-macro.svg" alt="Macro da cortiça no mesmo enquadramento, com uma pequena criatura escondida entre os grãos" width="1600" height="1000" loading="lazy" />
           <span class="depth">z −2700 · o fundo</span>
           <h2 class="display">E lá no fundo, <em>alguém mora</em>.</h2>
           <p>Fim do túnel. O próximo bloco sobe por cima do viewport fixo.</p>
@@ -112,8 +112,8 @@
     </div>
   </div>
 
-  <script src="/_shared/motion-kit.js"></script>
-  <script src="/_shared/nav.js"></script>
+  <script src="../../_shared/motion-kit.js"></script>
+  <script src="../../_shared/nav.js"></script>
   <script>
     withGsap(function (gsap, ST) {
       var vp = document.getElementById('viewport');

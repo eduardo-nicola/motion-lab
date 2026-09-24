@@ -59,10 +59,16 @@
     ] }
   ];
 
+  /* base do site derivada do próprio src deste script: "/" localmente, "/motion-lab/" num subcaminho (GitHub Pages) */
+  var BASE = (function () {
+    try { return new URL('../', d.currentScript.src).pathname; } catch (e) { return '/'; }
+  })();
+  w.LAB_BASE = BASE;
+
   var FLAT = [];
   GROUPS.forEach(function (g) {
     g.items.forEach(function (it) {
-      FLAT.push({ href: '/' + g.slug + '/' + it.slug + '/', title: it.title, group: g, bleed: !!it.bleed });
+      FLAT.push({ href: BASE + g.slug + '/' + it.slug + '/', title: it.title, group: g, bleed: !!it.bleed });
     });
   });
 
@@ -75,20 +81,20 @@
     var idx = -1;
     FLAT.forEach(function (it, i) { if (it.href === path) idx = i; });
     var cur = idx > -1 ? FLAT[idx] : null;
-    var isRoot = path === '/';
+    var isRoot = path === BASE;
     var prev = idx > 0 ? FLAT[idx - 1] : null;
     var next = idx > -1 && idx < FLAT.length - 1 ? FLAT[idx + 1] : isRoot ? FLAT[0] : null;
 
     var crumb = '';
     if (cur) {
       var menu = cur.group.items.map(function (it) {
-        var href = '/' + cur.group.slug + '/' + it.slug + '/';
+        var href = BASE + cur.group.slug + '/' + it.slug + '/';
         return '<a role="menuitem" href="' + href + '"' + (href === cur.href ? ' class="is-active" aria-current="page"' : '') + '>' + esc(it.title) + '</a>';
       }).join('');
       crumb =
         '<nav class="lab-crumb" aria-label="Caminho do lab">' +
-        '<a class="root" href="/">MOTION lab</a><span class="sep">/</span>' +
-        '<a href="/#' + cur.group.slug + '">' + esc(cur.group.label) + '</a><span class="sep">/</span>' +
+        '<a class="root" href="' + BASE + '">MOTION lab</a><span class="sep">/</span>' +
+        '<a href="' + BASE + '#' + cur.group.slug + '">' + esc(cur.group.label) + '</a><span class="sep">/</span>' +
         '<div class="lab-drop"><button type="button" class="cur" aria-haspopup="true" aria-expanded="false">' + esc(cur.title) + ' ▾</button>' +
         '<div class="lab-menu" role="menu">' + menu + '</div></div></nav>';
     }

@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="/_shared/lab.css" />
+  <link rel="stylesheet" href="../../_shared/lab.css" />
   <style>
     .intro, .outro { min-height: 70dvh; padding: 20vh var(--pad) 12vh; display: grid; gap: 20px; align-content: end; }
     .intro h1 { font-size: clamp(2.6rem, 8vw, 6rem); max-width: 12ch; }
@@ -63,7 +63,7 @@
   <section id="seq" aria-labelledby="seq-t">
     <h2 class="sr-only" id="seq-t">O porta-copos levanta e se abre em quatro camadas</h2>
     <div class="seq-box">
-      <img class="seq-poster" src="/_shared/media/seq/f000.svg" alt="Porta-copos de cortiça Nº 7 pousado sobre fundo escuro, primeiro quadro da vista explodida em que ele se abre em quatro camadas" width="1600" height="1000" fetchpriority="high" />
+      <img class="seq-poster" src="../../_shared/media/seq/f000.svg" alt="Porta-copos de cortiça Nº 7 pousado sobre fundo escuro, primeiro quadro da vista explodida em que ele se abre em quatro camadas" width="1600" height="1000" fetchpriority="high" />
       <canvas class="seq-canvas" id="seq-c" aria-hidden="true"></canvas>
     </div>
     <div class="seq-hud" aria-hidden="true"><span>frame <b id="seq-f">01</b> / <span id="seq-n">48</span></span><i id="seq-bar"></i><span id="seq-step">1 em 1</span></div>
@@ -93,15 +93,15 @@
     </div>
   </div>
 
-  <script src="/_shared/motion-kit.js"></script>
-  <script src="/_shared/nav.js"></script>
+  <script src="../../_shared/motion-kit.js"></script>
+  <script src="../../_shared/nav.js"></script>
   <script>
     withGsap(function (gsap, ST) {
       var wrap = document.getElementById('seq'), c = document.getElementById('seq-c'), g = c.getContext('2d');
       var hudF = document.getElementById('seq-f'), bar = document.getElementById('seq-bar');
       var beats = [].slice.call(document.querySelectorAll('[data-beat]'));
       var step = innerWidth < 768 ? 2 : 1, frames = [], imgs = [], st = { f: 0 }, drawn = -1;
-      for (var i = 0; i < 48; i += step) frames.push('/_shared/media/seq/f' + ('00' + i).slice(-3) + '.svg');
+      for (var i = 0; i < 48; i += step) frames.push('../../_shared/media/seq/f' + ('00' + i).slice(-3) + '.svg');
       var n = frames.length;
       document.getElementById('seq-n').textContent = n;
       document.getElementById('seq-step').textContent = '1 em ' + step;

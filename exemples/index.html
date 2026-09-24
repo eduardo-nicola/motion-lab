@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="/_shared/lab.css" />
+  <link rel="stylesheet" href="_shared/lab.css" />
   <style>
     .hero { isolation: isolate; min-height: 88dvh; padding: 18vh var(--pad) 8vh; display: grid; align-content: end; gap: 28px; position: relative; overflow: hidden; }
     .hero h1 { font-size: clamp(3.4rem, 14vw, 12rem); line-height: .84; letter-spacing: -.05em; }
@@ -49,8 +49,8 @@
   <main class="index" id="dict" aria-label="Dicionário de técnicas"></main>
   <footer>Uma técnica por página. Navegue pelo topo: anterior / próximo.</footer>
 
-  <script src="/_shared/motion-kit.js"></script>
-  <script src="/_shared/nav.js"></script>
+  <script src="_shared/motion-kit.js"></script>
+  <script src="_shared/nav.js"></script>
   <script>
     (function () {
       Motion.splitChars(document.getElementById('title'), 35);
@@ -61,7 +61,7 @@
           '<summary><span class="n">0' + (gi + 1) + '</span><h2>' + g.label + '</h2><span class="count">' + g.items.length + ' técnicas</span></summary>' +
           '<p class="lead">' + g.lead + '</p><div class="dict-list">';
         g.items.forEach(function (it) {
-          html += '<a href="/' + g.slug + '/' + it.slug + '/"><span class="meta">' + g.slug + '</span><strong>' + it.title + '</strong><span>' + it.desc + '</span></a>';
+          html += '<a href="' + LAB_BASE + g.slug + '/' + it.slug + '/"><span class="meta">' + g.slug + '</span><strong>' + it.title + '</strong><span>' + it.desc + '</span></a>';
         });
         html += '</div></details>';
       });

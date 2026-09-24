@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="/_shared/lab.css" />
+  <link rel="stylesheet" href="../../_shared/lab.css" />
   <style>
     .pl-stage { display: grid; grid-template-rows: 1fr auto; }
     .pl-view { position: relative; overflow: hidden; min-height: 420px; display: grid; }
@@ -85,7 +85,7 @@
     <section class="stage pl-stage" aria-labelledby="pl-t">
       <div class="pl-view" id="pl-view">
         <div class="pl-hero">
-          <img id="pl-img" src="/_shared/media/seq/f000.svg" alt="Porta-copos de cortiça Nº 7, primeiro quadro da vista explodida em quatro camadas" width="1600" height="1000" />
+          <img id="pl-img" src="../../_shared/media/seq/f000.svg" alt="Porta-copos de cortiça Nº 7, primeiro quadro da vista explodida em quatro camadas" width="1600" height="1000" />
           <div class="pl-copy">
             <p class="eyebrow">image sequence · <span class="pl-frame">quadro <b id="pl-frame">01</b> / 48</span></p>
             <h2 class="display pl-title" id="pl-t">Pousa. Levanta. Abre.</h2>
@@ -122,8 +122,8 @@
     </div>
   </main>
 
-  <script src="/_shared/motion-kit.js"></script>
-  <script src="/_shared/nav.js"></script>
+  <script src="../../_shared/motion-kit.js"></script>
+  <script src="../../_shared/nav.js"></script>
   <script>
     (function () {
       if (!Motion.on()) return;
@@ -137,7 +137,7 @@
       var status = document.getElementById('pl-status');
       var frameEl = document.getElementById('pl-frame');
       var urls = [];
-      for (var i = 0; i < N; i++) urls.push('/_shared/media/seq/f' + ('00' + i).slice(-3) + '.svg');
+      for (var i = 0; i < N; i++) urls.push('../../_shared/media/seq/f' + ('00' + i).slice(-3) + '.svg');
       var token = 0;
 
       function pad(n) { return ('0' + n).slice(-2); }
