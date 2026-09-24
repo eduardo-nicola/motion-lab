@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Text mask · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .tm-stage {
+      display: grid; align-content: center; justify-items: start; gap: 24px;
+      padding: 40px var(--pad);
+      background: radial-gradient(80% 60% at 30% 100%, rgb(168 116 63 / .18), transparent 70%), var(--color-bg-2);
+    }
+    .tm-top { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; align-items: center; width: 100%; }
+    .mask {
+      margin: 0;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: clamp(4.5rem, 22vw, 12rem);
+      letter-spacing: -.08em;
+      line-height: .8;
+      padding: .06em .08em .1em 0;
+      color: var(--color-cream);                                       /* fallback: cor sólida */
+      background: url('/_shared/media/plate-cork.svg') center / cover;
+    }
+    @supports (background-clip: text) or (-webkit-background-clip: text) {
+      .mask { color: transparent; -webkit-background-clip: text; background-clip: text; }
+      /* modo didático: a imagem inteira, sem o recorte da letra */
+      .tm-stage.is-raw .mask { -webkit-background-clip: border-box; background-clip: border-box; color: rgb(255 237 215 / .5); }
+    }
+    .tm-copy { margin: 0; max-width: 44ch; color: var(--color-muted); }
+    .tm-copy b { color: var(--color-ink); font-weight: 500; }
+    .tm-legend { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
+    .tm-legend li {
+      font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+      padding: 6px 10px; border: 1px solid var(--color-line); color: var(--color-muted);
+    }
+  </style>
+</head>
+<body>
+  <main class="teach">
+    <header class="teach-head">
+      <p class="eyebrow"><b>tipo</b> · deps css · mobile degradar · custo baixo</p>
+      <h1 class="display">A letra é a janela.</h1>
+      <p class="formula">Quando <em>o título precisa de imagem</em>, o <em>tipo</em> faz <em>mask</em> com <em>estado estático</em>, porque a foto só existe dentro da letra.</p>
+    </header>
+
+    <section class="stage tm-stage" aria-labelledby="tm-word">
+      <div class="tm-top">
+        <p class="eyebrow">rolha · a matéria</p>
+        <button type="button" class="btn btn-ghost" id="tm-toggle" aria-pressed="false">Ver a imagem inteira</button>
+      </div>
+      <h2 class="mask" id="tm-word">Grão</h2>
+      <p class="tm-copy">A textura de cortiça só aparece <b>dentro</b> das letras: <code>background-clip: text</code> + <code>color: transparent</code>. Sem suporte, a palavra fica creme, legível.</p>
+      <ul class="tm-legend" aria-label="Regras da técnica">
+        <li>uma palavra</li>
+        <li>uma máscara por dobra</li>
+        <li>peso 700 · tracking −0.08em</li>
+      </ul>
+    </section>
+
+    <div class="lesson">
+      <div>
+        <h2>Usar</h2>
+        <p>Hero com uma palavra curta e grossa, quando a matéria do produto (cortiça, tecido, paisagem) é o argumento.</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p>Frases, palavras longas que quebram no mobile, fonte fina (a imagem some). Nunca duas máscaras na mesma dobra.</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>Estático por natureza: fica igual com motion off. Sem <code>background-clip: text</code>, o <code>@supports</code> deixa a cor sólida de fallback.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    (function () {
+      var btn = document.getElementById('tm-toggle');
+      var stage = document.querySelector('.tm-stage');
+      btn.addEventListener('click', function () {
+        var on = btn.getAttribute('aria-pressed') !== 'true';
+        btn.setAttribute('aria-pressed', String(on));
+        btn.textContent = on ? 'Voltar para a máscara' : 'Ver a imagem inteira';
+        stage.classList.toggle('is-raw', on);
+      });
+    })();
+  </script>
+</body>
+</html>

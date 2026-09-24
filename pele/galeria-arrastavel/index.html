@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Galeria arrastável · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .ga-stage { display: grid; align-content: center; gap: 24px; padding: 36px 0; }
+    .ga-head { display: flex; flex-wrap: wrap; gap: 16px 24px; justify-content: space-between; align-items: end; padding: 0 var(--pad); }
+    .ga-head h2 { font-size: clamp(1.8rem, 5vw, 3.2rem); max-width: 14ch; }
+    .ga-nav { display: flex; gap: 8px; }
+    .ga-nav .btn { min-width: 48px; padding: 0 16px; }
+
+    /* base CSS: touch e trackpad já funcionam */
+    .gal {
+      display: flex; gap: 16px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      overscroll-behavior-x: contain;
+      scrollbar-width: none;
+      padding-inline: var(--pad);
+      scroll-padding-inline: var(--pad);
+      margin: 0; list-style: none;
+    }
+    .gal::-webkit-scrollbar { display: none; }
+    .gal > li { flex: 0 0 min(80vw, 420px); scroll-snap-align: start; }
+    .gal.is-drag { cursor: grab; }
+    .gal.is-down { cursor: grabbing; user-select: none; }
+    .ga-card { margin: 0; display: grid; gap: 12px; }
+    .ga-card img {
+      width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover;
+      border: 1px solid var(--color-line);
+      background: var(--color-bg);
+      -webkit-user-drag: none;
+    }
+    .ga-card figcaption { display: grid; gap: 4px; }
+    .ga-card small { font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-primary); }
+    .ga-card strong { font: 600 1.3rem/1.1 var(--font-display); letter-spacing: -.02em; color: var(--color-cream); }
+
+    .ga-foot { padding: 0 var(--pad); display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; color: var(--color-muted); }
+    .ga-foot p { margin: 0; max-width: 52ch; }
+    .ga-bar { height: 2px; background: var(--color-line); width: min(100%, 240px); align-self: center; }
+    .ga-bar span { display: block; height: 100%; background: var(--color-primary); transform-origin: 0 50%; transform: scaleX(1); }
+  </style>
+</head>
+<body>
+  <main class="teach">
+    <header class="teach-head">
+      <p class="eyebrow"><b>pele</b> · deps css · mobile ok · custo baixo</p>
+      <h1 class="display">Puxa quem quer.</h1>
+      <p class="formula">Quando <em>a pessoa arrasta</em>, a <em>faixa de cards</em> faz <em>translateX com inércia</em> e <em>snap</em>, porque explorar é opcional — quem quiser, puxa.</p>
+    </header>
+
+    <section class="stage ga-stage" aria-labelledby="ga-t">
+      <div class="ga-head">
+        <div>
+          <p class="eyebrow">rolha · diário de produção</p>
+          <h2 class="display" id="ga-t">Da casca à mesa, em seis quadros.</h2>
+        </div>
+        <div class="ga-nav">
+          <button type="button" class="btn btn-ghost" id="ga-prev" aria-controls="gal" aria-label="Quadro anterior">←</button>
+          <button type="button" class="btn btn-ghost" id="ga-next" aria-controls="gal" aria-label="Próximo quadro">→</button>
+        </div>
+      </div>
+
+      <ul class="gal" id="gal" tabindex="0" aria-label="Galeria: seis quadros da produção. Use as setas do teclado ou os botões para navegar.">
+        <li><figure class="ga-card">
+          <img src="/_shared/media/plate-cork.svg" width="1600" height="1000" alt="Textura de cortiça caramelo com poros escuros." draggable="false" />
+          <figcaption><small>01 · matéria</small><strong>O grão, de perto.</strong></figcaption>
+        </figure></li>
+        <li><figure class="ga-card">
+          <img src="/_shared/media/plate-cork-macro.svg" width="1600" height="1000" alt="Detalhe macro da mesma cortiça, com um pequeno inseto escondido entre os poros." draggable="false" />
+          <figcaption><small>02 · macro</small><strong>Mais perto: tem vida ali.</strong></figcaption>
+        </figure></li>
+        <li><figure class="ga-card">
+          <img src="/_shared/media/plate-atelier.svg" width="1600" height="1000" alt="Blocos de arquitetura em tons quentes com janelas acesas." loading="lazy" draggable="false" />
+          <figcaption><small>03 · ateliê</small><strong>Prensa ao entardecer.</strong></figcaption>
+        </figure></li>
+        <li><figure class="ga-card">
+          <img src="/_shared/media/plate-street.svg" width="1600" height="1000" alt="Os mesmos blocos de arquitetura em tom oliva, vistos da rua." loading="lazy" draggable="false" />
+          <figcaption><small>04 · rua</small><strong>A loja, da calçada.</strong></figcaption>
+        </figure></li>
+        <li><figure class="ga-card">
+          <img src="/_shared/media/seq/f024.svg" width="1600" height="1000" alt="Porta-copos de cortiça girando no ar, a meio caminho de um salto." loading="lazy" draggable="false" />
+          <figcaption><small>05 · teste</small><strong>Cai, gira, pousa.</strong></figcaption>
+        </figure></li>
+        <li><figure class="ga-card">
+          <img src="/_shared/media/plate-table.svg" width="1600" height="1000" alt="Mesa escura de madeira com um porta-copos de cortiça ao centro." loading="lazy" draggable="false" />
+          <figcaption><small>06 · mesa</small><strong>Onde ela mora.</strong></figcaption>
+        </figure></li>
+      </ul>
+
+      <div class="ga-foot">
+        <p>Mouse: arraste a faixa e solte — ela desliza e encaixa. Toque e trackpad: scroll nativo com <code>scroll-snap</code>. O scroll vertical da página nunca é sequestrado.</p>
+        <div class="ga-bar" aria-hidden="true"><span id="ga-bar"></span></div>
+      </div>
+    </section>
+
+    <div class="lesson">
+      <div>
+        <h2>Usar</h2>
+        <p>Features, depoimentos, portfólio curto: conteúdo que é bônus para quem explora. Seguro para landing porque o eixo Y continua livre.</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p>Junto de horizontal hijack (dois trilhos X). Para conteúdo obrigatório (o que ninguém arrastar, ninguém vê). Sem controles de teclado.</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>CSS + vanilla. Base é <code>overflow-x</code> com snap. Arrasto só com ponteiro fino; inércia só com <code>.motion</code>. Sem motion: solta e encaixa, sem deslizar.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    (function () {
+      var el = document.getElementById('gal');
+      var bar = document.getElementById('ga-bar');
+      var step = function () { var li = el.querySelector('li'); return li ? li.getBoundingClientRect().width + 16 : 300; };
+      var smooth = Motion.on() ? 'smooth' : 'auto';
+
+      document.getElementById('ga-prev').addEventListener('click', function () { el.scrollBy({ left: -step(), behavior: smooth }); });
+      document.getElementById('ga-next').addEventListener('click', function () { el.scrollBy({ left: step(), behavior: smooth }); });
+
+      function progress() {
+        var max = el.scrollWidth - el.clientWidth;
+        bar.style.transform = 'scaleX(' + (max > 0 ? Math.max(.08, el.scrollLeft / max) : 1) + ')';
+      }
+      el.addEventListener('scroll', function () { requestAnimationFrame(progress); }, { passive: true });
+      progress();
+
+      /* camada mouse: drag + inércia */
+      if (!Motion.fine()) return;
+      el.classList.add('is-drag');
+      var down = false, moved = false, x0 = 0, s0 = 0, v = 0, last = 0, raf = 0;
+      el.addEventListener('pointerdown', function (e) {
+        if (e.button !== 0 || e.pointerType !== 'mouse') return;
+        cancelAnimationFrame(raf);
+        down = true; moved = false; x0 = last = e.clientX; s0 = el.scrollLeft; v = 0;
+        el.style.scrollSnapType = 'none';
+        el.classList.add('is-down');
+        el.setPointerCapture(e.pointerId);
+      });
+      el.addEventListener('pointermove', function (e) {
+        if (!down) return;
+        v = e.clientX - last; last = e.clientX;
+        if (Math.abs(e.clientX - x0) > 3) moved = true;
+        el.scrollLeft = s0 - (e.clientX - x0);
+      });
+      function release() {
+        if (!down) return;
+        down = false;
+        el.classList.remove('is-down');
+        if (!Motion.on()) { el.style.scrollSnapType = ''; return; }  // sem motion: encaixa direto, sem deslizar
+        (function glide() {
+          v *= .92; el.scrollLeft -= v;
+          if (Math.abs(v) > .5) raf = requestAnimationFrame(glide); else el.style.scrollSnapType = '';
+        })();
+      }
+      el.addEventListener('pointerup', release);
+      el.addEventListener('pointercancel', release);
+      el.addEventListener('click', function (e) { if (moved) { e.preventDefault(); e.stopPropagation(); } }, true);
+    })();
+  </script>
+</body>
+</html>

@@ -3,80 +3,91 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MOTION lab / Pin</title>
-  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <title>Pin · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
   <link rel="stylesheet" href="/_shared/lab.css" />
   <style>
-    .axis {
-      position: fixed; right: 22px; top: 50%; transform: translateY(-50%);
-      z-index: 40; font-family: ui-monospace, monospace; font-size: 10px;
-      letter-spacing: 0.18em; color: var(--accent); writing-mode: vertical-rl;
-      text-transform: uppercase; pointer-events: none;
-    }
-    @media (max-width: 700px) {
-      .axis { display: none; }
-    }
+    .intro, .outro { min-height: 70dvh; padding: 20vh var(--pad) 12vh; display: grid; gap: 20px; align-content: end; }
+    .intro h1 { font-size: clamp(2.6rem, 8vw, 6rem); max-width: 12ch; }
+    #pin { background: var(--color-bg-2); border-block: 1px solid var(--color-line); }
+    .pin-inner { min-height: 100dvh; padding: 18vh var(--pad) 12vh; display: grid; gap: 24px; align-content: center; }
+    .pin-inner h2 { font-size: clamp(2.2rem, 6vw, 4.8rem); max-width: 14ch; }
+    .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; max-width: 46ch; color: var(--color-muted); }
+    .steps li { padding-left: 20px; border-left: 2px solid var(--color-line); }
+    .rail { height: 4px; background: var(--color-line); max-width: 320px; }
+    .rail span { display: block; height: 100%; background: var(--color-primary); transform-origin: 0 50%; transform: scaleX(1); }
 
-    .hero, .tail { min-height: 70dvh; padding: 22vh 8vw 12vh; }
-    .hero h1, .pin-copy h2 { font-family: var(--font-d); font-weight:800; letter-spacing:-0.05em; font-size: clamp(2.6rem, 7vw, 5.5rem); line-height:0.92; margin:0 0 16px; max-width: 12ch; }
-    .hero p, .pin-copy p, .tail p { color: var(--muted); max-width: 42ch; line-height:1.45; }
-    #pin { background: var(--bg-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-    .pin-copy { min-height: 100dvh; padding: 22vh 8vw 12vh; }
-    .pin-rail { height: 6px; background: var(--line); max-width: 280px; margin-bottom: 28px; }
-    .pin-rail span { display:block; height:100%; width:100%; background: var(--accent); transform-origin: 0 50%; transform: scaleX(0); }
-    .pin-tag { font-family: ui-monospace, monospace; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
-    
+    /* camada de motion: só com .motion */
+    .motion .rail span { transform: scaleX(0); }
+    .motion .steps li { transition: color .3s var(--ease-out), border-color .3s var(--ease-out); }
+    .motion .steps li.is-on { color: var(--color-ink); border-color: var(--color-primary); }
   </style>
 </head>
-<body class="lab-grain">
-<div class="axis">secao cola, miolo vive</div>
-  
-    <section class="hero">
-      <h1>Documento, depois residencia.</h1>
-      <p class="formula">Quando <em>o bloco atinge o topo</em>, ele faz <em>pin</em> e o <em>orbe interno pulsa no relogio</em>, porque a camera precisa parar para o olho crer no capitulo.</p>
-    </section>
-    <section id="pin">
-      <div class="pin-copy">
-        <p class="pin-tag" id="pinLabel">preso no topo</p>
-        <div class="pin-rail" aria-hidden="true"><span id="pinFill"></span></div>
-        <h2>Fica enquanto voce le.</h2>
-        <p>A barra acima e o proprio progresso do scroll dentro do pin: ela so anda porque o dedo anda.</p>
-      </div>
-    </section>
-    <section class="tail">
-      <p>Soltou. O scroll volta a ser pagina.</p>
-      <p><strong>Pin vs stack vs scrub:</strong> pin = um quadro fixo enquanto o texto e lido; sticky-stack = cartas comparativas se empilhando; scrub = camera continua amarrada ao dedo o tempo todo. Aqui: so pin.</p>
-    </section>
-    <div class="lesson lesson--bleed">
-      <p><strong>Usar</strong> para um take que precisa de tempo de leitura, uma decisao, uma virada. O pin da tempo ao olho.</p>
-      <p><strong>Nao usar</strong> para texto de artigo generico, nem empilhado com hijack ou dive na mesma pagina.</p>
-    </div>
-    
-  <script src="/_shared/lab.js"></script>
-  <script src="/_shared/nav.js"></script>
-  
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
-  <script>
-  (function () {
+<body>
+  <header class="intro">
+    <p class="eyebrow"><b>scroll</b> · deps gsap · mobile ok · custo médio</p>
+    <h1 class="display">A câmera para.</h1>
+    <p class="formula">Quando <em>o bloco atinge o topo</em>, ele faz <em>pin</em> e o <em>miolo reage ao progresso</em> com <em>ease none</em>, porque a câmera precisa parar para o olho crer no capítulo.</p>
+  </header>
 
-    gsap.registerPlugin(ScrollTrigger);
-    if (Lab.reduce()) { document.body.classList.add("is-reduce"); return; }
-    var fill = document.getElementById("pinFill");
-    var label = document.getElementById("pinLabel");
-    var labels = ["preso no topo", "ainda preso", "soltando"];
-    ScrollTrigger.create({
-      trigger: "#pin",
-      start: "top top",
-      end: "+=140%",
-      pin: true,
-      onUpdate: function (self) {
-        fill.style.transform = "scaleX(" + self.progress + ")";
-        label.textContent = labels[Math.min(2, Math.floor(self.progress * 3))];
-      }
+  <section id="pin" aria-labelledby="pin-t">
+    <div class="pin-inner">
+      <p class="eyebrow" id="pin-label">passo 1 de 3</p>
+      <div class="rail" aria-hidden="true"><span id="pin-fill"></span></div>
+      <h2 class="display" id="pin-t">Fica enquanto você lê.</h2>
+      <ol class="steps">
+        <li data-step>Decisão: o bloco chega no topo e cola.</li>
+        <li data-step>Leitura: a barra e o passo ativo andam com o dedo.</li>
+        <li data-step>Soltura: fim do progresso, o documento volta a descer.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="outro">
+    <p class="formula">Soltou. <em>Pin</em> = um quadro fixo enquanto o texto é lido. <em>Sticky stack</em> = cartas se substituindo. <em>Scrub</em> = câmera colada ao dedo o tempo todo.</p>
+  </section>
+
+  <div class="lesson lesson--bleed">
+    <div>
+      <h2>Usar</h2>
+      <p>Um take que pede tempo de leitura: decisão, virada, número-chave, "como funciona" em 3 passos.</p>
+    </div>
+    <div>
+      <h2>Não usar</h2>
+      <p>Texto genérico de artigo. Junto de hijack ou dive. Mais de 3 pins por página. Formulário dentro do pin.</p>
+    </div>
+    <div>
+      <h2>Reduced motion / sem GSAP</h2>
+      <p>Sem pin; barra cheia e os 3 passos em fluxo normal.</p>
+    </div>
+  </div>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    withGsap(function (gsap, ST) {
+      var fill = document.getElementById('pin-fill');
+      var label = document.getElementById('pin-label');
+      var steps = [].slice.call(document.querySelectorAll('[data-step]'));
+      ST.create({
+        trigger: '#pin', start: 'top top', end: '+=160%', pin: true,
+        onUpdate: function (s) {
+          var i = Math.min(steps.length - 1, Math.floor(s.progress * steps.length));
+          fill.style.transform = 'scaleX(' + s.progress + ')';
+          label.textContent = 'passo ' + (i + 1) + ' de ' + steps.length;
+          steps.forEach(function (el, j) { el.classList.toggle('is-on', j === i); });
+        }
+      });
     });
-    
-  })();
   </script>
 </body>
 </html>

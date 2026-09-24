@@ -3,103 +3,113 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MOTION lab / Sticky stack</title>
-  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <title>Sticky stack · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
   <link rel="stylesheet" href="/_shared/lab.css" />
   <style>
-    .axis {
-      position: fixed; right: 22px; top: 50%; transform: translateY(-50%);
-      z-index: 40; font-family: ui-monospace, monospace; font-size: 10px;
-      letter-spacing: 0.18em; color: var(--accent); writing-mode: vertical-rl;
-      text-transform: uppercase; pointer-events: none;
+    .intro, .outro { min-height: 70dvh; padding: 20vh var(--pad) 12vh; display: grid; gap: 20px; align-content: end; }
+    .intro h1 { font-size: clamp(2.6rem, 8vw, 6rem); max-width: 12ch; }
+
+    .stack { position: relative; }
+    .stack-card {
+      position: relative; min-height: 100dvh; transform-origin: 50% 8%;
+      display: grid; align-content: center; gap: 18px; padding: 14vh var(--pad) 10vh;
+      border-top: 6px solid var(--color-primary);
+      background: var(--bg, var(--color-bg-2));
+      box-shadow: 0 -24px 48px rgb(0 0 0 / .45);
+      will-change: transform, opacity;
     }
-    @media (max-width: 700px) {
-      .axis { display: none; }
+    .stack-card:nth-child(1) { z-index: 1; --bg: var(--color-bg-2); }
+    .stack-card:nth-child(2) { z-index: 2; --bg: var(--color-bg-3); }
+    .stack-card:nth-child(3) { z-index: 3; --bg: #2f2113; }
+    .stack-card:nth-child(4) { z-index: 4; --bg: #3a2818; }
+    .stack-card .n { font: 700 clamp(4rem, 16vw, 11rem)/.8 var(--font-display); letter-spacing: -.05em; color: transparent; -webkit-text-stroke: 1px var(--color-primary); }
+    .stack-card h2 { font-size: clamp(2.2rem, 6.4vw, 5rem); max-width: 12ch; }
+    .stack-card p { margin: 0; max-width: 42ch; color: var(--color-muted); }
+    @media (min-width: 768px) {
+      .stack-card { grid-template-columns: auto 1fr; column-gap: 6vw; align-items: end; }
+      .stack-card .n { grid-row: span 3; }
     }
 
-    .deck { position: relative; }
-    .stack-card {
-      position: sticky; top: 0; min-height: 100dvh;
-      display: flex; flex-direction: column; justify-content: flex-end;
-      padding: 12vh 10vw 14vh; border-bottom: 1px solid var(--line);
-      transform-origin: 50% 8%;
-    }
-    .stack-card:nth-child(1) { background: #181910; z-index: 1; }
-    .stack-card:nth-child(2) { background: #1e2016; z-index: 2; }
-    .stack-card:nth-child(3) { background: #24271c; z-index: 3; }
-    .stack-card:nth-child(4) { background: #16170f; z-index: 4; }
-    .stack-card::before { content:""; position:absolute; left:0; right:0; top:0; height:6px; background: var(--accent); }
-    h1, h2 { font-family: var(--font-d); font-weight:800; letter-spacing:-0.05em; line-height:0.92; margin:0 0 18px; font-size: clamp(2.8rem, 8vw, 6.4rem); max-width: 12ch; }
-    p { margin:0; max-width: 40ch; color: var(--muted); line-height:1.45; }
-    .formula { color: var(--ink); margin-bottom: 16px; }
-    @media (prefers-reduced-motion: reduce) {
-      .stack-card { position: relative; transform: none !important; }
-    }
-    
+    /* sticky: só quando não há reduced motion (fluxo normal). Se o CDN cair (.motion-fallback), o sticky nativo segue sem o encolhimento. */
+    .motion .stack-card, .motion-fallback .stack-card { position: sticky; top: 0; }
   </style>
 </head>
-<body class="lab-grain">
-<div class="axis">carta cobre carta, a de baixo encolhe</div>
-  
-    <main class="deck" id="deck">
-      <article class="stack-card">
-        <p class="formula">Quando <em>a carta atinge o topo</em>, ela faz <em>pin</em> e a anterior faz <em>scale 0.92</em> com <em>scrub none</em>, porque o capitulo novo substitui o velho.</p>
-        <h1>Baralho, nao lista.</h1>
-        <p>Start top top. Pin. A de baixo encolhe quando a proxima chega. Se so aparece em fila, e reveal, nao stack.</p>
-      </article>
-      <article class="stack-card">
-        <h2>Cobre e recua.</h2>
-        <p>Usar para servicos, teses, passos que se substituem. Cada carta anula a anterior na memoria espacial.</p>
-      </article>
-      <article class="stack-card">
-        <h2>Uma camera.</h2>
-        <p>Nao misturar hijack nem dive nesta pagina. Stack vive no Y com pin. O resto obedece.</p>
-      </article>
-      <article class="stack-card">
-        <h2>Quando nao.</h2>
-        <p>Ruim se os itens precisam coexistir. Precos lado a lado, grid de pecas, nav. Reduced motion: cartas em fluxo normal, sem pin.</p>
-      </article>
-    </main>
-    
-  <script src="/_shared/lab.js"></script>
-  <script src="/_shared/nav.js"></script>
-  
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
-  <script>
-  (function () {
+<body>
+  <header class="intro">
+    <p class="eyebrow"><b>scroll</b> · deps gsap · mobile ok · custo médio</p>
+    <h1 class="display">Carta cobre carta.</h1>
+    <p class="formula">Quando <em>a carta atinge o topo</em>, ela faz <em>pin</em> e a anterior faz <em>scale 0.92 + opacity 0.55</em> com <em>scrub none</em>, porque o capítulo novo substitui o velho.</p>
+  </header>
 
-    gsap.registerPlugin(ScrollTrigger);
-    if (Lab.reduce()) return;
-    var root = document.getElementById("deck");
-    var ctx = gsap.context(function () {
-      var cards = gsap.utils.toArray(".stack-card");
+  <div class="stack">
+    <section class="stack-card" aria-labelledby="sk-1">
+      <span class="n" aria-hidden="true">01</span>
+      <p class="eyebrow">colheita</p>
+      <h2 class="display" id="sk-1">A casca sai, a árvore fica.</h2>
+      <p>O sobreiro é descascado a cada nove anos. Nada é cortado; a casca volta a crescer.</p>
+    </section>
+    <section class="stack-card" aria-labelledby="sk-2">
+      <span class="n" aria-hidden="true">02</span>
+      <p class="eyebrow">cura</p>
+      <h2 class="display" id="sk-2">Seis meses no tempo.</h2>
+      <p>As pranchas descansam ao ar livre até a seiva sair. Pressa aqui vira racha depois.</p>
+    </section>
+    <section class="stack-card" aria-labelledby="sk-3">
+      <span class="n" aria-hidden="true">03</span>
+      <p class="eyebrow">prensa</p>
+      <h2 class="display" id="sk-3">Doze toneladas, um disco.</h2>
+      <p>O granulado é prensado a quente, sem cola sintética. A cortiça se segura sozinha.</p>
+    </section>
+    <section class="stack-card" aria-labelledby="sk-4">
+      <span class="n" aria-hidden="true">04</span>
+      <p class="eyebrow">mesa</p>
+      <h2 class="display" id="sk-4">E o anel some da madeira.</h2>
+      <p>Última carta: nada vem por cima, então ela não recua. O baralho termina aqui.</p>
+    </section>
+  </div>
+
+  <section class="outro">
+    <p class="formula">Baralho, não lista. <em>Sticky stack</em> = cada carta anula a anterior. <em>Pin</em> = um quadro só que fica. <em>Horizontal hijack</em> = outro eixo (nunca junto).</p>
+  </section>
+
+  <div class="lesson lesson--bleed">
+    <div>
+      <h2>Usar</h2>
+      <p>Serviços, teses, passos, módulos de curso que se substituem. Faixa de 6px na cor de acento no topo de cada carta.</p>
+    </div>
+    <div>
+      <h2>Não usar</h2>
+      <p>Itens que precisam coexistir (preços lado a lado, grid). Junto de hijack ou dive.</p>
+    </div>
+    <div>
+      <h2>Reduced motion / sem GSAP</h2>
+      <p>Reduced motion: cartas em fluxo normal, sem sticky. CDN caído: o <code>position: sticky</code> nativo continua empilhando, só sem o encolhimento da de baixo.</p>
+    </div>
+  </div>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    withGsap(function (gsap) {
+      var cards = gsap.utils.toArray('.stack-card');
       cards.forEach(function (card, i) {
-        if (i === cards.length - 1) return;
-        ScrollTrigger.create({
-          trigger: card,
-          start: "top top",
-          endTrigger: cards[cards.length - 1],
-          end: "top top",
-          pin: true,
-          pinSpacing: false,
-        });
+        if (i === cards.length - 1) return;                     // a última não recua
         gsap.to(card, {
-          scale: 0.92,
-          opacity: 0.55,
-          ease: "none",
-          scrollTrigger: {
-            trigger: cards[i + 1],
-            start: "top bottom",
-            end: "top top",
-            scrub: true,
-          },
+          scale: .92, opacity: .55, ease: 'none',
+          scrollTrigger: { trigger: cards[i + 1], start: 'top bottom', end: 'top top', scrub: true }
         });
       });
-    }, root);
-    window.addEventListener("pagehide", function () { ctx.revert(); });
-    
-  })();
+    });
   </script>
 </body>
 </html>

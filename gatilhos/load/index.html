@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Load · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .ld-stage { display: grid; grid-template-rows: 1fr auto; }
+    .ld-hero {
+      position: relative;
+      display: grid; gap: 22px; align-content: center; justify-items: start;
+      padding: 56px 20px 40px;
+      background:
+        radial-gradient(60% 70% at 85% 10%, rgb(220 80 0 / .18), transparent 70%),
+        radial-gradient(50% 60% at 0% 100%, rgb(93 108 73 / .16), transparent 70%);
+    }
+    .ld-kick { color: var(--color-cream); }
+    .ld-word {
+      font-size: clamp(2.2rem, 11vw, 9rem);
+      color: var(--color-ink);
+      line-height: .86;
+    }
+    .ld-word span span { display: inline-block; }
+    .ld-sub { margin: 0; max-width: 34ch; font-size: clamp(1.02rem, 2vw, 1.3rem); color: var(--color-muted); }
+    .ld-sub b { color: var(--color-ink); font-weight: 500; }
+
+    .ld-bar {
+      border-top: 1px solid var(--color-line);
+      padding: 18px 20px 20px;
+      display: grid; gap: 18px;
+    }
+    .ld-time { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+    .ld-time li { display: grid; grid-template-columns: 7.5rem 1fr; gap: 12px; align-items: center; font: 11px/1.2 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--color-muted); }
+    .ld-time li b { color: var(--color-ink); font-weight: 500; }
+    .ld-lane { position: relative; height: 6px; background: var(--color-bg-3); }
+    .ld-lane span {
+      position: absolute; top: 0; bottom: 0;
+      left: calc(var(--at) / 1600 * 100%);
+      width: calc(var(--len) / 1600 * 100%);
+      background: var(--color-primary);
+      transform-origin: 0 50%;
+    }
+    .ld-scale { display: flex; justify-content: space-between; margin-left: calc(7.5rem + 12px); font: 10px/1 var(--font-mono); color: var(--color-muted); letter-spacing: .1em; }
+    .ld-foot { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; justify-content: space-between; }
+
+    @media (min-width: 768px) {
+      .ld-hero { padding: 72px 56px 56px; }
+      .ld-bar { padding: 22px 56px 26px; }
+    }
+
+    /* camada de motion: só com .motion — sem ela o hero já está montado */
+    html:not(.motion) #ld-replay { display: none; }
+    .motion .ld-hero.run .ld-word span span { animation: ld-up var(--dur-enter) var(--ease-out) var(--d) both; }
+    .motion .ld-hero.run .ld-sub { animation: ld-up-s .6s var(--ease-out) 620ms both; }
+    .motion .ld-hero.run .ld-cta { animation: ld-up-s .6s var(--ease-out) 820ms both; }
+    .motion .ld-bar.run .ld-lane span { animation: ld-fill calc(var(--len) * 1ms) linear calc(var(--at) * 1ms) both; }
+    @keyframes ld-up { from { opacity: 0; transform: translateY(32px); } }
+    @keyframes ld-up-s { from { opacity: 0; transform: translateY(16px); } }
+    @keyframes ld-fill { from { transform: scaleX(0); } }
+  </style>
+</head>
+<body>
+  <main class="teach">
+    <header class="teach-head">
+      <p class="eyebrow"><b>gatilhos</b> · deps css · mobile ok · custo baixo</p>
+      <h1 class="display">O primeiro olhar.</h1>
+      <p class="formula">Quando <em>a página carrega</em>, o <em>título</em> faz <em>stagger de letras</em> com <em>40–60ms e 0.7s ease-out</em>, porque a hierarquia precisa existir no primeiro olhar.</p>
+    </header>
+
+    <section class="stage ld-stage" aria-labelledby="ld-t">
+      <div class="ld-hero" id="ld-hero">
+        <p class="eyebrow ld-kick">porta-copos nº 7 · cortiça prensada</p>
+        <h2 class="display ld-word" id="ld-t">LANÇAMENTO</h2>
+        <p class="ld-sub"><b>Segura o frio, esquece o anel na mesa.</b> A tese chega depois do nome, nunca junto.</p>
+        <a class="btn ld-cta" href="#ld-lesson">Ver quando usar o load</a>
+      </div>
+      <div class="ld-bar" id="ld-bar">
+        <ol class="ld-time" aria-label="Ordem de entrada da coreografia">
+          <li><span><b>1</b> nome</span><span class="ld-lane" aria-hidden="true"><span style="--at:0;--len:1100"></span></span></li>
+          <li><span><b>2</b> tese</span><span class="ld-lane" aria-hidden="true"><span style="--at:620;--len:600"></span></span></li>
+          <li><span><b>3</b> CTA</span><span class="ld-lane" aria-hidden="true"><span style="--at:820;--len:600"></span></span></li>
+        </ol>
+        <div class="ld-scale" aria-hidden="true"><span>0ms</span><span>400</span><span>800</span><span>1200</span><span>1600</span></div>
+        <div class="ld-foot">
+          <p class="eyebrow">10 letras × 40ms + 0.7s · toca uma vez</p>
+          <button type="button" class="btn btn-ghost" id="ld-replay">Tocar a abertura de novo</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="lesson" id="ld-lesson">
+      <div>
+        <h2>Usar</h2>
+        <p>Hero, headline, nome do produto. O CTA primário entra por último, perto dos 600ms: nome → tese → ação.</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p>Conteúdo já visto, dashboards, texto que precisa ser lido em 200ms, qualquer coisa em loop infinito.</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>Sem <code>.motion</code> o texto já nasce montado no lugar. As letras só ficam escondidas dentro do <code>animation … both</code>, nunca no CSS base. Não depende de GSAP.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    (function () {
+      var hero = document.getElementById('ld-hero');
+      var bar = document.getElementById('ld-bar');
+      Motion.splitChars(hero.querySelector('.ld-word'), 40);
+      function play() {
+        [hero, bar].forEach(function (el) { el.classList.remove('run'); });
+        void hero.offsetWidth;
+        [hero, bar].forEach(function (el) { el.classList.add('run'); });
+      }
+      play();
+      document.getElementById('ld-replay').addEventListener('click', play);
+    })();
+  </script>
+</body>
+</html>

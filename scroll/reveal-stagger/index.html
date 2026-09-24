@@ -3,77 +3,97 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MOTION lab / Reveal stagger</title>
-  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <title>Reveal stagger · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
   <link rel="stylesheet" href="/_shared/lab.css" />
   <style>
-    .axis {
-      position: fixed; right: 22px; top: 50%; transform: translateY(-50%);
-      z-index: 40; font-family: ui-monospace, monospace; font-size: 10px;
-      letter-spacing: 0.18em; color: var(--accent); writing-mode: vertical-rl;
-      text-transform: uppercase; pointer-events: none;
+    .rs-stage { padding: 32px 20px 48px; display: grid; gap: 28px; }
+    .rs-top { display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: end; }
+    .rs-top h2 { font-size: clamp(1.8rem, 5vw, 3.4rem); max-width: 14ch; }
+    .rs-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; background: var(--color-line); border: 1px solid var(--color-line); counter-reset: rs; }
+    .rs-list li {
+      counter-increment: rs;
+      display: grid; grid-template-columns: 3.2ch 1fr; gap: 6px 16px; align-items: baseline;
+      padding: 22px 18px; background: var(--color-bg);
     }
-    @media (max-width: 700px) {
-      .axis { display: none; }
+    .rs-list li::before { content: counter(rs, decimal-leading-zero); font-family: var(--font-mono); font-size: 12px; color: var(--color-primary); }
+    .rs-list strong { font: 600 clamp(1.2rem, 2.6vw, 1.7rem)/1.1 var(--font-display); letter-spacing: -.02em; }
+    .rs-list span { grid-column: 2; color: var(--color-muted); max-width: 52ch; }
+    .rs-note { margin: 0; font-family: var(--font-mono); font-size: 12px; color: var(--color-muted); }
+    @media (min-width: 768px) {
+      .rs-stage { padding: 56px 48px 72px; }
+      .rs-list li { grid-template-columns: 4ch minmax(12ch, 22ch) 1fr; padding: 28px 24px; }
+      .rs-list span { grid-column: 3; }
     }
 
-    .page { padding: 22vh 8vw 20vh; }
-    .page h1 { font-family: var(--font-d); font-weight:800; letter-spacing:-0.05em; font-size: clamp(2.6rem, 7vw, 5rem); line-height:0.95; max-width: 12ch; margin: 0 0 14px; }
-    .page .formula { margin-bottom: 48px; }
-    .list { display:grid; gap: 0; max-width: 42rem; }
-    .list article {
-      padding: 28px 0; border-top: 1px solid var(--line);
-      font-family: var(--font-d); font-size: clamp(1.6rem, 4vw, 2.6rem);
-      letter-spacing:-0.04em; line-height:1.1;
-      opacity: 0; transform: translateY(28px);
-    }
-    .list article.in { opacity:1; transform:none; transition: 0.6s cubic-bezier(0.16,1,0.3,1); }
-    @media (prefers-reduced-motion: reduce) { .list article { opacity:1; transform:none; } }
-    
+    /* camada de motion: estado escondido só com .motion */
+    .motion .rs-list li { opacity: 0; transform: translateY(28px); }
+    .motion .rs-list li.in { opacity: 1; transform: none; transition: opacity .6s var(--ease-out), transform .6s var(--ease-out); }
   </style>
 </head>
-<body class="lab-grain">
-<div class="axis">entra e nasce em ordem</div>
-  
-    <main class="page">
-      <h1>Nasce quando entra.</h1>
-      <p class="formula">Quando <em>o item entra na viewport</em>, ele faz <em>reveal</em> com <em>stagger 70ms</em>, porque a lista e uma tese em ordem, nao um mural.</p>
-      <div class="list">
-        <article data-r>Hierarquia: o olho pega um, depois o outro.</article>
-        <article data-r>Storytelling: a ordem e o argumento.</article>
-        <article data-r>Nao e pin. Nao e scrub. E entrada.</article>
-        <article data-r>Once. Quem ja leu nao assiste replay.</article>
-        <article data-r>Ruim em nav, preco, form. Esses ja precisam estar la.</article>
-        <article data-r>IntersectionObserver dispara, uma vez, e desconecta.</article>
-        <article data-r>70ms entre itens: rapido pra nao entediar, lento pra ler ordem.</article>
-        <article data-r>Cada item nasce de baixo pra cima. Direcao consistente.</article>
-        <article data-r>Reduced motion: tudo ja nasce visivel, sem transform.</article>
-      </div>
-      <div class="lesson">
-        <p><strong>Usar</strong> para features, versos, pecas em fila vertical. IntersectionObserver, uma vez.</p>
-        <p><strong>Nao usar</strong> quando os itens precisam coexistir na memoria espacial desde o primeiro frame.</p>
-      </div>
-    </main>
-    
-  <script src="/_shared/lab.js"></script>
-  <script src="/_shared/nav.js"></script>
-  
-  <script>
-  (function () {
+<body>
+  <main class="teach">
+    <header class="teach-head">
+      <p class="eyebrow"><b>scroll</b> · deps vanilla · mobile ok · custo baixo</p>
+      <h1 class="display">Um de cada vez.</h1>
+      <p class="formula">Quando <em>o item entra na viewport</em>, ele faz <em>reveal</em> com <em>stagger 70ms</em>, porque a lista é uma tese em ordem, não um mural.</p>
+    </header>
 
-    if (Lab.reduce()) return;
-    var els = document.querySelectorAll("[data-r]");
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) {
-        if (!en.isIntersecting) return;
-        var i = [...els].indexOf(en.target);
-        setTimeout(function () { en.target.classList.add("in"); }, i * 70);
-        io.unobserve(en.target);
+    <section class="stage rs-stage" aria-labelledby="rs-t">
+      <div class="rs-top">
+        <h2 class="display" id="rs-t">Oito razões para a cortiça nº 7.</h2>
+        <button type="button" class="btn btn-ghost" id="rs-replay">Esconder e revelar de novo</button>
+      </div>
+      <ol class="rs-list">
+        <li data-reveal><strong>Não sua.</strong><span>A condensação do copo gelado fica na cortiça, não no tampo.</span></li>
+        <li data-reveal><strong>Não escorrega.</strong><span>Atrito natural: o copo para onde você pousou.</span></li>
+        <li data-reveal><strong>Não mancha.</strong><span>Selagem com cera de abelha, sem verniz plástico.</span></li>
+        <li data-reveal><strong>Abafa o som.</strong><span>O "toc" do vidro na madeira vira um silêncio curto.</span></li>
+        <li data-reveal><strong>Aguenta calor.</strong><span>Caneca de café recém-passado, sem marca de anel.</span></li>
+        <li data-reveal><strong>Dura anos.</strong><span>Prensada a 12 toneladas; não esfarela na borda.</span></li>
+        <li data-reveal><strong>Vem da casca.</strong><span>O sobreiro não é cortado: a casca cresce de novo.</span></li>
+        <li data-reveal><strong>Volta pra terra.</strong><span>Compostável. Nada de resina, nada de cola sintética.</span></li>
+      </ol>
+      <p class="rs-note">Cada item dispara uma vez e desconecta o observer. Sem scrub, sem voltar.</p>
+    </section>
+
+    <div class="lesson">
+      <div>
+        <h2>Usar</h2>
+        <p>Features, benefícios, versos, depoimentos em fila vertical. É a câmera base mais segura: combina com quase tudo.</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p>Nav, preço, formulário: precisam já estar lá. Itens que devem coexistir na memória desde o primeiro frame.</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>Não depende de GSAP. Sem <code>.motion</code> os itens já nascem visíveis; o <code>opacity:0</code> só existe sob <code>.motion</code>. Sem IntersectionObserver, <code>Motion.reveal</code> marca tudo como <code>.in</code>.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    (function () {
+      Motion.reveal('[data-reveal]', { stagger: 70, threshold: .35 });
+      var btn = document.getElementById('rs-replay');
+      if (!Motion.on()) { btn.hidden = true; return; }
+      btn.addEventListener('click', function () {
+        [].forEach.call(document.querySelectorAll('[data-reveal]'), function (el) { el.classList.remove('in'); });
+        requestAnimationFrame(function () { Motion.reveal('[data-reveal]', { stagger: 70, threshold: .35 }); });
       });
-    }, { threshold: 0.35 });
-    els.forEach(function (el) { io.observe(el); });
-    
-  })();
+    })();
   </script>
 </body>
 </html>

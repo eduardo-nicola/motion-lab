@@ -3,96 +3,129 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MOTION lab / Horizontal hijack</title>
-  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <title>Horizontal hijack · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
   <link rel="stylesheet" href="/_shared/lab.css" />
   <style>
-    .axis {
-      position: fixed; right: 22px; top: 50%; transform: translateY(-50%);
-      z-index: 40; font-family: ui-monospace, monospace; font-size: 10px;
-      letter-spacing: 0.18em; color: var(--accent); writing-mode: vertical-rl;
-      text-transform: uppercase; pointer-events: none;
-    }
-    @media (max-width: 700px) {
-      .axis { display: none; }
-    }
+    .intro, .outro { min-height: 70dvh; padding: 20vh var(--pad) 12vh; display: grid; gap: 20px; align-content: end; }
+    .intro h1 { font-size: clamp(2.6rem, 8vw, 6rem); max-width: 12ch; }
 
-    .viewport { position: relative; overflow: hidden; }
-    .track { display: flex; height: 100dvh; width: max-content; will-change: transform; }
+    #hj-wrap { position: relative; background: var(--color-bg-2); border-block: 1px solid var(--color-line); }
+    .track { display: flex; flex-direction: column; }                 /* base: empilha no Y */
     .panel {
-      flex: 0 0 100vw; height: 100dvh; padding: 12vh 10vw 14vh;
-      display: flex; flex-direction: column; justify-content: flex-end;
-      border-right: 1px solid var(--line); position: relative; background: var(--bg);
+      position: relative; min-height: 100dvh; overflow: hidden;
+      display: grid; align-content: end; gap: 14px; padding: 12vh var(--pad) 10vh;
+      border-bottom: 1px solid var(--color-line);
     }
-    .panel:nth-child(2) { background: #181910; }
-    .panel:nth-child(3) { background: #1e2016; }
-    .panel:nth-child(4) { background: #16170f; }
-    h1, h2 { font-family: var(--font-d); font-weight:800; letter-spacing:-0.05em; line-height:0.92; margin:0 0 18px; font-size: clamp(2.8rem, 8vw, 6.4rem); max-width: 12ch; }
-    p { margin:0; max-width: 38ch; color: var(--muted); line-height:1.45; }
-    .formula { color: var(--ink); margin-bottom: 16px; }
-    @media (prefers-reduced-motion: reduce) {
-      .viewport { overflow: visible; }
-      .track { display: block; width: auto; transform: none !important; height: auto; }
-      .panel { width: auto; min-height: 100dvh; height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+    .panel img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+    .panel::after { content: ""; position: absolute; inset: 0; z-index: 0; background: linear-gradient(180deg, rgb(16 9 4 / .1) 30%, rgb(16 9 4 / .9)); }
+    .panel > :not(img) { position: relative; z-index: 1; }
+    .panel .n { font-family: var(--font-mono); font-size: 12px; letter-spacing: .16em; color: var(--color-primary); }
+    .panel h2 { font-size: clamp(2.4rem, 7vw, 5.4rem); max-width: 11ch; }
+    .panel p { margin: 0; max-width: 38ch; color: var(--color-muted); }
+    .panel--plain { background: var(--color-bg-3); }
+    .panel--plain::after { display: none; }
+    .hj-bar { display: none; }
+
+    @media (min-width: 768px) {
+      .motion #hj-wrap { overflow: hidden; }
+      .motion .track { flex-direction: row; width: max-content; height: 100dvh; will-change: transform; }
+      .motion .panel { flex: 0 0 100vw; height: 100dvh; border-bottom: 0; border-right: 1px solid var(--color-line); }
+      .motion .hj-bar { display: block; position: absolute; z-index: 2; left: var(--pad); right: var(--pad); bottom: 28px; height: 2px; background: var(--color-line); }
+      .motion .hj-bar span { position: absolute; inset: 0; background: var(--color-primary); transform-origin: 0 50%; transform: scaleX(0); }
     }
-    
   </style>
 </head>
-<body class="lab-grain">
-<div class="axis">scroll Y vira translateX</div>
-  
-    <section class="viewport" id="wrap">
-      <div class="track" id="track">
-        <article class="panel">
-          <p class="formula">Quando <em>o wrapper pina no topo</em>, o <em>trilho</em> faz <em>translateX</em> com <em>scrub 1 e ease none</em>, porque cada quadro pede a tela inteira.</p>
-          <h1>Trilho. Nao lista.</h1>
-          <p>Pin no wrapper. Distancia = largura do trilho menos a viewport. Voltar o scroll rebobina o filme.</p>
-        </article>
-        <article class="panel">
-          <h2>Quadro a quadro.</h2>
-          <p>Usar para projetos, capitulos, produtos que pedem take isolado. Marquee infinito nao e esta camera.</p>
-        </article>
-        <article class="panel">
-          <h2>Start top top.</h2>
-          <p>Se o X ja governa, Z e Y-stack ficam fora. Uma camera. Parallax de hero nao conta.</p>
-        </article>
-        <article class="panel">
-          <h2>Quando nao.</h2>
-          <p>Ruim para artigo, form, pricing. Reduced motion: os paineis empilham no Y, sem pin, sem hijack. A pagina nao explode.</p>
-        </article>
-      </div>
-    </section>
-    
-  <script src="/_shared/lab.js"></script>
-  <script src="/_shared/nav.js"></script>
-  
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
-  <script>
-  (function () {
+<body>
+  <header class="intro">
+    <p class="eyebrow"><b>scroll</b> · deps gsap · mobile degradar · custo alto</p>
+    <h1 class="display">O Y vira trilho.</h1>
+    <p class="formula">Quando <em>o wrapper pina no topo</em>, o <em>trilho</em> faz <em>translateX</em> com <em>scrub 1 e ease none</em>, porque cada quadro pede a tela inteira.</p>
+  </header>
 
-    gsap.registerPlugin(ScrollTrigger);
-    if (Lab.reduce()) return;
-    var wrap = document.getElementById("wrap");
-    var track = document.getElementById("track");
-    var ctx = gsap.context(function () {
-      var distance = track.scrollWidth - window.innerWidth;
-      gsap.to(track, {
-        x: -distance,
-        ease: "none",
-        scrollTrigger: {
-          trigger: wrap,
-          start: "top top",
-          end: function () { return "+=" + (track.scrollWidth - window.innerWidth); },
-          pin: true,
-          scrub: 1,
-          invalidateOnRefresh: true,
-        },
+  <section id="hj-wrap" aria-label="Linha nº 7 em cinco quadros">
+    <div class="track" id="hj-track">
+      <article class="panel panel--plain">
+        <p class="n">01 / 05</p>
+        <h2 class="display">Linha nº 7, em cinco quadros.</h2>
+        <p>Role para baixo: o trilho anda para o lado. Volte o dedo e o filme rebobina.</p>
+      </article>
+      <article class="panel">
+        <img src="/_shared/media/plate-cork.svg" alt="Textura de cortiça natural vista de perto" width="1600" height="1000" loading="lazy" />
+        <p class="n">02 / 05</p>
+        <h2 class="display">Matéria: cortiça crua.</h2>
+        <p>Granulado de casca de sobreiro, sem resina.</p>
+      </article>
+      <article class="panel">
+        <img src="/_shared/media/plate-cork-macro.svg" alt="Macro da cortiça mostrando os poros e uma pequena criatura escondida" width="1600" height="1000" loading="lazy" />
+        <p class="n">03 / 05</p>
+        <h2 class="display">Poro: o segredo da esponja.</h2>
+        <p>Milhões de células de ar seguram a gota do copo.</p>
+      </article>
+      <article class="panel">
+        <img src="/_shared/media/plate-atelier.svg" alt="Ateliê em blocos de arquitetura quente com janelas acesas" width="1600" height="1000" loading="lazy" />
+        <p class="n">04 / 05</p>
+        <h2 class="display">Ateliê: prensa a quente.</h2>
+        <p>Doze toneladas por disco, uma fornada por noite.</p>
+      </article>
+      <article class="panel">
+        <img src="/_shared/media/plate-table.svg" alt="Mesa escura com um porta-copos de cortiça no centro" width="1600" height="1000" loading="lazy" />
+        <p class="n">05 / 05</p>
+        <h2 class="display">Mesa: nenhum anel.</h2>
+        <p>Último quadro. O pin solta e o documento volta a descer.</p>
+      </article>
+    </div>
+    <div class="hj-bar" aria-hidden="true"><span id="hj-fill"></span></div>
+  </section>
+
+  <section class="outro">
+    <p class="formula">Soltou. Se <em>o X governa</em>, Z e Y-stack ficam fora da página. <em>Marquee</em> infinito não é esta câmera: aqui o dedo manda.</p>
+  </section>
+
+  <div class="lesson lesson--bleed">
+    <div>
+      <h2>Usar</h2>
+      <p>Capítulos, produtos, cases, galeria de módulos que pedem take isolado. Distância = <code>track.scrollWidth − innerWidth</code>.</p>
+    </div>
+    <div>
+      <h2>Não usar</h2>
+      <p>Artigo, formulário, pricing. Junto de sticky stack, dive, split screen ou parallax. No mobile (abaixo de 768px) os painéis empilham.</p>
+    </div>
+    <div>
+      <h2>Reduced motion / sem GSAP</h2>
+      <p>O layout em linha só existe sob <code>.motion</code> e ≥ 768px. Sem ele, os cinco painéis empilham no Y em fluxo normal.</p>
+    </div>
+  </div>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    withGsap(function (gsap) {
+      var wrap = document.getElementById('hj-wrap');
+      var track = document.getElementById('hj-track');
+      var fill = document.getElementById('hj-fill');
+      var mm = gsap.matchMedia();
+      mm.add('(min-width: 768px)', function () {                // abaixo disso: empilhado, sem hijack
+        var dist = function () { return track.scrollWidth - innerWidth; };
+        gsap.to(track, {
+          x: function () { return -dist(); }, ease: 'none',
+          scrollTrigger: {
+            trigger: wrap, start: 'top top', end: function () { return '+=' + dist(); },
+            pin: true, scrub: 1, invalidateOnRefresh: true,
+            onUpdate: function (s) { fill.style.transform = 'scaleX(' + s.progress + ')'; }
+          }
+        });
       });
-    }, wrap);
-    window.addEventListener("pagehide", function () { ctx.revert(); });
-    
-  })();
+    });
   </script>
 </body>
 </html>

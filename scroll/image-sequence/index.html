@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image sequence · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .intro, .outro { min-height: 70dvh; padding: 20vh var(--pad) 12vh; display: grid; gap: 20px; align-content: end; }
+    .intro h1 { font-size: clamp(2.6rem, 8vw, 6rem); max-width: 12ch; }
+
+    /* estado final = default: frame real em <img>, legendas em fluxo */
+    #seq { position: relative; background: #100904; border-block: 1px solid var(--color-line); }
+    .seq-box { position: relative; aspect-ratio: 16 / 10; overflow: hidden; }
+    .seq-poster { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .seq-canvas { display: none; position: absolute; inset: 0; width: 100%; height: 100%; }
+    .seq-box::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgb(16 9 4 / 0) 45%, rgb(16 9 4 / .85)); }
+    .beats { list-style: none; margin: 0; padding: 32px var(--pad) 48px; display: grid; gap: 20px; }
+    .beats li { display: grid; gap: 6px; max-width: 36ch; }
+    .beats small { font-family: var(--font-mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-primary); }
+    .beats strong { font: 600 clamp(1.8rem, 5vw, 3.4rem)/1 var(--font-display); letter-spacing: -.03em; color: var(--color-ink); }
+    .beats span { color: var(--color-muted); }
+    .seq-hud { display: none; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    @media (min-width: 768px) { .beats { grid-template-columns: repeat(3, 1fr); } }
+
+    /* camada de motion: palco em tela cheia, canvas assume quando o 1º frame desenha */
+    .motion .seq-box { aspect-ratio: auto; height: 100dvh; }
+    .motion #seq.is-live .seq-canvas { display: block; }
+    .motion #seq.is-live .seq-poster { visibility: hidden; }
+    .motion .beats { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding-bottom: 9vh; display: block; }
+    .motion .beats li { position: absolute; bottom: 9vh; left: var(--pad); right: var(--pad); opacity: 0; transform: translateY(16px); transition: opacity .4s var(--ease-out), transform .4s var(--ease-out); }
+    .motion .beats li.is-on { opacity: 1; transform: none; }
+    @media (min-width: 768px) {
+      .motion .seq-box::after { display: none; }
+      .motion .beats { top: 0; padding: 0; }
+      .motion .beats li { left: var(--pad); right: auto; width: min(26vw, 34ch); bottom: auto; top: 50%; transform: translateY(calc(-50% + 16px)); }
+      .motion .beats li.is-on { transform: translateY(-50%); }
+    }
+    .motion .seq-hud { display: flex; gap: 14px; align-items: center; position: absolute; z-index: 2; top: 7vh; left: var(--pad); right: var(--pad); font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-muted); }
+    .seq-hud i { flex: 1; max-width: 280px; height: 2px; background: var(--color-line); position: relative; }
+    .seq-hud i::after { content: ""; position: absolute; inset: 0; background: var(--color-primary); transform-origin: 0 50%; transform: scaleX(var(--p, 0)); }
+    .seq-hud b { color: var(--color-ink); font-weight: 500; }
+  </style>
+</head>
+<body>
+  <header class="intro">
+    <p class="eyebrow"><b>scroll</b> · deps gsap · mobile degradar · custo alto</p>
+    <h1 class="display">O filme já foi rodado.</h1>
+    <p class="formula">Quando <em>o scroll avança</em>, o <em>canvas</em> faz <em>troca de frame pré-renderizado</em> com <em>scrub none</em>, porque a câmera 3D foi gravada antes e o scroll só escolhe o quadro.</p>
+  </header>
+
+  <section id="seq" aria-labelledby="seq-t">
+    <h2 class="sr-only" id="seq-t">O porta-copos levanta e se abre em quatro camadas</h2>
+    <div class="seq-box">
+      <img class="seq-poster" src="/_shared/media/seq/f000.svg" alt="Porta-copos de cortiça Nº 7 pousado sobre fundo escuro, primeiro quadro da vista explodida em que ele se abre em quatro camadas" width="1600" height="1000" fetchpriority="high" />
+      <canvas class="seq-canvas" id="seq-c" aria-hidden="true"></canvas>
+    </div>
+    <div class="seq-hud" aria-hidden="true"><span>frame <b id="seq-f">01</b> / <span id="seq-n">48</span></span><i id="seq-bar"></i><span id="seq-step">1 em 1</span></div>
+    <ol class="beats">
+      <li data-beat><small>00–33%</small><strong>Levanta.</strong><span>O disco descola do piso e a câmera sobe. Nenhum 3D roda no navegador.</span></li>
+      <li data-beat><small>33–66%</small><strong>Abre.</strong><span>As camadas se separam. Cada quadro foi renderizado antes: o scroll só escolhe qual desenhar.</span></li>
+      <li data-beat><small>66–100%</small><strong>Explica.</strong><span>As etiquetas nomeiam cada camada. Custo de CPU baixo, custo real é banda: 48 frames no desktop, 24 no celular.</span></li>
+    </ol>
+  </section>
+
+  <section class="outro">
+    <p class="formula">Corta. O <em>primeiro frame</em> é um <code>&lt;img&gt;</code> de verdade (LCP e fallback); o <em>canvas</em> só entra quando o motion roda. Abaixo de 768px, <em>um frame a cada dois</em>.</p>
+  </section>
+
+  <div class="lesson lesson--bleed">
+    <div>
+      <h2>Usar</h2>
+      <p>Hero de produto com giro cinematográfico que seria caro em WebGL: render exportado como 60–150 frames otimizados, trocados pelo scroll.</p>
+    </div>
+    <div>
+      <h2>Não usar</h2>
+      <p>Página de captura leve, público em conexão ruim, ou sem frames reais (nunca placeholder). Junto de z-axis dive ou horizontal hijack.</p>
+    </div>
+    <div>
+      <h2>Reduced motion / sem GSAP</h2>
+      <p>Sem pin e sem canvas: fica o <code>&lt;img&gt;</code> do quadro e as três legendas em fluxo normal. Nenhum frame extra é baixado.</p>
+    </div>
+  </div>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    withGsap(function (gsap, ST) {
+      var wrap = document.getElementById('seq'), c = document.getElementById('seq-c'), g = c.getContext('2d');
+      var hudF = document.getElementById('seq-f'), bar = document.getElementById('seq-bar');
+      var beats = [].slice.call(document.querySelectorAll('[data-beat]'));
+      var step = innerWidth < 768 ? 2 : 1, frames = [], imgs = [], st = { f: 0 }, drawn = -1;
+      for (var i = 0; i < 48; i += step) frames.push('/_shared/media/seq/f' + ('00' + i).slice(-3) + '.svg');
+      var n = frames.length;
+      document.getElementById('seq-n').textContent = n;
+      document.getElementById('seq-step').textContent = '1 em ' + step;
+
+      function size() {
+        var dpr = Math.min(2, devicePixelRatio || 1);
+        c.width = Math.round(c.clientWidth * dpr); c.height = Math.round(c.clientHeight * dpr);
+        drawn = -1; draw();
+      }
+      function draw() {
+        var k = Math.round(st.f), im = imgs[k];
+        if (k === drawn || !im || !im.complete || !im.naturalWidth) return;
+        // contain: o frame inteiro (com as etiquetas) sempre visível. Desktop: coluna da direita; as legendas ficam à esquerda.
+        var iw = im.naturalWidth, ih = im.naturalHeight, x, y, s;
+        g.fillStyle = '#100904'; g.fillRect(0, 0, c.width, c.height);
+        if (innerWidth >= 768) {
+          var L = c.width * .3, aw = c.width - L;
+          s = Math.min(aw / iw, c.height / ih); x = L + (aw - iw * s) / 2; y = (c.height - ih * s) / 2;
+        } else {
+          // celular: zoom no produto (centro do disco em x = 40% do frame); as etiquetas saem de quadro
+          s = c.width / (iw * .5); x = c.width / 2 - iw * .4 * s; y = (c.height - ih * s) / 2 + c.height * .03;
+        }
+        g.drawImage(im, x, y, iw * s, ih * s);
+        drawn = k;
+        hudF.textContent = ('0' + (k + 1)).slice(-2);
+      }
+      frames.forEach(function (src, j) {
+        var im = new Image(); im.decoding = 'async'; im.src = src; imgs[j] = im;
+        im.onload = function () { if (j === Math.round(st.f)) { drawn = -1; draw(); } };
+      });
+      imgs[0].addEventListener('load', function () { wrap.classList.add('is-live'); size(); });
+      if (imgs[0].complete && imgs[0].naturalWidth) { wrap.classList.add('is-live'); size(); }
+      ST.addEventListener('refresh', size);      // depois do pin recalcular a largura
+
+      beats[0].classList.add('is-on');
+      gsap.to(st, {
+        f: n - 1, ease: 'none', onUpdate: draw,
+        scrollTrigger: {
+          trigger: '#seq', start: 'top top', end: '+=300%', pin: true, scrub: .5,
+          onUpdate: function (s) {
+            var b = Math.min(beats.length - 1, Math.floor(s.progress * beats.length));
+            bar.style.setProperty('--p', s.progress.toFixed(3));
+            beats.forEach(function (el, j) { el.classList.toggle('is-on', j === b); });
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

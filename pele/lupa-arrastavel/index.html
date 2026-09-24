@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lupa arrastável · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .lp-stage { display: grid; gap: 24px; align-content: center; padding: 36px var(--pad); }
+    .lp-head { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; align-items: end; }
+    .lp-head h2 { font-size: clamp(1.8rem, 5vw, 3.2rem); max-width: 16ch; }
+    .lp-head p { margin: 0; max-width: 40ch; color: var(--color-muted); }
+
+    /* estado final (toque / sem motion): as duas imagens lado a lado */
+    .loupe { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 0; }
+    .loupe figure { margin: 0; display: grid; gap: 8px; }
+    .loupe img { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; border: 1px solid var(--color-line); }
+    .loupe figcaption { font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-muted); }
+    .lp-ring { display: none; }
+
+    /* lupa (JS adiciona .is-loupe só com .motion + ponteiro fino) */
+    .loupe.is-loupe { display: block; cursor: none; --r: 90px; --lx: 50%; --ly: 50%; }
+    @media (min-width: 768px) { .loupe.is-loupe { --r: 120px; } }
+    .loupe.is-loupe figcaption { display: none; }
+    .loupe.is-loupe .detail { position: absolute; inset: 0; clip-path: circle(0 at var(--lx) var(--ly)); }
+    .loupe.is-loupe:hover .detail,
+    .loupe.is-loupe:focus-visible .detail { clip-path: circle(var(--r) at var(--lx) var(--ly)); }
+    .loupe.is-loupe .lp-ring {
+      display: block;
+      position: absolute; left: 0; top: 0;
+      width: calc(var(--r) * 2); height: calc(var(--r) * 2);
+      border: 1px solid var(--color-cream);
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px rgb(16 9 4 / .5), 0 20px 40px -10px rgb(0 0 0 / .6);
+      pointer-events: none;
+      opacity: 0; transition: opacity .3s var(--ease-out);
+    }
+    .loupe.is-loupe:hover .lp-ring, .loupe.is-loupe:focus-visible .lp-ring { opacity: 1; }
+    .lp-hint { margin: 0; color: var(--color-muted); font-size: .92rem; }
+  </style>
+</head>
+<body>
+  <main class="teach">
+    <header class="teach-head">
+      <p class="eyebrow"><b>pele</b> · deps vanilla · mobile degradar · custo baixo</p>
+      <h1 class="display">O detalhe é a prova.</h1>
+      <p class="formula">Quando <em>o cursor passeia pelo produto</em>, a <em>lupa</em> faz <em>follow com lerp revelando uma segunda imagem (macro)</em>, porque o detalhe é a prova de qualidade.</p>
+    </header>
+
+    <section class="stage lp-stage" aria-labelledby="lp-t">
+      <div class="lp-head">
+        <div>
+          <p class="eyebrow">rolha · controle de qualidade</p>
+          <h2 class="display" id="lp-t">Olhe de perto. Tem alguém morando aí.</h2>
+        </div>
+        <p>Mesmo enquadramento, duas imagens. O círculo segue o cursor com atraso (lerp 0.15) e recorta a macro com <code>clip-path</code>.</p>
+      </div>
+
+      <div class="loupe" id="loupe" aria-label="Cortiça normal e em macro; a macro revela um pequeno inseto nos poros">
+        <figure class="base">
+          <img src="/_shared/media/plate-cork.svg" width="1600" height="1000" alt="Textura de cortiça caramelo com poros escuros, vista normal." />
+          <figcaption>vista normal</figcaption>
+        </figure>
+        <figure class="detail">
+          <img src="/_shared/media/plate-cork-macro.svg" width="1600" height="1000" alt="A mesma cortiça em macro: poros ampliados e um pequeno inseto claro escondido à direita do centro." />
+          <figcaption>macro</figcaption>
+        </figure>
+        <span class="lp-ring" id="lp-ring" aria-hidden="true"></span>
+      </div>
+      <p class="lp-hint" id="lp-hint">Toque ou motion off: as duas imagens lado a lado.</p>
+    </section>
+
+    <div class="lesson">
+      <div>
+        <h2>Usar</h2>
+        <p>Produto cuja qualidade está no detalhe: trama, costura, grão, circuito. Duas imagens com o mesmo enquadramento (normal + macro, ou raio-x).</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p>Com imagens de enquadramentos diferentes (o recorte não bate). Em galeria inteira. Como único jeito de ver a informação.</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>Vanilla com <code>Motion.loop</code> (pausa fora da tela). Sem <code>.motion</code> ou em toque: sem lupa nem inércia, as duas imagens lado a lado.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    (function (el) {
+      if (!Motion.on() || !Motion.fine()) return;
+      var ring = document.getElementById('lp-ring');
+      el.classList.add('is-loupe');
+      el.tabIndex = 0;                              // teclado: foco mostra a lupa no centro
+      el.setAttribute('role', 'img');
+      document.getElementById('lp-hint').textContent = 'Passe o cursor sobre a cortiça. Com Tab, a lupa abre no centro.';
+      var r = el.getBoundingClientRect();
+      var tx = r.width / 2, ty = r.height / 2, x = tx, y = ty;
+      el.addEventListener('pointerenter', function (e) {
+        var b = el.getBoundingClientRect();
+        tx = x = e.clientX - b.left; ty = y = e.clientY - b.top;  // nasce onde o cursor entrou
+      });
+      el.addEventListener('pointermove', function (e) {
+        var b = el.getBoundingClientRect();
+        tx = e.clientX - b.left; ty = e.clientY - b.top;
+      });
+      el.addEventListener('focus', function () {
+        var b = el.getBoundingClientRect();
+        tx = x = b.width / 2; ty = y = b.height / 2;
+      });
+      var rad = function () { return parseFloat(getComputedStyle(el).getPropertyValue('--r')) || 90; };
+      var R = rad();
+      window.addEventListener('resize', function () { R = rad(); });
+      Motion.loop(el, function () {
+        var dx = tx - x, dy = ty - y;
+        if (Math.abs(dx) < .1 && Math.abs(dy) < .1) return;   // parado: não escreve
+        x += dx * .15; y += dy * .15;
+        el.style.setProperty('--lx', x + 'px');
+        el.style.setProperty('--ly', y + 'px');
+        ring.style.transform = 'translate(' + (x - R) + 'px,' + (y - R) + 'px)';
+      });
+      el.style.setProperty('--lx', x + 'px');
+      el.style.setProperty('--ly', y + 'px');
+      ring.style.transform = 'translate(' + (x - R) + 'px,' + (y - R) + 'px)';
+    })(document.getElementById('loupe'));
+  </script>
+</body>
+</html>

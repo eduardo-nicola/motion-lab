@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tilt card · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .tl-stage {
+      display: grid; gap: 32px; align-items: center;
+      padding: 40px var(--pad);
+      background: radial-gradient(50% 60% at 70% 50%, rgb(220 80 0 / .12), transparent 70%), var(--color-bg-2);
+    }
+    @media (min-width: 768px) { .tl-stage { grid-template-columns: 1fr 1.2fr; gap: 48px; } }
+    .tl-copy { display: grid; gap: 16px; align-content: center; }
+    .tl-copy h2 { font-size: clamp(2rem, 5vw, 3.6rem); max-width: 12ch; }
+    .tl-copy p { margin: 0; max-width: 40ch; color: var(--color-muted); }
+    .tl-copy ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-muted); }
+    .tl-copy ul b { color: var(--color-ink); font-weight: 500; }
+
+    /* perspectiva no PAI, preserve-3d no card */
+    .tl-scene { perspective: 900px; padding: 12px; }
+    .tl-card {
+      position: relative;
+      margin: 0;
+      transform-style: preserve-3d;
+      border: 1px solid var(--color-line);
+      background: var(--color-bg);
+      box-shadow: 0 30px 60px -30px rgb(0 0 0 / .8);
+      will-change: transform;
+    }
+    .tl-card img { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; }
+    /* camada interna: sai do plano da foto (paralaxe dentro do card) */
+    .tl-front {
+      position: absolute; left: 6%; bottom: 8%;
+      display: grid; gap: 6px;
+      padding: 14px 18px;
+      background: rgb(16 9 4 / .78);
+      border: 1px solid var(--color-line);
+      transform: translateZ(40px);
+      backdrop-filter: blur(4px);
+    }
+    .tl-front strong { font: 600 clamp(1.2rem, 3vw, 1.8rem)/1 var(--font-display); letter-spacing: -.03em; color: var(--color-cream); }
+    .tl-front span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--color-primary); }
+    .tl-tag {
+      position: absolute; right: 6%; top: 8%;
+      font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+      padding: 6px 10px; background: var(--color-primary); color: var(--color-bg);
+      transform: translateZ(70px);
+    }
+  </style>
+</head>
+<body>
+  <main class="teach">
+    <header class="teach-head">
+      <p class="eyebrow"><b>pele</b> · deps vanilla · mobile desligar · custo baixo</p>
+      <h1 class="display">O plano segue a mão.</h1>
+      <p class="formula">Quando <em>o ponteiro atravessa a peça</em>, o <em>cartão</em> faz <em>rotateX/Y até 9°</em> com <em>follow imediato</em>, porque a peça precisa parecer objeto, não thumbnail.</p>
+    </header>
+
+    <section class="stage tl-stage" aria-labelledby="tl-t">
+      <div class="tl-copy">
+        <p class="eyebrow">rolha 01 · a peça</p>
+        <h2 class="display" id="tl-t">Pousa na mesa, some no café.</h2>
+        <p>Passe o cursor pela foto. A etiqueta e a legenda estão em <code>translateZ</code>: andam mais que a foto e dão profundidade.</p>
+        <ul>
+          <li>perspectiva <b>900px no pai</b></li>
+          <li>inclinação <b>até 9°</b></li>
+          <li>camadas <b>0 · 40 · 70px</b></li>
+        </ul>
+      </div>
+      <div class="tl-scene">
+        <figure class="tl-card" id="tl-card">
+          <img src="/_shared/media/plate-table.svg" width="1600" height="1000" alt="Mesa escura de madeira com um porta-copos de cortiça redondo pousado ao centro, sob luz lateral quente." />
+          <figcaption class="tl-front"><span>Rolha 01</span><strong>98 mm de cortiça</strong></figcaption>
+          <span class="tl-tag" aria-hidden="true">novo lote</span>
+        </figure>
+      </div>
+    </section>
+
+    <div class="lesson">
+      <div>
+        <h2>Usar</h2>
+        <p>Uma peça por página, talvez duas: mockup do produto, capa do e-book, cartão de preço destaque. Combina com spotlight border.</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p>Em grid de oito cards. Com <code>overflow: hidden</code> no card (achata o 3D). Inclinações acima de 12°: vira brinquedo.</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>Vanilla via <code>Motion.tilt</code>. Só com <code>.motion</code> e ponteiro fino. No toque ou com motion off: cartão plano, camadas no lugar.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    Motion.tilt(document.getElementById('tl-card'), 9);
+  </script>
+</body>
+</html>

@@ -1,65 +1,51 @@
 # MOTION lab
 
-Reading this as: educational motion lab / mini-portfolio of techniques for a creative frontend developer, with an Awwwards-experimental language, leaning toward native CSS + Motion/GSAP + Tailwind, not a SaaS landing.
+Dicionário vivo de técnicas de movimento para landing pages com design único. Uma técnica por pasta, cada página com demo, fórmula, "usar / não usar" e comportamento sem motion.
 
-Dials: DESIGN_VARIANCE 8, MOTION_INTENSITY 8, VISUAL_DENSITY 3.
 
-Audience: the user learning to NAME and SEE each technique before briefing a portfolio.
-
-## Stack
-
-Static HTML, shared CSS/JS: `_shared/lab.css`, `_shared/lab.js`, `_shared/nav.js`. Cabinet Grotesk + Satoshi, olive charcoal + burnt red, sharp radius 0, dark theme lock. No build step, no framework.
-
-`_shared/nav.js` owns one manifest (the dictionary tree) and injects the nav chrome into every page at runtime: a top-left breadcrumb (`MOTION lab / {topico} / {item}`, each segment opens a dropdown instead of a full list sitting in the lateral) and a top-right pair (`anterior` / `proximo`). No page hardcodes its own header anymore, so there is exactly one place that lists every technique.
-
-GSAP + ScrollTrigger via CDN only on pin/scrub/camera pages. Pointer physics in vanilla transform (`Lab.magnetic`, `Lab.tilt`), never React state. Grain is a fixed `pointer-events: none` overlay.
-
-Three.js is not in the stack. Gaussian splat / 3D-to-2D (Oryzo-level) is skipped. `scroll/scrollytelling` and `scroll/z-axis-dive` say why. `stage/webgl-blob` is a labeled canvas approximation.
-
-`cam/` is the original three-axis reference (stack, horizontal, dive). It stays on disk but is intentionally out of the nav and out of the index: superseded by the dictionaries below.
-
-## One technique, one folder (dedupe)
-
-- **Magnet** lives only in `skin/magnetic-button/`. `triggers/hover/` teaches the plain CSS hover (scale + color) and points to magnetic-button for the physics variant.
-- **Pin** and **scrub** live only in `scroll/`. The old `triggers/pin/` and `triggers/scrub/` were the same lesson under a different label and were removed.
-- **Text as object** (kinetic type, text mask, scramble, marquee) moved out of `skin/` into its own `type/` dictionary: it teaches typography, not pointer interaction. `skin/` kept only the four techniques that actually respond to the cursor (magnet, tilt, spotlight, page wipe).
-- **Shared element** was cut: it repeated the same state-swap idea already covered by `triggers/click/`.
-- **Composition** was cut: keeping one hand-picked "portfolio example" in the lab blurred the line between dictionary and product. The lab teaches techniques; it does not ship a portfolio.
-
-## Run
+## Rodar
 
 ```bash
-npm install
-npm run dev
+npm install && npm run dev      # http://localhost:4173/
+# ou, sem Node:
+python3 -m http.server 4173
 ```
 
-Open http://localhost:4173/
+A raiz servida **precisa** ser `exemples/` (links são root-relative: `/_shared/...`, `/scroll/pin/`).
 
-## Deploy (static)
+## Estrutura
 
-The lab has no build step and no server-side code: every path resolves to a static file under `exemples/`. To publish, point any static host at the `exemples/` folder as its root:
-
-```bash
-# quick check of the production file set, no dev reload
-npx serve . -l 4173
-
-# Netlify / any static host: publish directory = exemples/, no build command
-# GitHub Pages: push exemples/ contents to the pages branch (or set Pages source to /exemples)
+```
+_shared/
+  lab.css         tokens + chrome + anatomia das páginas
+  motion-kit.js   runtime: reveal, splitChars, magnetic, tilt,
+                  scramble, spring, loop, particles, fit, withGsap (CDN com fallback)
+  nav.js          manifesto único → breadcrumb e anterior/próximo
+  media/          SVGs gerados localmente (plates, gobo, 48 frames da vista explodida)
+  media/_src/     gen_seq.py: gerador dos frames (python3 _src/gen_seq.py dentro de media/)
+gatilhos/  scroll/  palco/  tipo/  pele/  timing/    uma pasta por técnica
 ```
 
-Notes:
+## Regras que toda página segue
 
-- All internal links are root-relative (`/_shared/...`, `/scroll/...`). The deployed root **must** be `exemples/`, not the repo root.
-- Fonts (Fontshare), GSAP, and demo photography (picsum.photos) load from CDNs. Offline / air-gapped hosting will lose those, not break navigation.
-- `404.html` at the root catches unmatched paths and links back to `/`.
-- Smoke test before shipping: open `/`, one page per dictionary, and the two anchor jumps `/#type` and `/#skin` from a demo's breadcrumb.
+- **Estado final é o default.** Gate `.motion` no `<head>`; todo estado inicial escondido fica sob `.motion`.
+- **GSAP só via `withGsap()`**: se o CDN cair, `.motion` sai e a página fica estática e completa.
+- **Uma câmera por página, um palco + grain.**
+- Só `transform`/`opacity`; scrub com `ease: "none"`; UI com `cubic-bezier(0.16, 1, 0.3, 1)`; stagger 40–80ms.
+- Pele de ponteiro só com `(hover: hover) and (pointer: fine)`.
+- Zero imagem externa: tudo em `_shared/media/`.
 
-## URLs
+## Como testar os estados de fallback
 
-- Home: `/`
-- Gatilhos: `/triggers/load/` `/hover/` `/click/`
-- Scroll: `/scroll/reveal-stagger/` `/pin/` `/scrub/` `/parallax/` `/zoom-parallax/` `/sticky-stack/` `/horizontal-hijack/` `/split-screen/` `/curtain-reveal/` `/z-axis-dive/` `/scrollytelling/`
-- Palco: `/stage/grain/` `/mesh-gradient/` `/noise-displacement/` `/particles/` `/webgl-blob/` `/lens-blur/` `/light-leak/`
-- Tipo: `/type/kinetic-type/` `/text-mask/` `/scramble/` `/marquee/`
-- Pele: `/skin/magnetic-button/` `/tilt-card/` `/spotlight-border/` `/page-transition/`
-- Timing: `/timing/ease-out/` `/spring/` `/scrub-none/` `/stagger/` `/duration/`
+- **Reduced motion:** ative `prefers-reduced-motion` no sistema ou no DevTools (Rendering → Emulate CSS media feature).
+- **Queda do GSAP:** bloqueie `cdn.jsdelivr.net` no DevTools (Network → Block request domain).
+
+Toda página precisa continuar legível e completa nos dois casos.
+
+## Diferenças para o lab v1
+
+- Paleta quente derivada do Oryzo.ai (`#100904` / `#ffedd7` / `#dc5000`), Clash Display + General Sans.
+- 43 técnicas (v1: 34). Novas: Preloader, Chapter timeline, Image sequence, Nav adaptativa, Gobo, Cursor distortion (WebGL lite), Line mask reveal, Galeria arrastável, Lupa arrastável.
+- Grupos em português: `gatilhos`, `palco`, `tipo`, `pele` (v1: `triggers`, `stage`, `type`, `skin`).
+- Sem `picsum.photos`; sem `<script src>` direto de GSAP; gate `.motion` em vez de `Lab.reduce()`.
+- `cam/` removido.

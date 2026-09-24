@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Magnetic button · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .mg-stage {
+      display: grid; place-items: center; align-content: center; gap: 28px;
+      padding: 48px var(--pad);
+      text-align: center;
+      background:
+        radial-gradient(40% 50% at 50% 55%, rgb(220 80 0 / .14), transparent 70%),
+        var(--color-bg-2);
+    }
+    .mg-stage h2 { font-size: clamp(2rem, 6vw, 4rem); max-width: 14ch; }
+    .mg-stage > p { margin: 0; max-width: 42ch; color: var(--color-muted); }
+
+    /* órbita = zona de atração do ímã (3º argumento de Motion.magnetic) */
+    .mg-field {
+      position: relative;
+      display: grid; place-items: center;
+      width: min(100%, 340px); aspect-ratio: 1;
+    }
+    .mg-field::before, .mg-field::after {
+      content: ""; position: absolute; border-radius: 50%; pointer-events: none;
+      border: 1px dashed var(--color-line);
+    }
+    .mg-field::before { inset: 14%; }
+    .mg-field::after { inset: 0; opacity: .5; }
+    .mg-cta {
+      position: relative; z-index: 1;
+      min-height: 72px; padding: 0 36px;
+      font-size: 17px;
+      border-radius: 999px;
+    }
+    .mg-cta .arrow { display: inline-block; transition: transform var(--dur-ui) var(--ease-out); }
+    .mg-cta:hover .arrow, .mg-cta:focus-visible .arrow { transform: translateX(4px); }
+    .mg-cta:focus-visible { outline-offset: 6px; }
+    .mg-alt { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-items: center; }
+    .mg-alt .eyebrow { max-width: 30ch; }
+    .mg-done { min-height: 1.5em; margin: 0; color: var(--color-cream); }
+  </style>
+</head>
+<body>
+  <main class="teach">
+    <header class="teach-head">
+      <p class="eyebrow"><b>pele</b> · deps vanilla · mobile desligar · custo baixo</p>
+      <h1 class="display">O botão puxa.</h1>
+      <p class="formula">Quando <em>o cursor chega perto</em>, o <em>botão</em> faz <em>translate atrás do ponteiro</em> com <em>follow 80ms linear e retorno 0.5s ease-out</em>, porque o clique precisa parecer posse.</p>
+    </header>
+
+    <section class="stage mg-stage" aria-labelledby="mg-t">
+      <p class="eyebrow">rolha 01 · lote de setembro</p>
+      <h2 class="display" id="mg-t">Sua mesa, sem marca de copo.</h2>
+      <div class="mg-field">
+        <button type="button" class="btn mg-cta" id="mg-cta">Reservar a minha <span class="arrow" aria-hidden="true">→</span></button>
+      </div>
+      <p class="mg-done" id="mg-done" aria-live="polite"></p>
+      <div class="mg-alt">
+        <button type="button" class="btn btn-ghost">Ver a ficha técnica</button>
+        <p class="eyebrow">o secundário não puxa: um ímã por página</p>
+      </div>
+    </section>
+
+    <div class="lesson">
+      <div>
+        <h2>Usar</h2>
+        <p>No CTA principal, um só por página: hero ou CTA final. Força 0.35: o botão acompanha a mão sem fugir dela.</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p>Em todos os botões, em links de texto, em nav. Nunca guardar posição do cursor em estado de framework. Em botão de envio de formulário, só <code>transform</code>.</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>Vanilla via <code>Motion.magnetic</code>. Só roda com <code>.motion</code> e <code>(hover: hover) and (pointer: fine)</code>. No toque ou com motion off: botão parado, hover só de cor.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    (function () {
+      var cta = document.getElementById('mg-cta');
+      Motion.magnetic(cta, 0.3, cta.closest('.mg-field'));   // a órbita tracejada é a zona de atração
+      cta.addEventListener('click', function () {
+        document.getElementById('mg-done').textContent = 'Reservada. Guardamos uma Rolha 01 para você.';
+      });
+    })();
+  </script>
+</body>
+</html>

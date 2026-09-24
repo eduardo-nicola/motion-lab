@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blob aproximado · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .bl-stage {
+      display: grid; align-content: space-between; gap: 32px;
+      min-height: 72dvh; padding: 32px var(--pad) 40px;
+      background: var(--color-bg);
+    }
+    .bl-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .bl-stage > :not(canvas) { position: relative; z-index: 1; }
+    .bl-label {
+      justify-self: start; display: inline-flex; align-items: center; gap: 10px;
+      padding: 8px 12px; border: 1px solid var(--color-line); background: rgb(16 9 4 / .6);
+      font: 500 12px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--color-cream);
+    }
+    .bl-label::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--color-primary); }
+    .bl-copy { display: grid; gap: 16px; max-width: 34rem; }
+    .bl-copy h2 { margin: 0; font-size: clamp(2.2rem, 7vw, 5rem); color: var(--color-cream); max-width: 10ch; }
+    .bl-copy p { margin: 0; color: var(--color-ink); opacity: .82; }
+    .bl-code { margin: 0; font: 12px/1.6 var(--font-mono); color: var(--color-muted); overflow-wrap: anywhere; }
+    .bl-code b { color: var(--color-ink); font-weight: 500; }
+  </style>
+</head>
+<body>
+  <main class="teach">
+    <header class="teach-head">
+      <p class="eyebrow"><b>palco</b> · deps vanilla · mobile ok · custo médio</p>
+      <h1 class="display">Volume sem mentira.</h1>
+      <p class="formula">Quando <em>o palco pede volume</em>, o <em>canvas 2D</em> faz <em>gradiente radial derivando</em> com <em>drift lento</em>, porque three.js não está no padrão e mentir WebGL é pior do que nomear a aproximação.</p>
+    </header>
+
+    <section class="stage bl-stage" aria-labelledby="bl-t">
+      <canvas id="bl-canvas" aria-hidden="true"></canvas>
+      <p class="bl-label">aproximação canvas 2D</p>
+      <div class="bl-copy">
+        <h2 class="display" id="bl-t">Brasa dentro da cortiça.</h2>
+        <p>Um núcleo quente que respira devagar atrás do título. Não é shader, não é esfera: é um <code>createRadialGradient</code> com o centro passeando.</p>
+        <p class="bl-code">centro = <b>sin(t) × 52</b>, <b>cos(t × .8) × 32</b> · t += <b>.005</b>/frame</p>
+      </div>
+    </section>
+
+    <div class="lesson">
+      <div>
+        <h2>Usar</h2>
+        <p>Hero que precisa de massa orgânica e calor sem pesar a página. Sempre com o rótulo de aproximação visível no lab e um único sistema de palco.</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p>Como substituto de produto 3D real, junto de particles ou mesh. Upgrade só com shader WebGL puro inline e esta versão como fallback.</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>Não usa GSAP. Sem <code>.motion</code>, o gradiente é desenhado uma vez no centro: mancha estática, mesmo clima, zero loop.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    (function () {
+      var c = document.getElementById('bl-canvas');
+      var g = c.getContext('2d');
+      var dpr = Math.min(2, window.devicePixelRatio || 1);
+      var t = 0;
+      function size() { c.width = c.clientWidth * dpr; c.height = c.clientHeight * dpr; }
+      function draw() {
+        var w = c.width, h = c.height;
+        var k = Math.max(1, Math.min(w, h) / (360 * dpr)) * dpr;   /* amplitude cresce com o palco */
+        var x = w * .66 + Math.sin(t) * 52 * k;
+        var y = h * .42 + Math.cos(t * .8) * 32 * k;
+        var r = Math.max(w, h) * .48;
+        g.clearRect(0, 0, w, h);
+        var grd = g.createRadialGradient(x - r * .12, y - r * .14, 0, x, y, r);
+        grd.addColorStop(0, 'rgba(255,170,90,.95)');
+        grd.addColorStop(.22, 'rgba(255,106,26,.75)');
+        grd.addColorStop(.55, 'rgba(160,48,0,.32)');
+        grd.addColorStop(1, 'rgba(16,9,4,0)');
+        g.fillStyle = grd;
+        g.fillRect(0, 0, w, h);
+      }
+      size(); draw();
+      window.addEventListener('resize', function () { size(); draw(); });
+      if (!Motion.on()) return;
+      Motion.loop(c, function () { t += .005; draw(); });
+    })();
+  </script>
+</body>
+</html>

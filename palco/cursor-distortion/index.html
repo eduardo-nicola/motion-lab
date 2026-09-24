@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cursor distortion · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .cd { min-height: 70dvh; display: grid; align-content: end; isolation: isolate; }
+    .cd img, .cd canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .cd img { z-index: -2; }
+    /* o canvas só aparece quando o WebGL desenhou o primeiro quadro */
+    .cd canvas { z-index: -1; opacity: 0; transition: opacity .6s var(--ease-out); }
+    .cd.is-gl canvas { opacity: 1; }
+    .cd.is-gl { cursor: crosshair; }
+    .cd::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+      background: linear-gradient(180deg, rgb(16 9 4 / 0) 45%, rgb(16 9 4 / .8)); }
+    .cd-tier { position: absolute; top: 16px; left: 16px; z-index: 1; display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { font: 500 11px/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase;
+      padding: 8px 10px; border: 1px solid var(--color-line); background: rgb(16 9 4 / .7); color: var(--color-muted); }
+    .tag.hot { color: var(--color-ink); border-color: var(--color-primary); }
+    .cd-copy { position: relative; z-index: 1; padding: 28px; display: grid; gap: 12px; max-width: 38rem; pointer-events: none; }
+    .cd-copy h2 { font-size: clamp(2rem, 6vw, 4.4rem); max-width: 11ch; }
+    .cd-copy p { margin: 0; max-width: 40ch; opacity: .85; }
+    @media (min-width: 768px) { .cd-copy { padding: 48px; } }
+  </style>
+</head>
+<body>
+  <main class="teach">
+    <header class="teach-head">
+      <p class="eyebrow"><b>palco</b> · deps webgl · mobile desligar · custo alto</p>
+      <h1 class="display">A foto vira líquido.</h1>
+      <p class="formula">Quando <em>o cursor passa sobre a imagem do hero</em>, o <em>shader</em> faz <em>distorção de UV com RGB shift</em> com <em>rastro que decai em ~0.6s</em>, porque a imagem parece líquida e viva sob a mão.</p>
+    </header>
+
+    <section class="stage cd" id="cd" aria-labelledby="cd-t">
+      <img id="cd-img" src="/_shared/media/plate-table.svg" alt="Mesa escura de madeira com uma base de cortiça redonda no centro" width="1600" height="1000" />
+      <canvas id="cd-gl" aria-hidden="true"></canvas>
+      <div class="cd-tier">
+        <span class="tag hot">tier WebGL · fora do padrão</span>
+        <span class="tag" id="cd-status">fallback: &lt;img&gt;</span>
+      </div>
+      <div class="cd-copy">
+        <p class="eyebrow">passe o cursor rápido sobre a mesa</p>
+        <h2 class="display" id="cd-t">Mexa, e a mesa ondula.</h2>
+        <p>Quanto mais rápida a mão, mais a imagem se abre em vermelho, verde e azul. Parou, ela assenta em meio segundo.</p>
+      </div>
+    </section>
+
+    <div class="lesson">
+      <div>
+        <h2>Usar</h2>
+        <p>Um único hero fotográfico, desktop, marca que aguenta o custo. WebGL puro: quad, uma textura, um fragment shader curto. Loop via <code>Motion.loop</code>, parado quando a velocidade zera.</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p>Página de captura, imagem com texto, público mobile-first. Nunca junto de particles, blob ou mesh: é o palco inteiro.</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>Não usa GSAP. O <code>&lt;img&gt;</code> real fica sempre no DOM; o canvas só cobre se o contexto WebGL nasce, com <code>.motion</code> e <code>(pointer: fine)</code>. Senão: imagem estática.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    (function () {
+      if (!Motion.on() || !Motion.fine()) return;
+      var stage = document.getElementById('cd'), cv = document.getElementById('cd-gl');
+      var gl = cv.getContext('webgl', { alpha: false, antialias: false });
+      if (!gl) return;
+      var VS = 'attribute vec2 p;varying vec2 v;void main(){v=p*.5+.5;gl_Position=vec4(p,0.,1.);}';
+      var FS = 'precision mediump float;uniform sampler2D u_tex;uniform vec2 u_mouse,u_res;uniform float u_vel;varying vec2 v;' +
+        'vec2 cover(vec2 uv){float a=u_res.x/u_res.y;vec2 s=a>1.6?vec2(1.,1.6/a):vec2(a/1.6,1.);return (uv-.5)*s+.5;}' +
+        'void main(){vec2 d=v-u_mouse;float f=smoothstep(.25,0.,length(d*vec2(u_res.x/u_res.y,1.)))*u_vel;' +
+        'vec2 o=normalize(d+1e-4)*f*.04;' +
+        'gl_FragColor=vec4(texture2D(u_tex,cover(v-o*1.2)).r,texture2D(u_tex,cover(v-o)).g,texture2D(u_tex,cover(v-o*.8)).b,1.);}';
+      function sh(type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; }
+      var pr = gl.createProgram();
+      gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS));
+      gl.linkProgram(pr);
+      if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) return;
+      gl.useProgram(pr);
+      gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+      var loc = gl.getAttribLocation(pr, 'p');
+      gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+      var U = {}; ['u_mouse', 'u_res', 'u_vel'].forEach(function (n) { U[n] = gl.getUniformLocation(pr, n); });
+
+      var mx = .5, my = .5, tx = .5, ty = .5, vel = 0, dirty = true, lx = null, ly = null;
+      function size() {
+        var dpr = Math.min(1.5, window.devicePixelRatio || 1);
+        cv.width = cv.clientWidth * dpr; cv.height = cv.clientHeight * dpr;
+        gl.viewport(0, 0, cv.width, cv.height); dirty = true;
+      }
+      stage.addEventListener('pointermove', function (e) {
+        var r = stage.getBoundingClientRect();
+        tx = (e.clientX - r.left) / r.width; ty = 1 - (e.clientY - r.top) / r.height;
+        if (lx != null) vel = Math.min(1, vel + Math.hypot(e.clientX - lx, e.clientY - ly) / 120);
+        lx = e.clientX; ly = e.clientY;
+      });
+      stage.addEventListener('pointerleave', function () { lx = ly = null; });
+
+      var src = new Image();
+      src.onload = function () {
+        var c2 = document.createElement('canvas'); c2.width = 1600; c2.height = 1000;
+        c2.getContext('2d').drawImage(src, 0, 0, 1600, 1000);
+        gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, c2);
+        [gl.TEXTURE_WRAP_S, gl.TEXTURE_WRAP_T].forEach(function (k) { gl.texParameteri(gl.TEXTURE_2D, k, gl.CLAMP_TO_EDGE); });
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        size(); window.addEventListener('resize', size);
+        Motion.loop(stage, function () {
+          mx += (tx - mx) * .15; my += (ty - my) * .15;
+          vel *= .92;                                   // ~0.6s até assentar
+          if (vel < .002 && !dirty) return;             // parado: não redesenha
+          gl.uniform2f(U.u_mouse, mx, my); gl.uniform2f(U.u_res, cv.width, cv.height); gl.uniform1f(U.u_vel, vel);
+          gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); dirty = false;
+          if (!stage.classList.contains('is-gl')) {
+            stage.classList.add('is-gl');
+            document.getElementById('cd-status').textContent = 'WebGL ativo';
+          }
+        });
+      };
+      src.src = document.getElementById('cd-img').currentSrc || '/_shared/media/plate-table.svg';
+    })();
+  </script>
+</body>
+</html>

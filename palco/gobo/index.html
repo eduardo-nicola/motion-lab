@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gobo · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    /* seção clara: o gobo só funciona onde a sombra tem onde cair */
+    .gobo { background: var(--color-cream); color: var(--color-bg); border-color: #d9bfa0;
+      display: grid; align-content: center; isolation: isolate; }
+    .gobo::after { content: ""; position: absolute; inset: -10%; pointer-events: none; z-index: 0;
+      background: url('/_shared/media/gobo-leaves.svg') center/cover no-repeat;
+      mix-blend-mode: multiply; opacity: .35; filter: blur(2px); }
+    .motion .gobo::after { animation: sway 20s ease-in-out infinite alternate; }
+    @keyframes sway { to { transform: translate(2%, 1%) rotate(1.5deg) scale(1.03); } }
+
+    .gobo-in { position: relative; z-index: 1; padding: 40px 24px; display: grid; gap: 28px; }
+    .gobo .eyebrow { color: #6b5540; }
+    .gobo .eyebrow b { color: var(--color-primary); }
+    .gobo h2 { font-size: clamp(2.2rem, 6.5vw, 4.8rem); max-width: 11ch; }
+    .gobo-lead { margin: 0; max-width: 44ch; font-size: 1.05rem; color: #3a2818; }
+    .specs { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; background: #d9bfa0; border: 1px solid #d9bfa0; }
+    .specs li { background: rgb(246 224 198 / .72); padding: 18px 20px; display: grid; gap: 4px; }
+    .specs b { font: 600 1.6rem/1 var(--font-display); letter-spacing: -.03em; }
+    .specs span { font-size: .92rem; color: #5a4633; }
+    .gobo-side { display: grid; gap: 20px; }
+    .gobo-cta { justify-self: start; }
+    @media (min-width: 768px) {
+      .gobo-in { padding: 72px 64px; grid-template-columns: 1.2fr 1fr; align-items: end; column-gap: 64px; }
+      .gobo-in > header { display: grid; gap: 20px; }
+      .specs { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="teach">
+    <header class="teach-head">
+      <p class="eyebrow"><b>palco</b> · deps css · mobile ok · custo baixo</p>
+      <h1 class="display">Folhas na parede.</h1>
+      <p class="formula">Quando <em>a seção pede luz natural</em>, uma <em>sombra de folhagem</em> faz <em>deriva lenta</em> com <em>20s ease-in-out alternate</em>, porque luz projetada dá lugar físico ao produto.</p>
+    </header>
+
+    <section class="stage gobo" aria-labelledby="gobo-t">
+      <div class="gobo-in">
+        <header>
+          <p class="eyebrow"><b>sustentável</b> · casca que volta</p>
+          <h2 class="display" id="gobo-t">Nasce à sombra do sobreiro.</h2>
+          <p class="gobo-lead">A cortiça da base é tirada da casca, a árvore fica de pé. Nove anos depois, a casca cresceu de novo e a colheita recomeça.</p>
+        </header>
+        <div class="gobo-side">
+          <ul class="specs">
+            <li><b>9 anos</b><span>entre uma colheita e outra</span></li>
+            <li><b>0 cortes</b><span>nenhum sobreiro derrubado</span></li>
+            <li><b>100%</b><span>cortiça natural, sem cola</span></li>
+            <li><b>200 anos</b><span>vida média de um sobreiro</span></li>
+          </ul>
+          <a class="btn gobo-cta" href="#gobo-t">Conhecer a origem da cortiça</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="lesson">
+      <div>
+        <h2>Usar</h2>
+        <p>Seção clara de features ou CTA final: sustentabilidade, origem, "feito à mão". A sombra dá ao produto um lugar no mundo. Combina com grain e nav adaptativa.</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p>Em fundo escuro (multiply some). Com light leak ou mesh gradient: duas fontes de luz no mesmo palco. Opacidade acima de .4 compete com o texto.</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>CSS puro. Sem <code>.motion</code> a sombra fica parada, ainda projetada. Sem PNG de folha: persiana com <code>repeating-linear-gradient</code> + blur.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    /* gobo é 100% CSS: nada para orquestrar aqui */
+  </script>
+</body>
+</html>

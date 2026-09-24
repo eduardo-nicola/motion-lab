@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spotlight border · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .sp-stage { display: grid; align-content: center; gap: 28px; padding: 40px var(--pad); }
+    .sp-head { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; align-items: end; }
+    .sp-head h2 { font-size: clamp(1.8rem, 5vw, 3.2rem); max-width: 16ch; }
+    .sp-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+    @media (min-width: 768px) { .sp-grid { grid-template-columns: repeat(3, 1fr); } }
+
+    .spot {
+      position: relative;
+      display: grid; gap: 14px; align-content: start;
+      min-height: 280px;
+      padding: 28px;
+      background: var(--color-bg);
+      border: 1px solid var(--color-line);
+      transition: border-color .3s var(--ease-out);
+    }
+    .spot > * { position: relative; z-index: 1; }
+    .spot .n { font-family: var(--font-mono); font-size: 12px; color: var(--color-primary); }
+    .spot h3 { margin: 0; font: 600 clamp(1.5rem, 3vw, 2rem)/1 var(--font-display); letter-spacing: -.03em; color: var(--color-cream); }
+    .spot p { margin: 0; color: var(--color-muted); }
+    .spot .more {
+      justify-self: start; margin-top: auto;
+      font: 500 13px/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase;
+      color: var(--color-ink); background: none; border: 0; padding: 6px 0; cursor: pointer;
+      border-bottom: 1px solid var(--color-primary);
+    }
+    .spot .extra { color: var(--color-ink); }
+
+    /* estado final (sem .motion / toque): hover e foco = borda sólida */
+    .spot:hover, .spot:focus-within { border-color: var(--color-primary); }
+
+    /* camada de motion: luz local seguindo --mx/--my (só ponteiro fino) */
+    @media (hover: hover) and (pointer: fine) {
+      .motion .spot:hover, .motion .spot:focus-within { border-color: var(--color-line); }
+      .motion .spot::before, .motion .spot::after {
+        content: ""; position: absolute; pointer-events: none;
+        opacity: 0; transition: opacity .3s var(--ease-out);
+      }
+      /* brilho interno, suave */
+      .motion .spot::before {
+        inset: 0;
+        background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgb(220 80 0 / .14), transparent 60%);
+      }
+      /* só a borda: máscara exclui o miolo, sobra 1px de luz */
+      .motion .spot::after {
+        inset: -1px;
+        padding: 1px;
+        background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%), rgb(255 106 26 / .95), transparent 60%);
+        -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+      }
+      .motion .spot:hover::before, .motion .spot:hover::after,
+      .motion .spot:focus-within::before, .motion .spot:focus-within::after { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <main class="teach">
+    <header class="teach-head">
+      <p class="eyebrow"><b>pele</b> · deps vanilla · mobile desligar · custo baixo</p>
+      <h1 class="display">A luz vai com a mão.</h1>
+      <p class="formula">Quando <em>o cursor anda na peça</em>, a <em>borda</em> faz <em>luz local</em> com <em>custom properties no ponteiro</em>, porque o foco precisa seguir a mão, não um hover sólido.</p>
+    </header>
+
+    <section class="stage sp-stage" aria-labelledby="sp-t">
+      <div class="sp-head">
+        <h2 class="display" id="sp-t">Três razões para a cortiça.</h2>
+        <p class="eyebrow">passe o cursor · ou Tab até “detalhe”</p>
+      </div>
+      <div class="sp-grid">
+        <article class="spot">
+          <span class="n" aria-hidden="true">01</span>
+          <h3>Absorve</h3>
+          <p>O condensado do copo some no grão. A madeira embaixo nem fica sabendo.</p>
+          <p class="extra" id="sp-x1" hidden>Até 3 ml de água por base antes de saturar.</p>
+          <button type="button" class="more" aria-expanded="false" aria-controls="sp-x1">Ver detalhe de absorção</button>
+        </article>
+        <article class="spot">
+          <span class="n" aria-hidden="true">02</span>
+          <h3>Segura</h3>
+          <p>Atrito natural: a caneca não patina, nem na bancada de pedra.</p>
+          <p class="extra" id="sp-x2" hidden>Coeficiente de atrito 0.6 sobre vidro seco.</p>
+          <button type="button" class="more" aria-expanded="false" aria-controls="sp-x2">Ver detalhe de atrito</button>
+        </article>
+        <article class="spot">
+          <span class="n" aria-hidden="true">03</span>
+          <h3>Volta</h3>
+          <p>A casca da árvore cresce de novo. Nenhum sobreiro é cortado.</p>
+          <p class="extra" id="sp-x3" hidden>Cada árvore é descortiçada a cada 9 anos.</p>
+          <button type="button" class="more" aria-expanded="false" aria-controls="sp-x3">Ver detalhe de origem</button>
+        </article>
+      </div>
+    </section>
+
+    <div class="lesson">
+      <div>
+        <h2>Usar</h2>
+        <p>Em 1 a 4 cards de benefício ou planos. A luz diz “isto é uma superfície”, e o cursor vira lanterna.</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p>Em dezenas de cards, em listas longas, em fundo claro (a luz some). Nunca escrever posição em estado de framework.</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>Vanilla: <code>pointermove</code> escreve <code>--mx</code>/<code>--my</code> no card. Sem <code>.motion</code> ou no toque: borda sólida no hover e no foco.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    (function () {
+      var cards = [].slice.call(document.querySelectorAll('.spot'));
+      cards.forEach(function (el) {
+        var btn = el.querySelector('.more');
+        var extra = document.getElementById(btn.getAttribute('aria-controls'));
+        btn.addEventListener('click', function () {
+          var open = btn.getAttribute('aria-expanded') !== 'true';
+          btn.setAttribute('aria-expanded', String(open));
+          extra.hidden = !open;
+        });
+        if (!Motion.on() || !Motion.fine()) return;
+        el.addEventListener('pointermove', function (e) {
+          var r = el.getBoundingClientRect();
+          el.style.setProperty('--mx', e.clientX - r.left + 'px');
+          el.style.setProperty('--my', e.clientY - r.top + 'px');
+        });
+        el.addEventListener('pointerleave', function () {
+          el.style.removeProperty('--mx');
+          el.style.removeProperty('--my');
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

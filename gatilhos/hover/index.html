@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hover · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .hv-stage { display: grid; grid-template-columns: 1fr; gap: 1px; background: var(--color-line); }
+    .hv-cell {
+      background: var(--color-bg-2);
+      padding: 28px 20px 32px;
+      display: grid; gap: 22px; align-content: space-between;
+      min-height: 220px;
+    }
+    .hv-cell header { display: grid; gap: 6px; }
+    .hv-cell h2 { font: 600 clamp(1.4rem, 3vw, 2rem)/1 var(--font-display); letter-spacing: -.03em; margin: 0; }
+    .hv-spec { font: 11px/1.4 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--color-muted); margin: 0; }
+    .hv-spec b { color: var(--color-primary); font-weight: 500; }
+    .hv-n { font: 11px/1 var(--font-mono); color: var(--color-primary); letter-spacing: .16em; }
+    .hv-demo { display: flex; align-items: center; min-height: 72px; }
+
+    /* 01 · scale + cor (CTA) */
+    .hv-cta { transition: transform .3s var(--ease-out), background-color .3s var(--ease-out); }
+    .hv-cta:hover, .hv-cta:focus-visible { background-color: var(--color-primary-hover); }
+
+    /* 02 · underline reveal */
+    .link-u {
+      position: relative;
+      font: 500 clamp(1.2rem, 2.4vw, 1.5rem)/1.2 var(--font-body);
+      color: var(--color-ink); text-decoration: none;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--color-line);
+      transition: border-color .3s var(--ease-out), color .3s var(--ease-out);
+    }
+    .link-u:hover, .link-u:focus-visible { border-color: var(--color-primary); color: var(--color-cream); }
+
+    /* 03 · icon nudge */
+    .link-n {
+      display: inline-flex; align-items: baseline; gap: 10px;
+      font: 600 clamp(1.3rem, 2.6vw, 1.7rem)/1.1 var(--font-display); letter-spacing: -.02em;
+      color: var(--color-ink); text-decoration: none;
+      transition: color .3s var(--ease-out);
+    }
+    .link-n:hover, .link-n:focus-visible { color: var(--color-primary-hover); }
+    .link-n .arrow { display: inline-block; color: var(--color-primary); transition: transform .3s var(--ease-out); }
+
+    /* 04 · card clicável */
+    .hv-card {
+      display: grid; grid-template-columns: 1fr; text-decoration: none; color: inherit;
+      border: 1px solid var(--color-line); background: var(--color-bg);
+      transition: border-color .3s var(--ease-out);
+    }
+    .hv-card:hover, .hv-card:focus-visible { border-color: var(--color-primary); }
+    .hv-card figure { margin: 0; overflow: hidden; aspect-ratio: 16 / 9; }
+    .hv-card img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s var(--ease-out); }
+    .hv-card div { padding: 16px 18px 18px; display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+    .hv-card strong { font: 600 1.15rem/1.1 var(--font-display); letter-spacing: -.02em; }
+    .hv-card span { font: 11px/1 var(--font-mono); color: var(--color-muted); letter-spacing: .12em; text-transform: uppercase; }
+
+    .hv-touch { grid-column: 1 / -1; background: var(--color-bg-3); padding: 18px 20px; margin: 0; color: var(--color-muted); font-size: .95rem; }
+    .hv-touch b { color: var(--color-ink); font-weight: 500; }
+
+    @media (min-width: 768px) {
+      .hv-stage { grid-template-columns: repeat(2, 1fr); }
+      .hv-cell { padding: 36px 40px 40px; min-height: 280px; }
+      .hv-touch { padding: 20px 40px; }
+    }
+
+    /* camada de motion: só com .motion. Sem ela, hover é só cor (reduced-motion: so-cor) */
+    .motion .hv-cta:hover, .motion .hv-cta:focus-visible { transform: scale(1.04); }
+    .motion .hv-cta:active { transform: scale(.98); }
+    .motion .link-u::after {
+      content: ""; position: absolute; left: 0; right: 0; bottom: -2px; height: 2px;
+      background: var(--color-primary);
+      transform: scaleX(0); transform-origin: 100% 50%;
+      transition: transform .3s var(--ease-out);
+    }
+    .motion .link-u:hover::after, .motion .link-u:focus-visible::after { transform: scaleX(1); transform-origin: 0 50%; }
+    .motion .link-n:hover .arrow, .motion .link-n:focus-visible .arrow { transform: translateX(6px); }
+    .motion .hv-card:hover img, .motion .hv-card:focus-visible img { transform: scale(1.04); }
+  </style>
+</head>
+<body>
+  <main class="teach">
+    <header class="teach-head">
+      <p class="eyebrow"><b>gatilhos</b> · deps css · mobile ok · custo baixo</p>
+      <h1 class="display">O cursor pergunta.</h1>
+      <p class="formula">Quando <em>o ponteiro entra</em>, o <em>botão</em> faz <em>scale e muda de cor</em> com <em>0.3s ease-out</em>, porque o cursor precisa de resposta antes do clique.</p>
+    </header>
+
+    <section class="stage hv-stage" aria-label="Variantes de hover: passe o cursor ou navegue com Tab">
+      <div class="hv-cell">
+        <header>
+          <span class="hv-n">01</span>
+          <h2>Scale + cor</h2>
+          <p class="hv-spec"><b>CTA</b> · scale(1.04) · 0.3s ease-out · :active .98</p>
+        </header>
+        <div class="hv-demo"><a class="btn hv-cta" href="#hv-lesson">Reservar o nº 7</a></div>
+      </div>
+
+      <div class="hv-cell">
+        <header>
+          <span class="hv-n">02</span>
+          <h2>Underline reveal</h2>
+          <p class="hv-spec"><b>link de texto</b> · scaleX da régua · entra pela esquerda</p>
+        </header>
+        <div class="hv-demo"><a class="link-u" href="#hv-lesson">Ficha técnica da cortiça</a></div>
+      </div>
+
+      <div class="hv-cell">
+        <header>
+          <span class="hv-n">03</span>
+          <h2>Icon nudge</h2>
+          <p class="hv-spec"><b>link com seta</b> · translateX(6px) · só a seta anda</p>
+        </header>
+        <div class="hv-demo"><a class="link-n" href="#hv-lesson">Ver a coleção inteira <span class="arrow" aria-hidden="true">→</span></a></div>
+      </div>
+
+      <div class="hv-cell">
+        <header>
+          <span class="hv-n">04</span>
+          <h2>Card clicável</h2>
+          <p class="hv-spec"><b>card</b> · borda acende · foto 1.04 dentro da moldura</p>
+        </header>
+        <a class="hv-card" href="#hv-lesson">
+          <figure><img src="/_shared/media/plate-cork.svg" alt="Superfície de cortiça em close, cor caramelo com poros escuros" width="1600" height="1000" loading="lazy" /></figure>
+          <div><strong>Cortiça nº 7</strong><span>ver detalhes →</span></div>
+        </a>
+      </div>
+
+      <p class="hv-touch"><b>No toque não existe hover.</b> Tudo que está aqui é reforço, nunca a única pista: o botão já parece botão e o link já parece link antes do cursor chegar.</p>
+    </section>
+
+    <div class="lesson" id="hv-lesson">
+      <div>
+        <h2>Usar</h2>
+        <p>CTA, card clicável, link importante. Transform e cor, sempre com o mesmo estilo em <code>:focus-visible</code>.</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p>Texto corrido. Como única pista de interação em touch. A física de puxão é outra pele: Magnetic button.</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>Só cor: sem <code>.motion</code> nenhum transform, a régua fica como borda que muda de cor e a seta não anda. CSS puro, zero JS.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    /* Hover é CSS puro: nada a orquestrar aqui. */
+  </script>
+</body>
+</html>

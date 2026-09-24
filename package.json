@@ -1,6 +1,7 @@
 {
   "name": "motion-lab",
   "private": true,
+  "version": "2.0.0",
   "scripts": {
     "dev": "serve . -l 4173"
   },

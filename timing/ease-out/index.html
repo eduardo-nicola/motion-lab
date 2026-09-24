@@ -3,46 +3,154 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MOTION lab / Ease out</title>
-  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <title>Ease out · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
   <link rel="stylesheet" href="/_shared/lab.css" />
   <style>
+    .eo-ctrl { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between; }
+    .eo { --t: .9s; }
+    .eo .ok { --curve: var(--ease-out); }
+    .eo .bad { --curve: linear; }
+    .eo .col h2 { font: 600 clamp(1.5rem, 3.2vw, 2.2rem)/1 var(--font-display); letter-spacing: -.03em; margin: 0; }
+    .eo .col > p:not(.eyebrow) { margin: 0; color: var(--color-muted); max-width: 44ch; }
+    .eo .bad .eyebrow { color: var(--color-muted); }
 
-    .box { width: 100%; min-height: 160px; border: 1px solid var(--line); background: var(--bg-3); color: var(--ink); font-family: var(--font-d); font-weight:700; font-size: 1.4rem; cursor: pointer; }
-    .good { transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
-    .good:hover { transform: scale(1.06); }
-    .bad { transition: transform 0.5s linear; }
-    .bad:hover { transform: scale(1.06); }
-    @media (prefers-reduced-motion: reduce) { .good, .bad { transition: none; } .good:hover, .bad:hover { transform: none; } }
-    
+    /* gráfico progresso × tempo: x anda linear (tempo), y anda com a curva */
+    .plot { position: relative; aspect-ratio: 1.7; margin: 6px 6px 14px; overflow: clip; overflow-clip-margin: 16px; } /* caixas transladadas do ponto não geram scroll horizontal */
+    .plot svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .plot .grid { stroke: var(--color-line); stroke-width: 1; fill: none; }
+    .plot .curve { stroke: var(--color-primary); stroke-width: 2; fill: none; }
+    .bad .plot .curve { stroke: var(--color-muted); stroke-dasharray: 5 5; }
+    .plot .lbl { position: absolute; font: 10px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--color-muted); }
+    .plot .lbl.t { right: 0; bottom: -16px; }
+    .plot .lbl.p { left: 0; top: -2px; transform: translateY(-100%); }
+    .dot-x, .dot-y { position: absolute; inset: 0; }
+    .dot-x { transform: translateX(100%); }
+    .dot-y { transform: translateY(-100%); }
+    .dot { position: absolute; left: -7px; bottom: -7px; width: 14px; height: 14px; border-radius: 50%; background: var(--color-ink); box-shadow: 0 0 0 4px rgb(220 80 0 / .35); }
+
+    /* trilho: o chip atravessa a mesma distância */
+    .track { position: relative; height: 56px; background: var(--color-bg-3); border: 1px solid var(--color-line); overflow: hidden; }
+    .runner { position: absolute; top: 0; bottom: 0; left: 0; right: 56px; transform: translateX(0); }
+    .chip { position: absolute; top: 7px; right: -48px; width: 40px; height: 40px; background: var(--color-primary); }
+    .bad .chip { background: var(--color-muted); }
+
+    .eo-card {
+      display: grid; gap: 4px; text-align: left;
+      padding: 18px 20px;
+      font: inherit; color: var(--color-ink);
+      background: var(--color-bg); border: 1px solid var(--color-line);
+      cursor: pointer;
+      transition: transform .5s var(--curve), border-color .3s var(--curve);
+    }
+    .eo-card strong { font: 600 1.1rem/1.1 var(--font-display); letter-spacing: -.01em; }
+    .eo-card span { font: 11px/1.3 var(--font-mono); color: var(--color-muted); letter-spacing: .1em; text-transform: uppercase; }
+    .eo-card:hover, .eo-card:focus-visible { border-color: var(--color-primary); }
+
+    /* camada de motion: só com .motion. Sem ela, tudo já está no destino */
+    .motion .eo.armed:not(.go) .dot-x,
+    .motion .eo.armed:not(.go) .dot-y,
+    .motion .eo.armed:not(.go) .runner { transform: none; transition: none; }
+    .motion .eo.armed:not(.go) .runner { transform: translateX(-100%); }
+    .motion .eo.go .dot-x { transition: transform var(--t) linear; }
+    .motion .eo.go .dot-y,
+    .motion .eo.go .runner { transition: transform var(--t) var(--curve); }
+    .motion .eo-card:hover, .motion .eo-card:focus-visible { transform: scale(1.04); }
   </style>
 </head>
-<body class="lab-grain">
-<main class="teach">
-    <div class="teach-head">
-      <h1>Chega e assenta.</h1>
-      <p class="formula">Quando <em>o hover acontece</em>, o <em>bloco certo</em> faz <em>scale</em> com <em>cubic-bezier(0.16, 1, 0.3, 1)</em>, porque UI precisa sair rapido e pousar sem linear de PowerPoint.</p>
-    </div>
-    
-    <div class="pair">
-      <div class="col ok"><p class="tag">certo</p><button class="box good" type="button">Hover</button></div>
-      <div class="col no"><p class="tag">errado</p><button class="box bad" type="button">Hover</button></div>
-    </div>
-    
-    <div class="lesson">
+<body>
+  <main class="teach">
+    <header class="teach-head">
+      <p class="eyebrow"><b>timing</b> · deps css · mobile ok · custo baixo</p>
+      <h1 class="display">Sai rápido, pousa macio.</h1>
+      <p class="formula">Quando <em>o hover acontece</em>, o <em>bloco</em> faz <em>scale</em> com <em>cubic-bezier(0.16, 1, 0.3, 1)</em>, porque UI precisa sair rápido e pousar sem linear de PowerPoint.</p>
+    </header>
 
-      <p><strong>Usar</strong> 0.16, 1, 0.3, 1 em hover, enter, painel. E a curva deste lab.</p>
-      <p><strong>Nao usar</strong> linear em hover de interface. Linear e para scrub de camera, nao para botao. Reduced motion: sem scale.</p>
-    
+    <div class="eo-ctrl">
+      <p class="eyebrow">mesma distância · mesma duração 0.9s · só a curva muda</p>
+      <button type="button" class="btn btn-ghost" id="eo-replay">Tocar os dois de novo</button>
+    </div>
+
+    <section class="pair eo" id="eo" aria-label="Comparação: ease-out certo e linear errado">
+      <div class="col ok">
+        <p class="eyebrow">certo · cubic-bezier(0.16, 1, 0.3, 1)</p>
+        <h2>Expo-out.</h2>
+        <div class="plot" aria-hidden="true">
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+            <path class="grid" d="M0 0 H100 V100 H0 Z M0 50 H100 M50 0 V100" vector-effect="non-scaling-stroke" />
+            <path class="curve" d="M0 100 C16 0 30 0 100 0" vector-effect="non-scaling-stroke" />
+          </svg>
+          <span class="lbl p">progresso</span><span class="lbl t">tempo</span>
+          <div class="dot-x"><div class="dot-y"><span class="dot"></span></div></div>
+        </div>
+        <div class="track" aria-hidden="true"><div class="runner"><span class="chip"></span></div></div>
+        <button type="button" class="eo-card" data-replay><strong>Passe o cursor aqui</strong><span>scale 1.04 · 0.5s · clique para tocar de novo</span></button>
+        <p>Em 30% do tempo já andou quase tudo. O resto é pouso: a interface responde na hora e não freia de repente.</p>
+      </div>
+
+      <div class="col bad">
+        <p class="eyebrow">errado · linear</p>
+        <h2>Linear de PowerPoint.</h2>
+        <div class="plot" aria-hidden="true">
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+            <path class="grid" d="M0 0 H100 V100 H0 Z M0 50 H100 M50 0 V100" vector-effect="non-scaling-stroke" />
+            <path class="curve" d="M0 100 L100 0" vector-effect="non-scaling-stroke" />
+          </svg>
+          <span class="lbl p">progresso</span><span class="lbl t">tempo</span>
+          <div class="dot-x"><div class="dot-y"><span class="dot"></span></div></div>
+        </div>
+        <div class="track" aria-hidden="true"><div class="runner"><span class="chip"></span></div></div>
+        <button type="button" class="eo-card" data-replay><strong>Passe o cursor aqui</strong><span>scale 1.04 · 0.5s · clique para tocar de novo</span></button>
+        <p>Velocidade constante: começa preguiçoso e bate no fim como um carrinho na parede. Linear é para scrub de câmera, não para UI.</p>
+      </div>
+    </section>
+
+    <div class="lesson">
+      <div>
+        <h2>Usar</h2>
+        <p><code>cubic-bezier(0.16, 1, 0.3, 1)</code> em hover, enter, painel, reveal. Um token só: <code>--ease-out</code>. No GSAP, <code>ease: "expo.out"</code>.</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p><code>linear</code> em interface. E o contrário também: ease-out num tween com scrub mente sobre o dedo; lá o certo é ease none.</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>Sem transform: sem <code>.motion</code> o ponto e o chip já estão no destino e o hover muda só a borda. CSS puro, não depende de GSAP.</p>
+      </div>
     </div>
   </main>
-  <script src="/_shared/lab.js"></script>
-  <script src="/_shared/nav.js"></script>
-  
-  <script>
-  (function () {
 
-  })();
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    (function () {
+      var pair = document.getElementById('eo');
+      if (!Motion.on()) return;
+      function play() {
+        pair.classList.add('armed');
+        pair.classList.remove('go');
+        void pair.offsetWidth;
+        requestAnimationFrame(function () { pair.classList.add('go'); });
+      }
+      if ('IntersectionObserver' in window) {
+        var io = new IntersectionObserver(function (en) {
+          if (en[0].isIntersecting) { play(); io.disconnect(); }
+        }, { threshold: .4 });
+        io.observe(pair);
+      }
+      document.getElementById('eo-replay').addEventListener('click', play);
+      [].forEach.call(document.querySelectorAll('[data-replay]'), function (b) { b.addEventListener('click', play); });
+    })();
   </script>
 </body>
 </html>

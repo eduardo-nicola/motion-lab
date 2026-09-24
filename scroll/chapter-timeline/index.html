@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chapter timeline · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .intro, .outro { min-height: 70dvh; padding: 20vh var(--pad) 12vh; display: grid; gap: 20px; align-content: end; }
+    .intro h1 { font-size: clamp(2.6rem, 8vw, 6rem); max-width: 12ch; }
+
+    /* --t = progresso do capítulo (0→1). Default 1 = estado final sem JS */
+    #chapters { position: relative; background: var(--color-bg-2); border-block: 1px solid var(--color-line); }
+    .cap { --t: 1; display: grid; gap: 20px; align-content: center; padding: 14vh var(--pad); border-top: 1px solid var(--color-line); }
+    .cap:first-of-type { border-top: 0; }
+    .cap h2 { font-size: clamp(2rem, 6vw, 4.4rem); max-width: 13ch; }
+    .cap h2 em { font-style: normal; color: var(--color-primary); }
+    .cap p { margin: 0; color: var(--color-muted); max-width: 44ch; }
+    .cap-media { position: relative; overflow: hidden; border-radius: var(--radius); aspect-ratio: 16 / 10; max-width: 640px; }
+    .cap-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    @media (min-width: 768px) { .cap { grid-template-columns: 1fr 1fr; column-gap: 48px; } .cap-copy { display: grid; gap: 20px; align-content: center; } }
+
+    /* 1 · linhas em máscara */
+    .ln { display: block; overflow: hidden; }
+    .ln span { display: block; transform: translateY(calc((1 - min(1, var(--t) * 2.4)) * 105%)); }
+    .ln + .ln span { transform: translateY(calc((1 - max(0, min(1, var(--t) * 2.4 - .5))) * 105%)); }
+    .disc { transform: scale(calc(.55 + var(--t) * .45)) rotate(calc((1 - var(--t)) * -140deg)); border-radius: 50%; aspect-ratio: 1; width: min(100%, 360px); object-fit: cover; }
+
+    /* 2 · slider térmico (Oryzo): filter segue --t */
+    .thermal img { filter: hue-rotate(calc(var(--t) * 190deg)) saturate(calc(1 + var(--t) * 1.4)) contrast(calc(1 + var(--t) * .4)); }
+    .scale { display: grid; gap: 8px; max-width: 360px; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-muted); }
+    .scale-bar { --heat: linear-gradient(90deg, #2c6bd6, #3fbf8f, #e8c33a, var(--color-primary)); height: 6px; border-radius: 3px; position: relative; }
+    .scale-bar::before, .scale-bar i { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--heat); }
+    .scale-bar::before { opacity: .22; }
+    .scale-bar i { transform-origin: 0 50%; transform: scaleX(var(--t)); }
+    .scale-row { display: flex; justify-content: space-between; }
+    #temp { font: 600 clamp(2rem, 5vw, 3.2rem)/1 var(--font-display); color: var(--color-ink); letter-spacing: -.02em; text-transform: none; }
+
+    /* 3 · macro abre por clip-path */
+    .macro img { clip-path: inset(calc((1 - var(--t)) * 42%) calc((1 - var(--t)) * 30%) round 12px); transform: scale(calc(1.25 - var(--t) * .25)); }
+
+    /* 4 · itens com stagger dentro do trecho */
+    .ship { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; max-width: 40ch; }
+    .ship li { padding: 14px 16px; border: 1px solid var(--color-line); border-radius: var(--radius); background: var(--color-bg-3); opacity: clamp(0, calc(var(--t) * 3 - var(--i)), 1); transform: translateY(calc((1 - clamp(0, calc(var(--t) * 3 - var(--i)), 1)) * 24px)); }
+    .ship b { color: var(--color-primary); font-family: var(--font-mono); font-weight: 500; margin-right: 8px; }
+
+    .ch-hud { display: none; }
+    /* camada de motion: só com .motion — capítulos empilhados no palco pinado */
+    .motion #chapters { height: 100dvh; overflow: hidden; }
+    .motion .cap { position: absolute; inset: 0; padding-top: 16vh; padding-bottom: 8vh; border-top: 0; opacity: 0; visibility: hidden; transition: opacity .35s var(--ease-out), visibility .35s; }
+    .motion .cap.is-on { opacity: 1; visibility: visible; }
+    .motion .cap-media { max-height: 36dvh; }
+    .motion .disc { width: min(100%, 36dvh, 360px); }
+    @media (min-width: 768px) { .motion .cap-media { max-height: 62dvh; } }
+    .motion .ch-hud { display: grid; gap: 10px; position: absolute; z-index: 2; top: 6vh; left: var(--pad); right: var(--pad); font-family: var(--font-mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-muted); }
+    .rail { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; max-width: 420px; }
+    .rail span { --t: 0; height: 3px; background: var(--color-line); position: relative; }
+    .rail span::after { content: ""; position: absolute; inset: 0; background: var(--color-primary); transform-origin: 0 50%; transform: scaleX(var(--t)); }
+  </style>
+</head>
+<body>
+  <header class="intro">
+    <p class="eyebrow"><b>scroll</b> · deps gsap · mobile ok · custo médio</p>
+    <h1 class="display">Uma seção, quatro atos.</h1>
+    <p class="formula">Quando <em>o progresso de uma seção longa pinada anda</em>, cada <em>capítulo</em> faz <em>sua própria animação num trecho do progresso</em> com <em>ease none</em>, porque uma seção longa precisa de atos, não de um único tween esticado.</p>
+  </header>
+
+  <section id="chapters" aria-label="A história da Base nº 7 em quatro capítulos">
+    <div class="ch-hud" aria-hidden="true">
+      <span id="ch-label">capítulo 1 de 4 · matéria</span>
+      <div class="rail"><span></span><span></span><span></span><span></span></div>
+    </div>
+
+    <article class="cap" data-cap="matéria">
+      <div class="cap-copy">
+        <p class="eyebrow">01 · matéria · <code>fit(p, 0, .2125)</code></p>
+        <h2 class="display"><span class="ln"><span>Cortiça</span></span><span class="ln"><span><em>antes de tudo.</em></span></span></h2>
+        <p>Casca de sobreiro prensada a frio. O primeiro ato só entra: título por máscara, disco girando até pousar.</p>
+      </div>
+      <img class="disc" src="/_shared/media/plate-cork.svg" alt="Textura de cortiça prensada em close, grãos castanhos irregulares" width="1600" height="1000" />
+    </article>
+
+    <article class="cap thermal" data-cap="térmico">
+      <div class="cap-copy">
+        <p class="eyebrow">02 · térmico · <code>filter</code> segue <code>--t</code></p>
+        <h2 class="display">Ela mostra <em>o calor.</em></h2>
+        <div class="scale" aria-hidden="true">
+          <span id="temp">74 °C</span>
+          <div class="scale-bar"><i></i></div>
+          <div class="scale-row"><span>22 °C</span><span>74 °C</span></div>
+        </div>
+      </div>
+      <div class="cap-media"><img src="/_shared/media/plate-table.svg" alt="Mesa escura com o porta-copos de cortiça, vista em falsa cor térmica" width="1600" height="1000" /></div>
+    </article>
+
+    <article class="cap macro" data-cap="detalhe">
+      <div class="cap-copy">
+        <p class="eyebrow">03 · detalhe · <code>clip-path</code> abre</p>
+        <h2 class="display">De perto, <em>ela respira.</em></h2>
+        <p>Cada alvéolo segura ar. O terceiro ato não troca de assunto: aproxima a câmera no mesmo objeto.</p>
+      </div>
+      <div class="cap-media"><img src="/_shared/media/plate-cork-macro.svg" alt="Macro da superfície de cortiça com alvéolos visíveis e um pequeno inseto caminhando" width="1600" height="1000" /></div>
+    </article>
+
+    <article class="cap" data-cap="entrega">
+      <div class="cap-copy">
+        <p class="eyebrow">04 · entrega · stagger dentro do trecho</p>
+        <h2 class="display">Chega <em>em três dias.</em></h2>
+      </div>
+      <ul class="ship">
+        <li style="--i:0"><b>01</b>Embalagem sem plástico, papel kraft.</li>
+        <li style="--i:1"><b>02</b>Frete fixo para todo o Brasil.</li>
+        <li style="--i:2"><b>03</b>Troca em 30 dias, sem pergunta.</li>
+      </ul>
+    </article>
+  </section>
+
+  <section class="outro">
+    <p class="formula">Fim do pin. Um <em>progresso</em>, quatro <em>trechos</em> de <code>Motion.fit</code>, cada um com <em>15% de respiro</em> no fim para o olho assentar antes do próximo ato.</p>
+  </section>
+
+  <div class="lesson lesson--bleed">
+    <div>
+      <h2>Usar</h2>
+      <p>Seção de features longa que conta uma história em atos: matéria, função, detalhe, entrega. Cada capítulo anima só no seu trecho do progresso.</p>
+    </div>
+    <div>
+      <h2>Não usar</h2>
+      <p>Junto de horizontal hijack ou z-axis dive. Um único tween esticado por 400vh. Mais de 4–5 capítulos: vira maratona de scroll.</p>
+    </div>
+    <div>
+      <h2>Reduced motion / sem GSAP</h2>
+      <p>Sem pin: os capítulos descem em fluxo normal, cada um já no estado final (<code>--t: 1</code> por padrão no CSS).</p>
+    </div>
+  </div>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    withGsap(function (gsap, ST) {
+      var caps = [].slice.call(document.querySelectorAll('[data-cap]'));
+      var segs = [].slice.call(document.querySelectorAll('.rail span'));
+      var label = document.getElementById('ch-label');
+      var temp = document.getElementById('temp');
+      var n = caps.length, last = -1;
+
+      function render(p) {
+        var cur = Math.min(n - 1, Math.floor(p * n));
+        caps.forEach(function (c, i) {
+          var a = i / n, b = (i + 1) / n;
+          var t = Motion.fit(p, a, a + (b - a) * .85, 0, 1);   // 15% de respiro no fim do trecho
+          c.style.setProperty('--t', t.toFixed(4));
+          segs[i].style.setProperty('--t', t.toFixed(4));
+          if (c.classList.contains('thermal')) temp.textContent = Math.round(22 + t * 52) + ' °C';
+        });
+        if (cur !== last) {
+          caps.forEach(function (c, i) { c.classList.toggle('is-on', i === cur); });
+          label.textContent = 'capítulo ' + (cur + 1) + ' de ' + n + ' · ' + caps[cur].getAttribute('data-cap');
+          last = cur;
+        }
+      }
+
+      render(0);
+      ST.create({
+        trigger: '#chapters', start: 'top top', end: '+=' + n * 120 + '%', pin: true,
+        onUpdate: function (s) { render(s.progress); }
+      });
+    });
+  </script>
+</body>
+</html>

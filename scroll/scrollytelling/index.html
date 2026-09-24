@@ -3,77 +3,140 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MOTION lab / Scrollytelling</title>
-  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <title>Scrollytelling · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
   <link rel="stylesheet" href="/_shared/lab.css" />
   <style>
-    .axis {
-      position: fixed; right: 22px; top: 50%; transform: translateY(-50%);
-      z-index: 40; font-family: ui-monospace, monospace; font-size: 10px;
-      letter-spacing: 0.18em; color: var(--accent); writing-mode: vertical-rl;
-      text-transform: uppercase; pointer-events: none;
-    }
-    @media (max-width: 700px) {
-      .axis { display: none; }
+    .intro, .outro { min-height: 70dvh; padding: 20vh var(--pad) 12vh; display: grid; gap: 20px; align-content: end; }
+    .intro h1 { font-size: clamp(2.6rem, 8vw, 6rem); max-width: 12ch; }
+
+    /* split 50/50; abaixo de 768px empilha (cena em cima, copy embaixo) */
+    #hold { display: grid; grid-template-columns: 1fr; min-height: 100dvh; background: var(--color-bg-2); border-block: 1px solid var(--color-line); }
+    .scene { position: relative; height: 40dvh; border-bottom: 1px solid var(--color-line); overflow: hidden; }
+    .scene svg { display: block; width: 100%; height: 100%; }
+    .copy { display: grid; gap: 18px; align-content: center; padding: 28px var(--pad) 32px; }
+    .copy h2 { font-size: clamp(1.8rem, 4.6vw, 3.8rem); max-width: 13ch; }
+    .count { font: 600 clamp(1.6rem, 4vw, 2.6rem)/1 var(--font-display); letter-spacing: -.02em; color: var(--color-primary); font-variant-numeric: tabular-nums; }
+    .count small { font: 500 11px/1 var(--font-mono); letter-spacing: .16em; text-transform: uppercase; color: var(--color-muted); margin-left: 10px; }
+    .beats { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; max-width: 44ch; color: var(--color-muted); font-size: .95rem; }
+    .beats li { padding-left: 16px; border-left: 2px solid var(--color-line); }
+    .beats b { color: var(--color-ink); font-weight: 600; }
+    @media (min-width: 768px) {
+      #hold { grid-template-columns: 1fr 1fr; }
+      .scene { height: auto; min-height: 100dvh; border-bottom: 0; border-right: 1px solid var(--color-line); }
+      .copy { padding: 12vh var(--pad); gap: 26px; }
+      .beats { font-size: 1rem; gap: 14px; }
     }
 
-    #hold { min-height: 100dvh; display:grid; grid-template-columns: 1fr; }
-    @media (min-width: 768px) { #hold { grid-template-columns: 1fr 1fr; } }
-    .scene { min-height: 100dvh; position: relative; background: #181910; overflow: hidden; }
-    .sun { position:absolute; left: 18%; top: 62%; width: 90px; height: 90px; border-radius: 50%; background: var(--accent); }
-    .ground { position:absolute; left:0; right:0; bottom:0; height: 28%; background: #2a2c22; }
-    .block { position:absolute; left: 48%; bottom: 28%; width: 22%; height: 10%; background: var(--ink); transform-origin: 50% 100%; }
-    .copy { min-height: 100dvh; padding: 22vh 8vw 12vh; }
-    h1 { font-family: var(--font-d); font-weight:800; letter-spacing:-0.05em; font-size: clamp(2.4rem, 6vw, 4.4rem); line-height:0.95; margin:0 0 16px; max-width: 12ch; }
-    p { color: var(--muted); max-width: 40ch; line-height:1.5; }
-    .note { margin-top: 24px; }
-    
+    /* camada de motion: só destaque de passo (a cena em si é dirigida pelo timeline) */
+    .motion .beats li { transition: color .3s var(--ease-out), border-color .3s var(--ease-out); }
+    .motion .beats li.is-on { color: var(--color-ink); border-color: var(--color-primary); }
   </style>
 </head>
-<body class="lab-grain">
-<div class="axis">progresso 0-1 dirige a cena</div>
-  
-    <section id="hold">
-      <div class="scene" aria-hidden="true">
-        <div class="sun" id="sun"></div>
-        <div class="ground"></div>
-        <div class="block" id="block"></div>
-      </div>
-      <div class="copy">
-        <p class="formula">Quando <em>o progresso vai de 0 a 1</em>, a <em>cena</em> faz <em>sol subir e volume crescer</em> com <em>ease none</em>, porque o scroll e o narrador, nao um decorado 3D.</p>
-        <h1>Cena guiada.</h1>
-        <p>Usar para um argumento com comeco, meio e fim visivel. Um sol, um volume. Sem Gaussian splat, sem 3D para 2D tipo Oryzo: isso pede Three.js, malha e budget de outra liga. Este lab para no 2D dirigido por progresso.</p>
-        <p class="note"><strong>Nao usar</strong> se a cena pede orbita real. Reduced motion: sol e bloco ja no estado final, sem pin.</p>
-      </div>
-    </section>
-    
-  <script src="/_shared/lab.js"></script>
-  <script src="/_shared/nav.js"></script>
-  
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
-  <script>
-  (function () {
+<body>
+  <header class="intro">
+    <p class="eyebrow"><b>scroll</b> · deps gsap · mobile ok · custo médio</p>
+    <h1 class="display">O scroll narra.</h1>
+    <p class="formula">Quando <em>o progresso vai de 0 a 1</em>, a <em>cena</em> faz <em>o sol nascer e o dia clarear</em> com <em>ease none</em>, porque o scroll é o narrador, não um decorado 3D.</p>
+  </header>
 
-    gsap.registerPlugin(ScrollTrigger);
-    if (Lab.reduce()) {
-      document.getElementById("sun").style.top = "18%";
-      document.getElementById("block").style.height = "42%";
-      return;
-    }
-    gsap.timeline({
-      scrollTrigger: {
-        trigger: "#hold",
-        start: "top top",
-        end: "+=180%",
-        pin: true,
-        scrub: true,
-      }
-    })
-    .fromTo("#sun", { top: "62%" }, { top: "18%", ease: "none" }, 0)
-    .fromTo("#block", { height: "10%" }, { height: "42%", ease: "none" }, 0);
-    
-  })();
+  <section id="hold" aria-labelledby="hold-t">
+    <div class="scene">
+      <svg viewBox="0 0 600 700" preserveAspectRatio="xMidYMax slice" role="img" aria-label="Ilustração: amanhecer sobre um sobreiral; o sol nasce atrás dos morros e o dia clareia">
+        <defs>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a2410"/><stop offset=".55" stop-color="#c2561a"/><stop offset=".8" stop-color="#f3a45a"/></linearGradient>
+          <linearGradient id="night" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#07040a"/><stop offset=".8" stop-color="#1c1010"/></linearGradient>
+          <radialGradient id="glow"><stop offset="0" stop-color="#ffcf8a" stop-opacity=".75"/><stop offset=".45" stop-color="#ff8a3a" stop-opacity=".25"/><stop offset="1" stop-color="#ff6a1a" stop-opacity="0"/></radialGradient>
+          <radialGradient id="disc" cx=".42" cy=".4"><stop offset="0" stop-color="#fff6e4"/><stop offset=".6" stop-color="#ffd08a"/><stop offset="1" stop-color="#ff9a4a"/></radialGradient>
+        </defs>
+        <rect width="600" height="700" fill="url(#sky)"/>
+        <rect id="night" width="600" height="700" fill="url(#night)"/>
+        <g id="stars"><circle cx="285" cy="217" r="1.4" fill="#ffedd7" opacity="0.49"/><circle cx="7" cy="124" r="0.9" fill="#ffedd7" opacity="0.89"/><circle cx="414" cy="198" r="1.3" fill="#ffedd7" opacity="0.80"/><circle cx="87" cy="145" r="0.8" fill="#ffedd7" opacity="0.94"/><circle cx="35" cy="270" r="0.7" fill="#ffedd7" opacity="0.81"/><circle cx="202" cy="134" r="1.6" fill="#ffedd7" opacity="0.41"/><circle cx="36" cy="302" r="1.2" fill="#ffedd7" opacity="0.45"/><circle cx="592" cy="312" r="0.7" fill="#ffedd7" opacity="0.65"/><circle cx="81" cy="103" r="1.3" fill="#ffedd7" opacity="0.50"/><circle cx="418" cy="17" r="0.8" fill="#ffedd7" opacity="0.89"/><circle cx="240" cy="138" r="1.3" fill="#ffedd7" opacity="0.69"/><circle cx="231" cy="10" r="1.5" fill="#ffedd7" opacity="0.98"/><circle cx="586" cy="219" r="1.0" fill="#ffedd7" opacity="0.62"/><circle cx="414" cy="222" r="0.7" fill="#ffedd7" opacity="0.54"/><circle cx="218" cy="169" r="1.6" fill="#ffedd7" opacity="0.70"/><circle cx="17" cy="271" r="1.1" fill="#ffedd7" opacity="0.71"/><circle cx="133" cy="141" r="1.1" fill="#ffedd7" opacity="0.86"/><circle cx="62" cy="181" r="0.8" fill="#ffedd7" opacity="0.82"/><circle cx="22" cy="91" r="1.0" fill="#ffedd7" opacity="0.78"/><circle cx="31" cy="152" r="0.9" fill="#ffedd7" opacity="0.57"/><circle cx="286" cy="316" r="1.2" fill="#ffedd7" opacity="0.97"/><circle cx="101" cy="305" r="1.0" fill="#ffedd7" opacity="0.51"/><circle cx="449" cy="301" r="0.6" fill="#ffedd7" opacity="0.56"/><circle cx="462" cy="113" r="0.9" fill="#ffedd7" opacity="0.41"/><circle cx="24" cy="204" r="1.8" fill="#ffedd7" opacity="1.00"/><circle cx="302" cy="8" r="1.0" fill="#ffedd7" opacity="0.87"/><circle cx="499" cy="211" r="0.9" fill="#ffedd7" opacity="0.72"/><circle cx="286" cy="207" r="0.9" fill="#ffedd7" opacity="0.97"/><circle cx="537" cy="54" r="0.9" fill="#ffedd7" opacity="0.92"/><circle cx="167" cy="311" r="1.2" fill="#ffedd7" opacity="0.82"/><circle cx="423" cy="71" r="0.9" fill="#ffedd7" opacity="0.55"/><circle cx="410" cy="229" r="0.8" fill="#ffedd7" opacity="0.93"/><circle cx="252" cy="80" r="1.1" fill="#ffedd7" opacity="0.99"/><circle cx="336" cy="206" r="1.7" fill="#ffedd7" opacity="0.98"/><circle cx="456" cy="138" r="1.3" fill="#ffedd7" opacity="0.94"/><circle cx="474" cy="191" r="1.0" fill="#ffedd7" opacity="0.62"/><circle cx="442" cy="186" r="0.6" fill="#ffedd7" opacity="0.83"/><circle cx="542" cy="263" r="1.7" fill="#ffedd7" opacity="0.95"/><circle cx="321" cy="260" r="1.1" fill="#ffedd7" opacity="0.46"/><circle cx="212" cy="103" r="1.7" fill="#ffedd7" opacity="0.81"/><circle cx="325" cy="205" r="0.7" fill="#ffedd7" opacity="0.72"/><circle cx="420" cy="130" r="0.9" fill="#ffedd7" opacity="0.64"/><circle cx="194" cy="226" r="0.8" fill="#ffedd7" opacity="0.45"/><circle cx="187" cy="230" r="1.5" fill="#ffedd7" opacity="0.80"/><circle cx="561" cy="121" r="0.6" fill="#ffedd7" opacity="0.69"/><circle cx="266" cy="59" r="1.4" fill="#ffedd7" opacity="0.60"/><circle cx="143" cy="108" r="1.7" fill="#ffedd7" opacity="0.40"/><circle cx="216" cy="92" r="0.8" fill="#ffedd7" opacity="0.66"/><circle cx="132" cy="303" r="1.2" fill="#ffedd7" opacity="0.82"/><circle cx="97" cy="153" r="1.3" fill="#ffedd7" opacity="0.91"/><circle cx="150" cy="152" r="1.6" fill="#ffedd7" opacity="0.90"/><circle cx="137" cy="178" r="1.5" fill="#ffedd7" opacity="0.64"/><circle cx="404" cy="219" r="1.8" fill="#ffedd7" opacity="0.73"/><circle cx="408" cy="116" r="1.5" fill="#ffedd7" opacity="0.59"/><circle cx="300" cy="119" r="1.0" fill="#ffedd7" opacity="0.48"/><circle cx="135" cy="180" r="0.9" fill="#ffedd7" opacity="0.43"/><circle cx="482" cy="94" r="1.7" fill="#ffedd7" opacity="0.76"/><circle cx="233" cy="288" r="1.7" fill="#ffedd7" opacity="0.59"/><circle cx="76" cy="212" r="1.6" fill="#ffedd7" opacity="0.77"/><circle cx="471" cy="136" r="1.3" fill="#ffedd7" opacity="0.56"/><circle cx="244" cy="125" r="1.1" fill="#ffedd7" opacity="0.64"/><circle cx="484" cy="56" r="0.8" fill="#ffedd7" opacity="0.55"/><circle cx="583" cy="173" r="0.7" fill="#ffedd7" opacity="0.90"/><circle cx="524" cy="271" r="1.0" fill="#ffedd7" opacity="0.84"/><circle cx="183" cy="45" r="1.6" fill="#ffedd7" opacity="0.90"/><circle cx="127" cy="290" r="0.6" fill="#ffedd7" opacity="0.59"/><circle cx="8" cy="56" r="0.8" fill="#ffedd7" opacity="0.83"/><circle cx="178" cy="63" r="0.8" fill="#ffedd7" opacity="0.59"/><circle cx="517" cy="200" r="0.7" fill="#ffedd7" opacity="0.81"/><circle cx="322" cy="148" r="1.2" fill="#ffedd7" opacity="0.79"/></g>
+        <g transform="translate(380 175)"><g id="sun">
+          <circle r="230" fill="url(#glow)"/>
+          <g id="rays"><rect x="-1.5" y="-190" width="3" height="70" rx="1.5" fill="#ffd9a0" opacity=".35" transform="rotate(0)"/><rect x="-1.5" y="-190" width="3" height="70" rx="1.5" fill="#ffd9a0" opacity=".35" transform="rotate(20)"/><rect x="-1.5" y="-190" width="3" height="70" rx="1.5" fill="#ffd9a0" opacity=".35" transform="rotate(40)"/><rect x="-1.5" y="-190" width="3" height="70" rx="1.5" fill="#ffd9a0" opacity=".35" transform="rotate(60)"/><rect x="-1.5" y="-190" width="3" height="70" rx="1.5" fill="#ffd9a0" opacity=".35" transform="rotate(80)"/><rect x="-1.5" y="-190" width="3" height="70" rx="1.5" fill="#ffd9a0" opacity=".35" transform="rotate(100)"/><rect x="-1.5" y="-190" width="3" height="70" rx="1.5" fill="#ffd9a0" opacity=".35" transform="rotate(120)"/><rect x="-1.5" y="-190" width="3" height="70" rx="1.5" fill="#ffd9a0" opacity=".35" transform="rotate(140)"/><rect x="-1.5" y="-190" width="3" height="70" rx="1.5" fill="#ffd9a0" opacity=".35" transform="rotate(160)"/><rect x="-1.5" y="-190" width="3" height="70" rx="1.5" fill="#ffd9a0" opacity=".35" transform="rotate(180)"/><rect x="-1.5" y="-190" width="3" height="70" rx="1.5" fill="#ffd9a0" opacity=".35" transform="rotate(200)"/><rect x="-1.5" y="-190" width="3" height="70" rx="1.5" fill="#ffd9a0" opacity=".35" transform="rotate(220)"/><rect x="-1.5" y="-190" width="3" height="70" rx="1.5" fill="#ffd9a0" opacity=".35" transform="rotate(240)"/><rect x="-1.5" y="-190" width="3" height="70" rx="1.5" fill="#ffd9a0" opacity=".35" transform="rotate(260)"/><rect x="-1.5" y="-190" width="3" height="70" rx="1.5" fill="#ffd9a0" opacity=".35" transform="rotate(280)"/><rect x="-1.5" y="-190" width="3" height="70" rx="1.5" fill="#ffd9a0" opacity=".35" transform="rotate(300)"/><rect x="-1.5" y="-190" width="3" height="70" rx="1.5" fill="#ffd9a0" opacity=".35" transform="rotate(320)"/><rect x="-1.5" y="-190" width="3" height="70" rx="1.5" fill="#ffd9a0" opacity=".35" transform="rotate(340)"/></g>
+          <circle r="78" fill="#ffb070" opacity=".35"/>
+          <circle r="62" fill="url(#disc)"/>
+        </g></g>
+        <path d="M0 410 C90 370 170 380 250 400 S430 360 520 380 S580 395 600 390 V700 H0Z" fill="#8a4424"/>
+        <path d="M0 455 C110 430 210 445 300 450 S470 425 600 440 V700 H0Z" fill="#5a2c16"/>
+        <g transform="translate(318 452) scale(0.42)"><ellipse class="shadow" cx="-70" cy="4" rx="90" ry="10" fill="#0c0703" opacity=".35"/><path d="M-9,0 C-11,-30 -4,-52 -12,-78 C-30,-92 -52,-96 -66,-110 L-60,-116 C-44,-104 -26,-100 -8,-90 C-2,-104 4,-118 2,-136 L10,-136 C12,-116 8,-100 6,-88 C22,-100 44,-106 60,-122 L66,-116 C50,-100 30,-88 14,-76 C8,-52 12,-28 11,0 Z" fill="#2a1a0e"/><circle cx="-78" cy="-124" r="34" fill="#3a4428"/><circle cx="-44" cy="-150" r="42" fill="#3a4428"/><circle cx="0" cy="-164" r="48" fill="#3a4428"/><circle cx="46" cy="-150" r="42" fill="#3a4428"/><circle cx="80" cy="-122" r="34" fill="#3a4428"/><circle cx="-24" cy="-116" r="34" fill="#3a4428"/><circle cx="26" cy="-116" r="34" fill="#3a4428"/><circle cx="-60" cy="-96" r="22" fill="#3a4428"/><circle cx="62" cy="-96" r="22" fill="#3a4428"/><circle cx="-68" cy="-131" r="24" fill="#56663f"/><circle cx="-32" cy="-159" r="30" fill="#56663f"/><circle cx="13" cy="-175" r="35" fill="#56663f"/><circle cx="58" cy="-159" r="30" fill="#56663f"/><circle cx="90" cy="-129" r="24" fill="#56663f"/><circle cx="-14" cy="-123" r="24" fill="#56663f"/><circle cx="36" cy="-123" r="24" fill="#56663f"/><circle cx="-54" cy="-101" r="16" fill="#56663f"/><circle cx="68" cy="-101" r="16" fill="#56663f"/><circle class="lit" cx="-25" cy="-166" r="16" fill="#8a9a64" opacity=".55"/><circle class="lit" cx="22" cy="-182" r="18" fill="#8a9a64" opacity=".55"/><circle class="lit" cx="65" cy="-166" r="16" fill="#8a9a64" opacity=".55"/><circle class="lit" cx="95" cy="-135" r="13" fill="#8a9a64" opacity=".55"/></g>
+        <path d="M0 520 C130 500 250 512 360 515 S520 500 600 508 V700 H0Z" fill="#2e1a0d"/>
+        <g transform="translate(470 540) scale(0.72)"><ellipse class="shadow" cx="-70" cy="4" rx="90" ry="10" fill="#0c0703" opacity=".35"/><path d="M-9,0 C-11,-30 -4,-52 -12,-78 C-30,-92 -52,-96 -66,-110 L-60,-116 C-44,-104 -26,-100 -8,-90 C-2,-104 4,-118 2,-136 L10,-136 C12,-116 8,-100 6,-88 C22,-100 44,-106 60,-122 L66,-116 C50,-100 30,-88 14,-76 C8,-52 12,-28 11,0 Z" fill="#2a1a0e"/><circle cx="-78" cy="-124" r="34" fill="#3a4428"/><circle cx="-44" cy="-150" r="42" fill="#3a4428"/><circle cx="0" cy="-164" r="48" fill="#3a4428"/><circle cx="46" cy="-150" r="42" fill="#3a4428"/><circle cx="80" cy="-122" r="34" fill="#3a4428"/><circle cx="-24" cy="-116" r="34" fill="#3a4428"/><circle cx="26" cy="-116" r="34" fill="#3a4428"/><circle cx="-60" cy="-96" r="22" fill="#3a4428"/><circle cx="62" cy="-96" r="22" fill="#3a4428"/><circle cx="-68" cy="-131" r="24" fill="#56663f"/><circle cx="-32" cy="-159" r="30" fill="#56663f"/><circle cx="13" cy="-175" r="35" fill="#56663f"/><circle cx="58" cy="-159" r="30" fill="#56663f"/><circle cx="90" cy="-129" r="24" fill="#56663f"/><circle cx="-14" cy="-123" r="24" fill="#56663f"/><circle cx="36" cy="-123" r="24" fill="#56663f"/><circle cx="-54" cy="-101" r="16" fill="#56663f"/><circle cx="68" cy="-101" r="16" fill="#56663f"/><circle class="lit" cx="-25" cy="-166" r="16" fill="#8a9a64" opacity=".55"/><circle class="lit" cx="22" cy="-182" r="18" fill="#8a9a64" opacity=".55"/><circle class="lit" cx="65" cy="-166" r="16" fill="#8a9a64" opacity=".55"/><circle class="lit" cx="95" cy="-135" r="13" fill="#8a9a64" opacity=".55"/></g>
+        <path d="M0 590 C160 575 300 585 420 588 S560 580 600 584 V700 H0Z" fill="#1a0f07"/>
+        <g transform="translate(160 612) scale(1.08)"><ellipse class="shadow" cx="-70" cy="4" rx="90" ry="10" fill="#0c0703" opacity=".35"/><path d="M-9,0 C-11,-30 -4,-52 -12,-78 C-30,-92 -52,-96 -66,-110 L-60,-116 C-44,-104 -26,-100 -8,-90 C-2,-104 4,-118 2,-136 L10,-136 C12,-116 8,-100 6,-88 C22,-100 44,-106 60,-122 L66,-116 C50,-100 30,-88 14,-76 C8,-52 12,-28 11,0 Z" fill="#2a1a0e"/><circle cx="-78" cy="-124" r="34" fill="#3a4428"/><circle cx="-44" cy="-150" r="42" fill="#3a4428"/><circle cx="0" cy="-164" r="48" fill="#3a4428"/><circle cx="46" cy="-150" r="42" fill="#3a4428"/><circle cx="80" cy="-122" r="34" fill="#3a4428"/><circle cx="-24" cy="-116" r="34" fill="#3a4428"/><circle cx="26" cy="-116" r="34" fill="#3a4428"/><circle cx="-60" cy="-96" r="22" fill="#3a4428"/><circle cx="62" cy="-96" r="22" fill="#3a4428"/><circle cx="-68" cy="-131" r="24" fill="#56663f"/><circle cx="-32" cy="-159" r="30" fill="#56663f"/><circle cx="13" cy="-175" r="35" fill="#56663f"/><circle cx="58" cy="-159" r="30" fill="#56663f"/><circle cx="90" cy="-129" r="24" fill="#56663f"/><circle cx="-14" cy="-123" r="24" fill="#56663f"/><circle cx="36" cy="-123" r="24" fill="#56663f"/><circle cx="-54" cy="-101" r="16" fill="#56663f"/><circle cx="68" cy="-101" r="16" fill="#56663f"/><circle class="lit" cx="-25" cy="-166" r="16" fill="#8a9a64" opacity=".55"/><circle class="lit" cx="22" cy="-182" r="18" fill="#8a9a64" opacity=".55"/><circle class="lit" cx="65" cy="-166" r="16" fill="#8a9a64" opacity=".55"/><circle class="lit" cx="95" cy="-135" r="13" fill="#8a9a64" opacity=".55"/></g>
+        <rect id="dawn-tint" width="600" height="700" fill="#ff8a3a" opacity="0" style="mix-blend-mode: soft-light"/>
+      </svg>
+    </div>
+    <div class="copy">
+      <p class="eyebrow" id="beat-label">ato 3 de 3</p>
+      <h2 class="display" id="hold-t">Do sobreiro à mesa em uma estação.</h2>
+      <p class="count"><span id="count">09:00</span><small>hora no sobreiral</small></p>
+      <ol class="beats">
+        <li data-beat><b>Madrugada.</b> Estrelas ainda no céu; a colheita começa no escuro.</li>
+        <li data-beat><b>Nascer do sol.</b> A casca é tirada à mão; a árvore fica de pé.</li>
+        <li data-beat><b>Manhã.</b> Sol alto, sombras curtas: a casca seca ao ar.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="outro">
+    <p class="formula">Fim do ato. Um <em>timeline</em> com <em>scrub</em> dirige a cena inteira: <em>y</em> e rotação no sol, <em>opacity</em> na noite e nas estrelas, <em>scaleX</em> nas sombras. Nunca <code>top</code> ou <code>height</code>.</p>
+  </section>
+
+  <div class="lesson lesson--bleed">
+    <div>
+      <h2>Usar</h2>
+      <p>"Como funciona", transformação antes → depois, crescimento de resultado. Começo, meio e fim visíveis na cena.</p>
+    </div>
+    <div>
+      <h2>Não usar</h2>
+      <p>Se a cena pede órbita 3D real (isso é WebGL, fora do padrão). Junto de horizontal hijack ou z-axis dive.</p>
+    </div>
+    <div>
+      <h2>Reduced motion / sem GSAP</h2>
+      <p>Sem pin; a cena já está no estado final (sol alto, céu claro, relógio em 09:00) e os três atos ficam legíveis em fluxo normal.</p>
+    </div>
+  </div>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    withGsap(function (gsap) {
+      var count = document.getElementById('count');
+      var label = document.getElementById('beat-label');
+      var beats = [].slice.call(document.querySelectorAll('[data-beat]'));
+
+      gsap.timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: {
+          trigger: '#hold', start: 'top top', end: '+=180%', pin: true, scrub: true,
+          onUpdate: function (s) {
+            var i = Math.min(beats.length - 1, Math.floor(s.progress * beats.length));
+            var min = Math.round(Motion.fit(s.progress, 0, 1, 340, 540));      // 05:40 → 09:00
+            count.textContent = ('0' + Math.floor(min / 60)).slice(-2) + ':' + ('0' + (min % 60)).slice(-2);
+            label.textContent = 'ato ' + (i + 1) + ' de ' + beats.length;
+            beats.forEach(function (el, j) { el.classList.toggle('is-on', j === i); });
+          }
+        }
+      })
+        .fromTo('#sun', { y: 300 }, { y: 0, duration: 1 }, 0)                       // nasce atrás dos morros
+        .fromTo('#rays', { rotation: 0 }, { rotation: 60, svgOrigin: '0 0', duration: 1 }, 0)
+        .fromTo('#night', { opacity: 1 }, { opacity: 0, duration: .55 }, 0)
+        .fromTo('#stars', { opacity: 1 }, { opacity: 0, duration: .35 }, 0)
+        .fromTo('#dawn-tint', { opacity: 0 }, { opacity: .5, duration: .4 }, .25)
+        .fromTo('.shadow', { scaleX: 2.2, opacity: 0 }, { scaleX: .6, opacity: .35, transformOrigin: '100% 50%', duration: .9 }, .1)
+        .fromTo('.lit', { opacity: 0 }, { opacity: .55, duration: .6 }, .3);
+    });
   </script>
 </body>
 </html>

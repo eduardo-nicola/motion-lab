@@ -3,108 +3,151 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MOTION lab / Z-axis dive</title>
-  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <title>Z-axis dive · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
   <link rel="stylesheet" href="/_shared/lab.css" />
   <style>
-    .axis {
-      position: fixed; right: 22px; top: 50%; transform: translateY(-50%);
-      z-index: 40; font-family: ui-monospace, monospace; font-size: 10px;
-      letter-spacing: 0.18em; color: var(--accent); writing-mode: vertical-rl;
-      text-transform: uppercase; pointer-events: none;
-    }
-    @media (max-width: 700px) {
-      .axis { display: none; }
-    }
+    /* intro e o que vem depois ficam ACIMA do viewport fixo, com fundo opaco */
+    .intro, .outro { position: relative; z-index: 2; background: var(--color-bg); min-height: 70dvh; padding: 20vh var(--pad) 12vh; display: grid; gap: 20px; align-content: end; }
+    .intro h1 { font-size: clamp(2.6rem, 8vw, 6rem); max-width: 12ch; }
+    .after { position: relative; z-index: 2; background: var(--color-bg); border-top: 1px solid var(--color-line); }
 
-    .viewport { position: fixed; inset: 0; perspective: min(1100px, 78vw); perspective-origin: 50% 48%; overflow: hidden; }
-    .world { position: absolute; inset: 0; transform-style: preserve-3d; will-change: transform; }
-    .plane {
-      position: absolute; inset: 16vh 11vw;
-      background: linear-gradient(180deg, rgb(20 20 15 / 0.08), rgb(16 17 12 / 0.92) 78%);
-      border: 1px solid rgb(236 231 220 / 0.22);
-      padding: 8vh 6vw 7vh; display:flex; flex-direction:column; justify-content:flex-end;
-      backface-visibility: hidden;
+    /* estado final = planos em fluxo normal (mobile, reduced, sem GSAP) */
+    #dive { position: relative; }
+    .world { display: grid; gap: 1px; background: var(--color-line); border-block: 1px solid var(--color-line); }
+    .plane { position: relative; display: grid; gap: 14px; align-content: end; min-height: 70dvh; padding: 10vh var(--pad); background: var(--color-bg-2); overflow: hidden; }
+    .plane img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .plane::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 35%, rgb(16 9 4 / .86)); }
+    .plane > :not(img) { position: relative; z-index: 1; }
+    .plane h2 { font-size: clamp(2rem, 6vw, 4.6rem); max-width: 13ch; }
+    .plane h2 em { font-style: normal; color: var(--color-primary); }
+    .plane p { margin: 0; max-width: 40ch; color: var(--color-muted); }
+    .depth { font-family: var(--font-mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-primary); }
+    .spacer, .gauge { display: none; }
+
+    /* câmera Z: só desktop + .motion (mobile degrada para Y empilhado) */
+    @media (min-width: 768px) {
+      .motion .viewport { position: fixed; inset: 0; z-index: 1; perspective: min(1100px, 78vw); overflow: hidden; visibility: hidden; background: radial-gradient(ellipse at 50% 50%, var(--color-bg-3), var(--color-bg) 70%); }
+      .motion .viewport.is-live { visibility: visible; }
+      .motion .world { position: absolute; inset: 0; transform-style: preserve-3d; background: none; border: 0; will-change: transform; }
+      .motion .plane { position: absolute; inset: 16vh 11vw; min-height: 0; padding: 40px; border: 1px solid var(--color-line); backface-visibility: hidden; box-shadow: 0 40px 120px rgb(0 0 0 / .6); }
+      .motion .plane[data-z="0"] { transform: translateZ(0); }
+      .motion .plane[data-z="-900"] { transform: translateZ(-900px); }
+      .motion .plane[data-z="-1800"] { transform: translateZ(-1800px); }
+      .motion .plane[data-z="-2700"] { transform: translateZ(-2700px); }
+      .motion .spacer { display: block; height: 380vh; }
+      .motion .gauge { display: flex; position: absolute; left: var(--pad); bottom: 5vh; gap: 12px; align-items: center; font-family: var(--font-mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-muted); }
+      .gauge i { display: block; width: 160px; height: 2px; background: var(--color-line); }
+      .gauge i b { display: block; height: 100%; background: var(--color-primary); transform-origin: 0 50%; transform: scaleX(0); }
     }
-    h1, h2 { font-family: var(--font-d); font-weight:800; letter-spacing:-0.05em; line-height:0.92; margin:0 0 16px; font-size: clamp(2.6rem, 7vw, 5.5rem); max-width: 12ch; }
-    p { margin:0; max-width: 38ch; color: var(--muted); line-height:1.45; }
-    .spacer { height: 380vh; }
-    @media (prefers-reduced-motion: reduce) {
-      .viewport { position: relative; perspective: none; height: auto; overflow: visible; }
-      .world { position: relative; transform: none !important; }
-      .plane { position: relative; inset: auto; transform: none !important; opacity: 1 !important; min-height: 100dvh; margin: 0; }
-      .spacer { display: none; }
-    }
-    
   </style>
 </head>
-<body class="lab-grain">
-<div class="axis">scroll Y vira translateZ</div>
-  
-    <div class="viewport">
+<body>
+  <header class="intro">
+    <p class="eyebrow"><b>scroll</b> · deps gsap · mobile degradar · custo alto</p>
+    <h1 class="display">Para dentro.</h1>
+    <p class="formula">Quando <em>o scroll anda</em>, a <em>câmera</em> faz <em>dolly no Z</em> com <em>scrub none</em>, porque a história é penetração, não descida de documento.</p>
+  </header>
+
+  <section id="dive" aria-label="Mergulho em quatro planos: da mesa até dentro da cortiça">
+    <div class="viewport" id="viewport">
       <div class="world" id="world">
-        <section class="plane" data-z="0">
-          <p class="formula">Quando <em>o scroll anda</em>, a <em>camera</em> faz <em>dolly no Z</em> com <em>scrub none</em>, porque a historia e penetracao, nao descida de documento.</p>
-          <h1>Entra na pagina.</h1>
-        </section>
-        <section class="plane" data-z="-900">
-          <h2>Tunel de planos.</h2>
-          <p>Perspective no viewport. Planos estacionados em translateZ. Nao e zoom de CSS no hero.</p>
-        </section>
-        <section class="plane" data-z="-1800">
-          <h2>Um objeto a atravessar.</h2>
-          <p>Usar para produto, espaco, filme. Ruim para lista, pricing, depoimento.</p>
-        </section>
-        <section class="plane" data-z="-2700">
-          <h2>Nao e splat.</h2>
-          <p>Gaussian splat e Oryzo-level, fora deste lab. Aqui o eixo Z e CSS 3D. Reduced motion: planos empilhados, sem tunel.</p>
-        </section>
+        <article class="plane" data-z="0">
+          <img src="/_shared/media/plate-table.svg" alt="Mesa escura de madeira com um porta-copos de cortiça sob luz lateral quente" width="1600" height="1000" />
+          <span class="depth">z 0 · a mesa</span>
+          <h2 class="display">Tudo começa <em>na superfície</em>.</h2>
+          <p>Base nº 7 sobre a mesa. Role: a câmera não desce, ela entra.</p>
+        </article>
+        <article class="plane" data-z="-900">
+          <img src="/_shared/media/plate-atelier.svg" alt="Blocos de arquitetura em tons quentes com janelas acesas, o ateliê à noite" width="1600" height="1000" loading="lazy" />
+          <span class="depth">z −900 · o ateliê</span>
+          <h2 class="display">Atrás dela, <em>o ateliê</em>.</h2>
+          <p>Cada plano está estacionado mais fundo. É o mundo que avança até você.</p>
+        </article>
+        <article class="plane" data-z="-1800">
+          <img src="/_shared/media/plate-cork.svg" alt="Textura de cortiça prensada vista de perto, grãos em tons de mel" width="1600" height="1000" loading="lazy" />
+          <span class="depth">z −1800 · o material</span>
+          <h2 class="display">Mais perto: <em>cortiça</em>.</h2>
+          <p>Opacidade por distância: o plano acende ao chegar e se apaga ao passar pela lente.</p>
+        </article>
+        <article class="plane" data-z="-2700">
+          <img src="/_shared/media/plate-cork-macro.svg" alt="Macro da cortiça no mesmo enquadramento, com uma pequena criatura escondida entre os grãos" width="1600" height="1000" loading="lazy" />
+          <span class="depth">z −2700 · o fundo</span>
+          <h2 class="display">E lá no fundo, <em>alguém mora</em>.</h2>
+          <p>Fim do túnel. O próximo bloco sobe por cima do viewport fixo.</p>
+        </article>
       </div>
+      <div class="gauge" aria-hidden="true"><span>profundidade</span><i><b id="gauge"></b></i></div>
     </div>
     <div class="spacer" id="spacer" aria-hidden="true"></div>
-    
-  <script src="/_shared/lab.js"></script>
-  <script src="/_shared/nav.js"></script>
-  
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
-  <script>
-  (function () {
+  </section>
 
-    gsap.registerPlugin(ScrollTrigger);
-    var world = document.getElementById("world");
-    var planes = [...document.querySelectorAll(".plane")];
-    planes.forEach(function (el) {
-      el.style.transform = "translateZ(" + Number(el.dataset.z) + "px)";
-    });
-    if (Lab.reduce()) return;
-    var DEPTH = 2700;
-    var proxy = { z: 0 };
-    gsap.to(proxy, {
-      z: DEPTH,
-      ease: "none",
-      scrollTrigger: {
-        trigger: "#spacer",
-        start: "top top",
-        end: "bottom bottom",
-        scrub: true,
-        onUpdate: function () {
-          world.style.transform = "translateZ(" + proxy.z + "px)";
+  <div class="after">
+    <section class="outro">
+      <p class="formula">Saiu do túnel. O viewport é <em>fixo</em>: sem cuidado, ele cobriria esta lição. Aqui a saída é dupla: o bloco seguinte tem <em>z-index e fundo</em>, e o viewport some fora do trecho do dive (<em>onToggle</em>).</p>
+    </section>
+
+    <div class="lesson lesson--bleed">
+      <div>
+        <h2>Usar</h2>
+        <p>Produto, espaço, filme, "entrar" no método. É o mais próximo de um túnel WebGL sem WebGL.</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p>Lista, pricing, depoimento, formulário. Com qualquer outra câmera: hijack, sticky stack, zoom parallax, curtain.</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>Sem viewport fixo nem spacer: os 4 planos empilham no Y em fluxo normal. No mobile (&lt; 768px) o dive também degrada para essa pilha.</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    withGsap(function (gsap, ST) {
+      var vp = document.getElementById('viewport');
+      var world = document.getElementById('world');
+      var gauge = document.getElementById('gauge');
+      var planes = [].slice.call(document.querySelectorAll('.plane'));
+      var mm = gsap.matchMedia();
+
+      mm.add('(min-width: 768px)', function () {
+        var proxy = { z: 0 };
+        function paint() {
+          world.style.transform = 'translateZ(' + proxy.z + 'px)';
+          gauge.style.transform = 'scaleX(' + proxy.z / 2700 + ')';
           planes.forEach(function (el) {
-            var rel = Number(el.dataset.z) + proxy.z;
-            var o = 1;
-            if (rel > 420) o = 0;
-            else if (rel > 80) o = 1 - (rel - 80) / 340;
-            else if (rel > -850) o = 1;
-            else if (rel > -1300) o = (rel + 1300) / 450;
-            else o = 0;
-            el.style.opacity = String(o);
+            var rel = +el.dataset.z + proxy.z, o = 1;
+            if (rel > 420) o = 0; else if (rel > 80) o = 1 - (rel - 80) / 340;
+            else if (rel < -1300) o = 0; else if (rel < -850) o = (rel + 1300) / 450;
+            el.style.opacity = o;
+            el.style.visibility = o ? 'visible' : 'hidden';
           });
         }
-      }
+        paint();
+        /* visível só enquanto o dive está em cena: intro por cima antes, .after por cima depois */
+        ST.create({ trigger: '#spacer', start: 'top bottom', end: 'bottom top',
+          onToggle: function (s) { vp.classList.toggle('is-live', s.isActive); } });
+        gsap.to(proxy, { z: 2700, ease: 'none', onUpdate: paint,
+          scrollTrigger: { trigger: '#spacer', start: 'top top', end: 'bottom bottom', scrub: true } });
+        return function () {
+          vp.classList.remove('is-live');
+          world.style.transform = gauge.style.transform = '';
+          planes.forEach(function (el) { el.style.opacity = el.style.visibility = ''; });
+        };
+      });
     });
-    
-  })();
   </script>
 </body>
 </html>

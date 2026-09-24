@@ -3,66 +3,132 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MOTION lab / Scrub none</title>
-  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <title>Scrub none · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
   <link rel="stylesheet" href="/_shared/lab.css" />
   <style>
+    .sn-zone {
+      display: grid; gap: 14px; align-content: center;
+      padding: 60px 0 24px;
+      background: var(--color-bg);
+    }
+    .sn-head { display: flex; flex-wrap: wrap; gap: 8px 20px; justify-content: space-between; align-items: baseline; }
+    .sn-finger { font: 11px/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--color-muted); }
+    .sn-finger b { font: 600 clamp(1.6rem, 4vw, 2.6rem)/1 var(--font-display); letter-spacing: -.03em; color: var(--color-ink); font-variant-numeric: tabular-nums; margin-left: 8px; }
 
-    .scrub-pair { min-height: 70dvh; }
-    .col { display:flex; flex-direction:column; justify-content:flex-end; min-height: 48dvh; gap: 12px; }
-    .rail { height: 8px; background: var(--line); }
-    .rail span { display:block; height:100%; width: 0%; background: var(--accent); transform-origin: 0 50%; }
-    .hint { margin: 0 0 20px; color: var(--muted); max-width: 52ch; line-height: 1.5; }
-    .col .caption { margin: 0; font-size: 0.9rem; color: var(--muted); }
-    
+    .sn-zone .col { min-height: 0; gap: 14px; padding: 20px; }
+    .sn-zone .col h2 { font: 600 clamp(1.3rem, 3vw, 2rem)/1 var(--font-display); letter-spacing: -.03em; margin: 0; }
+    .sn-zone .col > p:not(.eyebrow) { margin: 0; color: var(--color-muted); max-width: 44ch; font-size: .95rem; }
+
+    .sn-bar { overflow: clip; overflow-clip-margin: 24px; /* marcador transladado não gera scroll horizontal */ position: relative; height: 44px; background: var(--color-bg-3); border: 1px solid var(--color-line); }
+    .sn-fill { position: absolute; inset: 0; background: var(--color-primary); transform-origin: 0 50%; transform: scaleX(1); }
+    .bad .sn-fill { background: var(--color-muted); }
+    .sn-tick { position: absolute; inset: -8px 0; transform: translateX(100%); pointer-events: none; }
+    .sn-tick::before { content: ""; position: absolute; left: -1px; top: 0; bottom: 0; width: 2px; background: var(--color-cream); }
+    .sn-tick::after { content: "dedo"; position: absolute; left: -13px; top: -12px; font: 9px/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--color-cream); }
+    .sn-val { display: flex; justify-content: space-between; font: 11px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--color-muted); }
+    .sn-val b { color: var(--color-ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+    .sn-gap b { color: var(--color-primary); }
+
+    .sn-after { color: var(--color-muted); margin: 0; max-width: 60ch; }
+
+    @media (min-width: 768px) {
+      .sn-zone { padding: 72px 0 32px; }
+      .sn-zone .col { padding: 28px; }
+    }
+
+    /* camada de motion: barras vazias só quando o scrub vai rodar */
+    html:not(.motion) .sn-tick { display: none; }
+    .motion .sn-fill { transform: scaleX(0); }
   </style>
 </head>
-<body class="lab-grain">
-<main class="teach">
-    <div class="teach-head">
-      <h1>O dedo e o easing.</h1>
-      <p class="formula">Quando <em>o scroll dirige a barra</em>, o <em>certo</em> faz <em>scaleX com ease none</em>, porque qualquer curva extra mente sobre onde o corpo esta.</p>
-    </div>
-    
-    <p class="hint">Role a pagina devagar. As duas barras sao a mesma distancia de scroll: uma delas mente sobre onde o seu dedo esta.</p>
-    <div class="pair scrub-pair">
-      <div class="col ok">
-        <p class="tag">certo / ease none</p>
-        <div class="rail"><span id="a"></span></div>
-        <p class="caption">Dedo = tempo. A barra e o scroll, 1 para 1.</p>
-      </div>
-      <div class="col no">
-        <p class="tag">errado / bounce no scrub</p>
-        <div class="rail"><span id="b"></span></div>
-        <p class="caption">A curva mente: acelera e quica sem o dedo mandar.</p>
-      </div>
-    </div>
-    
-    <div class="lesson">
+<body>
+  <main class="teach">
+    <header class="teach-head">
+      <p class="eyebrow"><b>timing</b> · deps gsap · mobile ok · custo baixo</p>
+      <h1 class="display">O dedo é a curva.</h1>
+      <p class="formula">Quando <em>o scroll dirige</em> a <em>barra</em>, ela faz <em>scaleX</em> com <em>ease none</em>, porque qualquer curva extra mente sobre onde o corpo está.</p>
+    </header>
 
-      <p><strong>Usar</strong> ease none em todo scrub de camera: hijack, dive, zoom, stack scale.</p>
-      <p><strong>Nao usar</strong> elastic ou power4 no scrub. A barra vira gelatina. Reduced motion: as duas barras cheias, sem pin.</p>
-    
+    <section class="sn-zone" id="sn-zone" aria-label="Comparação de scrub: ease none certo e bounce errado">
+      <div class="sn-head">
+        <p class="eyebrow">role devagar: as duas barras recebem o mesmo scroll</p>
+        <p class="sn-finger">scroll <b id="sn-pct">100%</b></p>
+      </div>
+      <div class="pair">
+        <div class="col ok">
+          <p class="eyebrow">certo · ease: "none"</p>
+          <h2>A barra é o dedo.</h2>
+          <div class="sn-bar" aria-hidden="true"><span class="sn-fill" id="sn-ok"></span><span class="sn-tick"></span></div>
+          <p class="sn-val"><span>barra <b id="sn-ok-v">100%</b></span><span class="sn-gap">desvio <b id="sn-ok-d">0</b></span></p>
+          <p>Progresso 40% = barra 40%. Parou o dedo, parou a barra. Voltou, voltou junto.</p>
+        </div>
+        <div class="col bad">
+          <p class="eyebrow">errado · ease: "bounce.out"</p>
+          <h2>A barra vira gelatina.</h2>
+          <div class="sn-bar" aria-hidden="true"><span class="sn-fill" id="sn-bad"></span><span class="sn-tick"></span></div>
+          <p class="sn-val"><span>barra <b id="sn-bad-v">100%</b></span><span class="sn-gap">desvio <b id="sn-bad-d">0</b></span></p>
+          <p>A barra corre na frente do dedo, quica e recua enquanto a mão segue para baixo. O corpo sente o conflito.</p>
+        </div>
+      </div>
+    </section>
+
+    <p class="sn-after">Suavizar é permitido, curvar não: <code>scrub: 1</code> deixa a barra 1s atrás do dedo. Isso é inércia, a forma continua linear.</p>
+
+    <div class="lesson">
+      <div>
+        <h2>Usar</h2>
+        <p><code>ease: "none"</code> em todo tween com <code>scrub</code>: Scrub, Horizontal hijack, Z-axis dive, Zoom parallax, Sticky stack. Em CSS nativo, <code>linear</code> com <code>animation-timeline</code>.</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p><code>bounce.out</code>, <code>elastic</code>, <code>power4</code> no scrub. E o inverso: ease none em hover ou painel, onde vale ease-out.</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>Estado final: sem <code>.motion</code> ou sem GSAP não há pin, as duas barras já estão cheias e o marcador do dedo some.</p>
+      </div>
     </div>
   </main>
-  <script src="/_shared/lab.js"></script>
-  <script src="/_shared/nav.js"></script>
-  
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
-  <script>
-  (function () {
 
-    gsap.registerPlugin(ScrollTrigger);
-    if (Lab.reduce()) {
-      document.getElementById("a").style.width = "100%";
-      document.getElementById("b").style.width = "100%";
-      return;
-    }
-    gsap.fromTo("#a", { scaleX: 0 }, { scaleX: 1, ease: "none", scrollTrigger: { trigger: ".scrub-pair", start: "top top", end: "+=140%", pin: true, scrub: true } });
-    gsap.fromTo("#b", { scaleX: 0 }, { scaleX: 1, ease: "bounce.out", scrollTrigger: { trigger: ".scrub-pair", start: "top top", end: "+=140%", scrub: true } });
-    
-  })();
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    withGsap(function (gsap, ST) {
+      var ok = document.getElementById('sn-ok');
+      var bad = document.getElementById('sn-bad');
+      var ticks = [].slice.call(document.querySelectorAll('.sn-tick'));
+      var pct = document.getElementById('sn-pct');
+      var okV = document.getElementById('sn-ok-v'), okD = document.getElementById('sn-ok-d');
+      var badV = document.getElementById('sn-bad-v'), badD = document.getElementById('sn-bad-d');
+
+      function pc(v) { return Math.round(v * 100) + '%'; }
+      function read() {
+        var p = tl.progress();
+        var a = gsap.getProperty(ok, 'scaleX'), b = gsap.getProperty(bad, 'scaleX');
+        pct.textContent = pc(p);
+        ticks.forEach(function (t) { t.style.transform = 'translateX(' + p * 100 + '%)'; });
+        okV.textContent = pc(a); okD.textContent = Math.round(Math.abs(a - p) * 100);
+        badV.textContent = pc(b); badD.textContent = Math.round(Math.abs(b - p) * 100);
+      }
+
+      var tl = gsap.timeline({
+        onUpdate: read,
+        scrollTrigger: { trigger: '#sn-zone', start: 'top top', end: '+=180%', pin: true, scrub: true }
+      });
+      tl.fromTo(ok, { scaleX: 0 }, { scaleX: 1, ease: 'none', duration: 1 }, 0)
+        .fromTo(bad, { scaleX: 0 }, { scaleX: 1, ease: 'bounce.out', duration: 1 }, 0);
+      read();
+    });
   </script>
 </body>
 </html>

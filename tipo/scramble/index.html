@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scramble · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .sc-stage { display: grid; gap: 0; align-content: center; padding: 24px 0; }
+    .sc-head { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; padding: 0 var(--pad) 18px; }
+    .sc-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--color-line); }
+    .sc-list li { border-bottom: 1px solid var(--color-line); }
+    .sc-item {
+      width: 100%;
+      display: grid; grid-template-columns: 3ch 1fr; gap: 6px 16px; align-items: baseline;
+      padding: 22px var(--pad);
+      text-align: left;
+      color: var(--color-ink);
+      background: transparent;
+      border: 0;
+      font: inherit;
+      cursor: pointer;
+      transition: background-color .3s var(--ease-out);
+    }
+    @media (min-width: 768px) { .sc-item { grid-template-columns: 3ch 1fr auto; } }
+    .sc-n { font-family: var(--font-mono); font-size: 12px; color: var(--color-primary); }
+    .sc-name {
+      font-family: var(--font-mono);
+      font-size: clamp(1.35rem, 4.4vw, 2.6rem);
+      letter-spacing: .02em;
+      line-height: 1.1;
+      white-space: pre;
+      transition: color .3s var(--ease-out);
+    }
+    .sc-meta { grid-column: 2; color: var(--color-muted); font-size: .92rem; }
+    @media (min-width: 768px) { .sc-meta { grid-column: 3; text-align: right; } }
+    .sc-item:hover, .sc-item:focus-visible, .sc-item[aria-pressed="true"] { background: var(--color-bg-3); }
+    .sc-item:hover .sc-name, .sc-item:focus-visible .sc-name { color: var(--color-primary); }
+    .sc-item[aria-pressed="true"] .sc-name { color: var(--color-cream); }
+    .sc-out { margin: 0; padding: 18px var(--pad) 0; color: var(--color-muted); min-height: 3em; }
+    .sc-out b { color: var(--color-ink); font-weight: 500; }
+  </style>
+</head>
+<body>
+  <main class="teach">
+    <header class="teach-head">
+      <p class="eyebrow"><b>tipo</b> · deps vanilla · mobile ok · custo baixo</p>
+      <h1 class="display">Cifrado, depois lido.</h1>
+      <p class="formula">Quando <em>o ponteiro entra</em> (ou foco), o <em>nome</em> faz <em>scramble</em> com <em>700ms</em>, porque o estado muda de cifrado para lido, e isso é feedback.</p>
+    </header>
+
+    <section class="stage sc-stage" aria-labelledby="sc-t">
+      <div class="sc-head">
+        <h2 class="eyebrow" id="sc-t">catálogo · passe o cursor ou navegue com Tab</h2>
+        <p class="eyebrow">A–Z · 0–9 · 700ms</p>
+      </div>
+      <ul class="sc-list">
+        <li><button type="button" class="sc-item" aria-pressed="false" aria-label="Rolha 01, base redonda de 98 mm" data-text="ROLHA 01" data-info="Base redonda, 98 mm, cortiça aglomerada fina.">
+          <span class="sc-n" aria-hidden="true">01</span><span class="sc-name" aria-hidden="true">ROLHA 01</span><span class="sc-meta" aria-hidden="true">98 mm · redonda</span>
+        </button></li>
+        <li><button type="button" class="sc-item" aria-pressed="false" aria-label="Grão fino, placa de 30 por 40 centímetros" data-text="GRÃO FINO" data-info="Placa de mesa 30 × 40 cm, grão fino, borda crua.">
+          <span class="sc-n" aria-hidden="true">02</span><span class="sc-name" aria-hidden="true">GRÃO FINO</span><span class="sc-meta" aria-hidden="true">30 × 40 cm · placa</span>
+        </button></li>
+        <li><button type="button" class="sc-item" aria-pressed="false" aria-label="Macro 7, jogo de sete bases" data-text="MACRO 7" data-info="Jogo de sete bases, grão grosso, para bancada.">
+          <span class="sc-n" aria-hidden="true">03</span><span class="sc-name" aria-hidden="true">MACRO 7</span><span class="sc-meta" aria-hidden="true">7 peças · grão grosso</span>
+        </button></li>
+        <li><button type="button" class="sc-item" aria-pressed="false" aria-label="Prensa zero, edição sem cola" data-text="PRENSA 0" data-info="Edição sem cola: só calor e pressão.">
+          <span class="sc-n" aria-hidden="true">04</span><span class="sc-name" aria-hidden="true">PRENSA 0</span><span class="sc-meta" aria-hidden="true">sem cola · edição</span>
+        </button></li>
+      </ul>
+      <p class="sc-out" id="sc-out" aria-live="polite">Escolha uma peça para ver a ficha.</p>
+    </section>
+
+    <div class="lesson">
+      <div>
+        <h2>Usar</h2>
+        <p>Nome de peça, label curto, número-chave revelado ao entrar na tela. O embaralhar é feedback de estado, não enfeite.</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p>Corpo de texto, botões de formulário, tudo que “parece hacker”. Fonte proporcional: a largura pula a cada glifo — use mono.</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>Vanilla. Sem <code>.motion</code>, <code>Motion.scramble</code> escreve o texto final direto. O <code>aria-label</code> fixo no botão impede o leitor de tela de ler glifos aleatórios.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    (function () {
+      var items = [].slice.call(document.querySelectorAll('.sc-item'));
+      var out = document.getElementById('sc-out');
+      items.forEach(function (btn) {
+        var name = btn.querySelector('.sc-name');
+        var text = btn.getAttribute('data-text');
+        var busy = 0;
+        function run() {
+          var now = Date.now();
+          if (now - busy < 700) return; // não reinicia no meio
+          busy = now;
+          Motion.scramble(name, text, 700);
+        }
+        btn.addEventListener('pointerenter', run);
+        btn.addEventListener('focus', run);
+        btn.addEventListener('click', function () {
+          items.forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+          out.innerHTML = '<b>' + btn.getAttribute('aria-label') + '.</b> ' + btn.getAttribute('data-info');
+          run();
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

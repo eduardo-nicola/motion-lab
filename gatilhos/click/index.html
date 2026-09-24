@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Click · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .ck-stage { display: grid; grid-template-rows: auto 1fr; }
+    .ck-top {
+      display: flex; flex-wrap: wrap; gap: 8px 20px; justify-content: space-between; align-items: center;
+      padding: 14px 20px; border-bottom: 1px solid var(--color-line);
+    }
+    .ck-state b { color: var(--color-ink); font-weight: 500; }
+    .ck-zone {
+      position: relative;
+      display: grid; place-items: center;
+      padding: 32px 16px;
+      min-height: 520px;
+      background: radial-gradient(70% 60% at 50% 40%, rgb(220 80 0 / .12), transparent 70%);
+    }
+    .ck-open { font-size: 16px; min-height: 56px; padding: 0 28px; }
+    .ck-open .plus { font: 500 20px/1 var(--font-mono); }
+
+    .ck-panel {
+      width: 100%; max-width: 860px;
+      background: var(--color-bg-3);
+      border: 1px solid var(--color-primary);
+      transform-origin: 0 0;
+    }
+    .ck-panel[hidden] { display: none; }
+    .ck-inner { display: grid; grid-template-columns: 1fr; }
+    .ck-inner figure { margin: 0; aspect-ratio: 16 / 10; overflow: hidden; border-bottom: 1px solid var(--color-line); }
+    .ck-inner img { width: 100%; height: 100%; object-fit: cover; }
+    .ck-body { padding: 22px 20px 24px; display: grid; gap: 16px; align-content: start; }
+    .ck-body h2 { font-size: clamp(1.8rem, 4.5vw, 2.8rem); }
+    .ck-specs { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 8px 18px; font-size: .95rem; }
+    .ck-specs dt { font: 11px/1.9 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--color-muted); }
+    .ck-specs dd { margin: 0; color: var(--color-ink); }
+
+    .ck-faq { border-top: 1px solid var(--color-line); padding: 24px 20px 28px; display: grid; gap: 14px; }
+    .ck-faq > h2 { font: 500 11px/1 var(--font-mono); letter-spacing: .16em; text-transform: uppercase; color: var(--color-primary); margin: 0; }
+    .ck-faq details { border-top: 1px solid var(--color-line); }
+    .ck-faq details:last-child { border-bottom: 1px solid var(--color-line); }
+    .ck-faq summary {
+      list-style: none; cursor: pointer;
+      display: flex; justify-content: space-between; gap: 16px; align-items: center;
+      padding: 16px 0;
+      font: 600 clamp(1.05rem, 2vw, 1.25rem)/1.2 var(--font-display); letter-spacing: -.01em;
+    }
+    .ck-faq summary::-webkit-details-marker { display: none; }
+    .ck-faq summary::after { content: "+"; font: 400 20px/1 var(--font-mono); color: var(--color-primary); transition: transform .3s var(--ease-out); }
+    .ck-faq summary:hover, .ck-faq summary:focus-visible { color: var(--color-cream); }
+    .ck-faq details[open] summary::after { content: "−"; }
+    .ck-faq .ck-a { margin: 0; padding: 0 0 18px; max-width: 60ch; color: var(--color-muted); }
+
+    @media (min-width: 768px) {
+      .ck-top { padding: 16px 40px; }
+      .ck-zone { padding: 48px 40px; min-height: 460px; }
+      .ck-inner { grid-template-columns: 1.1fr 1fr; }
+      .ck-inner figure { aspect-ratio: auto; border-bottom: 0; border-right: 1px solid var(--color-line); }
+      .ck-body { padding: 32px 32px 30px; }
+      .ck-faq { padding: 32px 40px 40px; }
+    }
+
+    /* camada de motion: o morph (FLIP) é JS e só roda com .motion; aqui só o FAQ nativo */
+    .motion .ck-faq details[open] .ck-a { animation: ck-rise .55s var(--ease-out); }
+    @keyframes ck-rise { from { opacity: 0; transform: translateY(16px) scale(.96); } }
+  </style>
+</head>
+<body>
+  <main class="teach">
+    <header class="teach-head">
+      <p class="eyebrow"><b>gatilhos</b> · deps vanilla · mobile ok · custo baixo</p>
+      <h1 class="display">O clique vira lugar.</h1>
+      <p class="formula">Quando <em>o botão é acionado</em>, o <em>retângulo</em> faz <em>morph para painel</em> com <em>0.55s ease-out</em>, porque o clique precisa mostrar que o estado mudou, não só piscar.</p>
+    </header>
+
+    <section class="stage ck-stage" aria-label="Demonstração de clique com morph">
+      <div class="ck-top">
+        <p class="eyebrow ck-state" aria-live="polite">estado: <b id="ck-state">fechado</b></p>
+        <p class="eyebrow">FLIP · first → last → invert → play</p>
+      </div>
+
+      <div class="ck-zone">
+        <button type="button" class="btn ck-open" id="ck-open" aria-expanded="false" aria-controls="ck-panel">Abrir a ficha do nº 7 <span class="plus" aria-hidden="true">+</span></button>
+
+        <section class="ck-panel" id="ck-panel" hidden aria-labelledby="ck-pt">
+          <div class="ck-inner" id="ck-inner">
+            <figure><img src="/_shared/media/plate-cork-macro.svg" alt="Detalhe macro da cortiça: poros escuros e uma pequena criatura escondida entre eles" width="1600" height="1000" /></figure>
+            <div class="ck-body">
+              <p class="eyebrow">ficha · origem = o botão</p>
+              <h2 class="display" id="ck-pt">Nº 7, cortiça prensada.</h2>
+              <dl class="ck-specs">
+                <dt>Diâmetro</dt><dd>10 cm</dd>
+                <dt>Espessura</dt><dd>6 mm, borda chanfrada</dd>
+                <dt>Uso</dt><dd>Absorve condensação sem manchar</dd>
+              </dl>
+              <div><button type="button" class="btn btn-ghost" id="ck-close">Fechar a ficha</button></div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="ck-faq">
+        <h2>O mesmo gatilho, sem JS: details + summary</h2>
+        <details>
+          <summary>Por que o painel nasce do botão?</summary>
+          <p class="ck-a">Porque o olho segue a origem. O painel ocupa o lugar que o botão prometia: a relação espacial explica o que aconteceu.</p>
+        </details>
+        <details>
+          <summary>E o foco do teclado?</summary>
+          <p class="ck-a">Segue o estado. Abriu: o foco vai para o fechar do painel. Fechou: volta para o botão de origem. Esc também fecha.</p>
+        </details>
+        <details>
+          <summary>Quando não é click, é page transition?</summary>
+          <p class="ck-a">Se o clique navega de verdade para outra URL, é Page transition. Click muda estado dentro da mesma página.</p>
+        </details>
+      </div>
+    </section>
+
+    <div class="lesson">
+      <div>
+        <h2>Usar</h2>
+        <p>Abrir detalhe, toggle, FAQ/accordion, "ver mais", confirmação. <code>:active scale(.98)</code> sempre, <code>aria-expanded</code> no gatilho.</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p>Quando navega de verdade (é Page transition). Quando o destino não tem relação espacial com a origem: morph sem parentesco confunde.</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>Troca sem viagem: o painel aparece no lugar, o foco muda igual. Vanilla com Web Animations API, sem GSAP; o FAQ nativo funciona até sem JS.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    (function () {
+      var open = document.getElementById('ck-open');
+      var close = document.getElementById('ck-close');
+      var panel = document.getElementById('ck-panel');
+      var inner = document.getElementById('ck-inner');
+      var state = document.getElementById('ck-state');
+      var EASE = 'cubic-bezier(0.16, 1, 0.3, 1)';
+      var DUR = 550;
+
+      function canAnimate(el) { return Motion.on() && typeof el.animate === 'function'; }
+
+      /* FLIP: o elemento já está no lugar final; parte da caixa de origem e volta para "none" */
+      function flip(el, from, to) {
+        var dx = from.left - to.left, dy = from.top - to.top;
+        var sx = from.width / to.width, sy = from.height / to.height;
+        el.animate([
+          { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(' + sx + ',' + sy + ')' },
+          { transform: 'none' }
+        ], { duration: DUR, easing: EASE });
+      }
+
+      function show() {
+        var first = open.getBoundingClientRect();
+        open.hidden = true;
+        panel.hidden = false;
+        open.setAttribute('aria-expanded', 'true');
+        state.textContent = 'aberto';
+        if (canAnimate(panel)) {
+          flip(panel, first, panel.getBoundingClientRect());
+          inner.animate([{ opacity: 0 }, { opacity: 0, offset: .3 }, { opacity: 1 }], { duration: DUR, easing: 'linear' });
+        }
+        close.focus();
+      }
+
+      function hide() {
+        var first = panel.getBoundingClientRect();
+        panel.hidden = true;
+        open.hidden = false;
+        open.setAttribute('aria-expanded', 'false');
+        state.textContent = 'fechado';
+        if (canAnimate(open)) {
+          open.style.transformOrigin = '0 0';
+          flip(open, first, open.getBoundingClientRect());
+          open.animate([{ opacity: 0 }, { opacity: 0, offset: .35 }, { opacity: 1 }], { duration: DUR, easing: 'linear' });
+          setTimeout(function () { open.style.transformOrigin = ''; }, DUR);
+        }
+        open.focus();
+      }
+
+      open.addEventListener('click', show);
+      close.addEventListener('click', hide);
+      panel.addEventListener('keydown', function (e) { if (e.key === 'Escape') hide(); });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Particles · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .pt-stage {
+      display: grid; align-content: end; gap: 22px;
+      min-height: 72dvh; padding: 40px var(--pad);
+      background: radial-gradient(120% 80% at 50% 110%, #2a1709 0%, var(--color-bg) 62%);
+    }
+    .pt-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .pt-stage > :not(canvas) { position: relative; z-index: 1; }
+    .pt-meta { display: flex; flex-wrap: wrap; gap: 8px 16px; font: 500 12px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--color-muted); }
+    .pt-meta b { color: var(--color-primary); font-weight: 500; }
+    .pt-stage h2 { margin: 0; font-size: clamp(2.2rem, 7vw, 5.2rem); max-width: 11ch; color: var(--color-cream); }
+    .pt-stage p.lead { margin: 0; max-width: 42ch; color: var(--color-muted); }
+    .pt-cta { display: flex; flex-wrap: wrap; gap: 12px; }
+    .btn:focus-visible { outline: 2px solid var(--color-primary-hover); outline-offset: 3px; background: var(--color-primary-hover); }
+    .btn-ghost:focus-visible { background: var(--color-bg-3); }
+    .pt-off { display: none; }
+    html:not(.motion) .pt-off { display: inline; }
+    html:not(.motion) .pt-on { display: none; }
+  </style>
+</head>
+<body>
+  <main class="teach">
+    <header class="teach-head">
+      <p class="eyebrow"><b>palco</b> · deps vanilla · mobile degradar · custo médio</p>
+      <h1 class="display">Poeira no facho.</h1>
+      <p class="formula">Quando <em>o palco pede poeira</em>, o <em>canvas</em> faz <em>60 pontos lentos</em> com <em>drift contínuo</em>, porque atmosfera é densidade baixa, não hero circus.</p>
+    </header>
+
+    <section class="stage pt-stage" aria-labelledby="pt-t">
+      <canvas id="pt-canvas" aria-hidden="true"></canvas>
+      <p class="pt-meta">
+        <span class="pt-on">canvas · <b id="pt-count">60</b> pontos · DPR ≤ 2 · pausa fora da tela</span>
+        <span class="pt-off">motion off · canvas vazio, o palco fica de pé</span>
+      </p>
+      <h2 class="display" id="pt-t">A oficina às seis da manhã.</h2>
+      <p class="lead">Serragem de cortiça no feixe de luz da janela. Ninguém repara nos grãos, mas sem eles a sala fica de estúdio fotográfico.</p>
+      <div class="pt-cta">
+        <a class="btn" href="#pt-lesson">Ler quando usar poeira</a>
+        <a class="btn btn-ghost" href="/">Voltar ao dicionário do lab</a>
+      </div>
+    </section>
+
+    <div class="lesson" id="pt-lesson">
+      <div>
+        <h2>Usar</h2>
+        <p>Hero vazio, tipográfico, que precisa de ar mexendo. Um único sistema de palco na página, com <a href="../grain/">grain</a> opcional por cima.</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p>Atrás de UI densa, como explosão interativa que segue o mouse, ou junto de mesh, blob ou vídeo. Abaixo de 768px, cai para 30 pontos.</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>Não usa GSAP. Sem <code>.motion</code>, <code>Motion.particles</code> só dimensiona o canvas e sai: canvas vazio, texto e CTA intactos.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    (function () {
+      var n = innerWidth < 768 ? 30 : 60;
+      document.getElementById('pt-count').textContent = n;
+      Motion.particles(document.getElementById('pt-canvas'), { count: n, color: 'rgba(255,170,110,.5)' });
+    })();
+  </script>
+</body>
+</html>

@@ -3,55 +3,177 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MOTION lab / Spring</title>
-  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <title>Spring · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
   <link rel="stylesheet" href="/_shared/lab.css" />
   <style>
+    .sp-ctrl { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between; }
+    .sp .col h2 { font: 600 clamp(1.5rem, 3.2vw, 2.2rem)/1 var(--font-display); letter-spacing: -.03em; margin: 0; }
+    .sp .col > p:not(.eyebrow) { margin: 0; color: var(--color-muted); max-width: 44ch; }
 
-    .box { width: 120px; height: 120px; background: var(--accent); color: var(--ink); border:0; font-family: var(--font-d); font-weight:700; cursor: pointer; }
-    .bounce { transition: transform 0.8s cubic-bezier(0.34, 1.8, 0.64, 1); }
-    .bounce.is { transform: translateX(120px); }
-    
+    /* curva posição × tempo (1s), calculada no JS com os mesmos números da demo */
+    .plot { position: relative; aspect-ratio: 2; margin: 18px 0 16px; }
+    .plot svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .plot .grid { stroke: var(--color-line); fill: none; }
+    .plot .target { stroke: var(--color-cream); stroke-dasharray: 3 5; fill: none; opacity: .5; }
+    .plot .curve { stroke: var(--color-primary); stroke-width: 2; fill: none; }
+    .bad .plot .curve { stroke: var(--color-muted); }
+    .plot .lbl { position: absolute; font: 10px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--color-muted); }
+    .plot .lbl.a { left: 0; top: 0; transform: translateY(-140%); }
+    .plot .lbl.b { right: 0; bottom: -16px; }
+
+    /* switch: um trilho, uma peça que é solta */
+    .sw { position: relative; height: 72px; border: 1px solid var(--color-line); background: var(--color-bg-3); }
+    .sw .slot { position: absolute; top: 11px; right: 11px; width: 48px; height: 48px; border: 1px dashed var(--color-line); }
+    .knob {
+      position: absolute; top: 11px; left: 11px; width: 48px; height: 48px;
+      background: var(--color-primary);
+      display: grid; place-items: center;
+      font: 600 11px/1 var(--font-mono); color: var(--color-bg);
+      will-change: transform;
+    }
+    .bad .knob { background: var(--color-muted); }
+    .sp-read { display: flex; justify-content: space-between; gap: 12px; font: 11px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--color-muted); }
+    .sp-read b { color: var(--color-ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+    /* camada de motion: o lado errado usa a curva elástica de template via CSS */
+    .motion .bad .knob { transition: transform .6s cubic-bezier(0.34, 1.8, 0.64, 1); }
   </style>
 </head>
-<body class="lab-grain">
-<main class="teach">
-    <div class="teach-head">
-      <h1>Mola, nao bounce de template.</h1>
-      <p class="formula">Quando <em>o clique solta o bloco</em>, o <em>certo</em> faz <em>spring stiffness 100 damping 20</em>, porque a peca precisa oscilar pouco e parar, nao pular como icone de 2014.</p>
-    </div>
-    
-    <div class="pair">
-      <div class="col ok"><p class="tag">certo / spring 100-20</p><button class="box" type="button" id="ok">Clique</button></div>
-      <div class="col no"><p class="tag">errado / bounce</p><button class="box bounce" type="button" id="no">Clique</button></div>
-    </div>
-    
-    <div class="lesson">
+<body>
+  <main class="teach">
+    <header class="teach-head">
+      <p class="eyebrow"><b>timing</b> · deps vanilla · mobile ok · custo baixo</p>
+      <h1 class="display">Oscila pouco. Para.</h1>
+      <p class="formula">Quando <em>o clique solta</em> o <em>bloco</em>, ele faz <em>spring</em> com <em>stiffness 100 damping 20</em>, porque a peça precisa oscilar pouco e parar, não pular como ícone de 2014.</p>
+    </header>
 
-      <p><strong>Usar</strong> spring 100/20 em CTA, magnet return, cards. Massa 1.</p>
-      <p><strong>Nao usar</strong> bounce elastico de portfolio template. Reduced motion: o bloco troca de lugar sem mola.</p>
-    
+    <div class="sp-ctrl">
+      <p class="eyebrow">mesma distância · mesma peça · física × curva</p>
+      <button type="button" class="btn" id="sp-go">Soltar os dois</button>
+    </div>
+
+    <section class="pair sp" aria-label="Comparação: mola física certa e bounce de template errado">
+      <div class="col ok">
+        <p class="eyebrow">certo · Motion.spring k 100 · d 20 · m 1</p>
+        <h2>Mola que assenta.</h2>
+        <div class="plot" aria-hidden="true">
+          <svg viewBox="0 0 100 50" preserveAspectRatio="none">
+            <path class="grid" d="M0 0 H100 V50 H0 Z" vector-effect="non-scaling-stroke" />
+            <path class="target" d="M0 12 H100" vector-effect="non-scaling-stroke" />
+            <path class="curve" id="sp-curve-ok" d="" vector-effect="non-scaling-stroke" />
+          </svg>
+          <span class="lbl a">posição</span><span class="lbl b">1s</span>
+        </div>
+        <div class="sw" aria-hidden="true"><span class="slot"></span><span class="knob" id="sp-knob-ok">k</span></div>
+        <p class="sp-read"><span>pico <b id="sp-peak-ok">—</b></span><span>assenta em <b id="sp-set-ok">—</b></span></p>
+        <p>Integração física: a peça sai com força, perde velocidade pelo amortecimento e pousa no alvo. Sem ricochete de desenho animado.</p>
+      </div>
+
+      <div class="col bad">
+        <p class="eyebrow">errado · cubic-bezier(0.34, 1.8, 0.64, 1)</p>
+        <h2>Bounce de template.</h2>
+        <div class="plot" aria-hidden="true">
+          <svg viewBox="0 0 100 50" preserveAspectRatio="none">
+            <path class="grid" d="M0 0 H100 V50 H0 Z" vector-effect="non-scaling-stroke" />
+            <path class="target" d="M0 12 H100" vector-effect="non-scaling-stroke" />
+            <path class="curve" id="sp-curve-bad" d="" vector-effect="non-scaling-stroke" />
+          </svg>
+          <span class="lbl a">posição</span><span class="lbl b">1s</span>
+        </div>
+        <div class="sw" aria-hidden="true"><span class="slot"></span><span class="knob" id="sp-knob-bad">×</span></div>
+        <p class="sp-read"><span>pico <b id="sp-peak-bad">—</b></span><span>assenta em <b>0.60s</b></span></p>
+        <p>Curva elástica passa do alvo e volta porque alguém desenhou assim, não porque há massa. Parece brinquedo, e cada clique repete o mesmo pulo.</p>
+      </div>
+    </section>
+
+    <div class="lesson">
+      <div>
+        <h2>Usar</h2>
+        <p>Retorno do Magnetic button, cards, toggle, peça solta por clique. <code>Motion.spring(get, set, alvo, {stiffness: 100, damping: 20})</code>.</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p>Bounce elástico de template (<code>cubic-bezier(0.34, 1.8, 0.64, 1)</code>, <code>elastic.out</code>). Mola em scrub: lá o dedo é a física.</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>Salto direto: sem <code>.motion</code> a peça vai para o alvo sem viagem. Vanilla via <code>Motion.spring</code>, zero GSAP. Sem JS, aproximação CSS com <code>linear()</code>.</p>
+      </div>
     </div>
   </main>
-  <script src="/_shared/lab.js"></script>
-  <script src="/_shared/nav.js"></script>
-  
-  <script>
-  (function () {
 
-    var ok = document.getElementById("ok");
-    var no = document.getElementById("no");
-    var on = false;
-    var x = 0;
-    ok.addEventListener("click", function () {
-      on = !on;
-      var target = on ? 120 : 0;
-      if (Lab.reduce()) { x = target; ok.style.transform = "translateX(" + x + "px)"; return; }
-      Lab.spring(function () { return x; }, function (v) { x = v; ok.style.transform = "translateX(" + v + "px)"; }, target, { stiffness: 100, damping: 20 });
-    });
-    no.addEventListener("click", function () { no.classList.toggle("is"); });
-    
-  })();
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    (function () {
+      var K = 100, D = 20, M = 1;
+
+      /* --- curvas do gráfico: mesma física de Motion.spring, mesma bezier do CSS --- */
+      function yOf(v) { return (50 - 12) - v * (50 - 12 - 12) + 0; }   /* 0 → y 38 · 1 → y 12 */
+      function springPath() {
+        var x = 0, v = 0, dt = 1 / 120, pts = [], peak = 0, settle = null;
+        for (var t = 0; t <= 1.0001; t += dt) {
+          pts.push((t * 100).toFixed(2) + ' ' + yOf(x).toFixed(2));
+          var a = (-K * (x - 1) - D * v) / M;
+          v += a * dt; x += v * dt;
+          if (x > peak) peak = x;
+          if (settle === null && Math.abs(x - 1) < .01 && Math.abs(v) < .05) settle = t;
+        }
+        return { d: 'M' + pts.join(' L'), peak: peak, settle: settle };
+      }
+      function bez(p1, p2, s) { var u = 1 - s; return 3 * u * u * s * p1 + 3 * u * s * s * p2 + s * s * s; }
+      function badPath() {
+        var pts = [], peak = 0;
+        for (var i = 0; i <= 120; i++) {
+          var s = i / 120, tx = bez(.34, .64, s), y = bez(1.8, 1, s);
+          if (y > peak) peak = y;
+          pts.push((tx * 60).toFixed(2) + ' ' + yOf(y).toFixed(2));
+        }
+        pts.push('100 ' + yOf(1).toFixed(2));
+        return { d: 'M' + pts.join(' L'), peak: peak };
+      }
+      var so = springPath(), sb = badPath();
+      document.getElementById('sp-curve-ok').setAttribute('d', so.d);
+      document.getElementById('sp-curve-bad').setAttribute('d', sb.d);
+      document.getElementById('sp-peak-ok').textContent = Math.round(so.peak * 100) + '%';
+      document.getElementById('sp-set-ok').textContent = so.settle ? so.settle.toFixed(2) + 's' : '> 1s';
+      document.getElementById('sp-peak-bad').textContent = Math.round(sb.peak * 100) + '%';
+
+      /* --- demo --- */
+      var btn = document.getElementById('sp-go');
+      var kOk = document.getElementById('sp-knob-ok');
+      var kBad = document.getElementById('sp-knob-bad');
+      var on = false, x = 0, stop = null;
+
+      function travel(knob) { return knob.parentNode.clientWidth - knob.offsetWidth - 24; }
+      function setOk(v) { x = v; kOk.style.transform = 'translateX(' + v + 'px)'; }
+
+      function apply(animate) {
+        var tOk = on ? travel(kOk) : 0;
+        var tBad = on ? travel(kBad) : 0;
+        kBad.style.transform = 'translateX(' + tBad + 'px)';
+        if (stop) { stop(); stop = null; }
+        if (!animate || !Motion.on()) { setOk(tOk); return; }
+        stop = Motion.spring(function () { return x; }, setOk, tOk, { stiffness: K, damping: D, mass: M });
+      }
+
+      btn.addEventListener('click', function () {
+        on = !on;
+        btn.textContent = on ? 'Trazer os dois de volta' : 'Soltar os dois';
+        apply(true);
+      });
+      window.addEventListener('resize', function () { apply(false); });
+    })();
   </script>
 </body>
 </html>

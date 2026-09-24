@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grain · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .gr-stage { display: grid; gap: 24px; padding: 32px var(--pad); align-content: center; }
+    .gr-head { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; align-items: end; }
+    .gr-head h2 { font-size: clamp(1.8rem, 5vw, 3.2rem); max-width: 16ch; }
+    .gr-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+    @media (min-width: 768px) { .gr-grid { grid-template-columns: repeat(3, 1fr); } }
+
+    .sw { margin: 0; display: grid; gap: 12px; }
+    .sw-plate {
+      position: relative; overflow: hidden;
+      aspect-ratio: 4 / 5;
+      display: grid; align-content: end; padding: 24px;
+      background:
+        radial-gradient(120% 80% at 20% 0%, rgb(220 80 0 / .55), transparent 60%),
+        linear-gradient(180deg, #2a1a0e, #0c0703);
+      border: 1px solid var(--color-line);
+    }
+    .sw-plate img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .45; mix-blend-mode: screen; }
+    /* o mesmo data-URI do body::before, só que com opacidade por amostra */
+    .sw-plate::after {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      opacity: var(--g);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    .sw-plate strong { position: relative; z-index: 1; font: 600 clamp(2.4rem, 6vw, 3.6rem)/.9 var(--font-display); letter-spacing: -.04em; color: var(--color-cream); }
+    .sw figcaption { display: grid; gap: 4px; }
+    .sw figcaption b { font: 500 12px/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--color-ink); }
+    .sw figcaption span { color: var(--color-muted); font-size: .95rem; }
+    .sw.is-prod .sw-plate { border-color: var(--color-primary); }
+    .sw.is-prod figcaption b { color: var(--color-primary); }
+
+    .gr-toggle[aria-pressed="false"] { color: var(--color-muted); }
+    html.no-grain body::before { opacity: 0; }
+  </style>
+</head>
+<body>
+  <main class="teach">
+    <header class="teach-head">
+      <p class="eyebrow"><b>palco</b> · deps css · mobile ok · custo baixo</p>
+      <h1 class="display">A película respira.</h1>
+      <p class="formula">Quando <em>a página está viva</em>, o <em>overlay fixo</em> faz <em>grain</em> com <em>opacidade 0.07</em>, porque o palco precisa de matéria sem roubar o scroll.</p>
+    </header>
+
+    <section class="stage gr-stage" aria-labelledby="gr-t">
+      <div class="gr-head">
+        <h2 class="display" id="gr-t">Mesmo fundo, três películas.</h2>
+        <button type="button" class="btn btn-ghost gr-toggle" id="gr-toggle" aria-pressed="true">Grain global da página: ligado</button>
+      </div>
+      <div class="gr-grid">
+        <figure class="sw" style="--g: 0">
+          <div class="sw-plate">
+            <img src="/_shared/media/plate-cork.svg" alt="Textura de cortiça sob luz quente, sem película de grain" />
+            <strong>0</strong>
+          </div>
+          <figcaption><b>opacidade 0</b><span>Digital, liso. O degradê faz banding e a cortiça parece render.</span></figcaption>
+        </figure>
+        <figure class="sw is-prod" style="--g: .07">
+          <div class="sw-plate">
+            <img src="/_shared/media/plate-cork.svg" alt="Textura de cortiça sob luz quente, com grain de produção a 0.07" />
+            <strong>.07</strong>
+          </div>
+          <figcaption><b>opacidade 0.07 · produção</b><span>Some no olhar direto, aparece no conjunto. É o valor do lab inteiro.</span></figcaption>
+        </figure>
+        <figure class="sw" style="--g: .16">
+          <div class="sw-plate">
+            <img src="/_shared/media/plate-cork.svg" alt="Textura de cortiça sob luz quente, com grain exagerado a 0.16" />
+            <strong>.16</strong>
+          </div>
+          <figcaption><b>opacidade 0.16 · comparação</b><span>Vira sujeira no escuro. Só em fundo claro ou para mostrar o efeito.</span></figcaption>
+        </figure>
+      </div>
+      <p class="eyebrow">as amostras somam ao grain global de 0.07 · desligue o global para ver cada uma isolada</p>
+    </section>
+
+    <div class="lesson">
+      <div>
+        <h2>Usar</h2>
+        <p>Em toda página do sistema: um <code>body::before</code> fixo, <code>pointer-events: none</code>, SVG <code>feTurbulence</code> como data-URI. Zero requests.</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p>Dentro de div que scrolla (repaint contínuo mata o FPS no mobile). Não animar o grain. Nunca cobrindo form sem <code>pointer-events: none</code>.</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>Mantém: grain é textura, não movimento. Nada aqui depende de JS; o botão só alterna uma classe para comparação.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    (function () {
+      var btn = document.getElementById('gr-toggle');
+      var html = document.documentElement;
+      btn.addEventListener('click', function () {
+        var on = btn.getAttribute('aria-pressed') !== 'true';
+        btn.setAttribute('aria-pressed', String(on));
+        html.classList.toggle('no-grain', !on);
+        btn.textContent = 'Grain global da página: ' + (on ? 'ligado' : 'desligado');
+      });
+    })();
+  </script>
+</body>
+</html>

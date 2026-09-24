@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marquee · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .mq-stage { display: grid; align-content: center; gap: 36px; padding: 40px 0; }
+    .mq-top, .mq-foot { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; align-items: center; padding: 0 var(--pad); }
+    .mq-count { margin: 0; font: 600 clamp(2rem, 6vw, 3.6rem)/1 var(--font-display); letter-spacing: -.04em; }
+    .mq-count span { color: var(--color-primary); }
+
+    .mq {
+      overflow: hidden;
+      border-block: 1px solid var(--color-line);
+      background: var(--color-bg);
+      padding: 18px 0;
+    }
+    /* estado final (sem .motion): texto estático, com quebra de linha */
+    .mq-track { display: flex; flex-wrap: wrap; padding: 0 var(--pad); }
+    .mq-track > span {
+      font: 600 clamp(2.4rem, 9vw, 6.4rem)/1 var(--font-display);
+      letter-spacing: -.04em;
+      color: var(--color-cream);
+    }
+    .mq-track i { font-style: normal; color: var(--color-primary); padding: 0 .3em; }
+    .mq-track > span[aria-hidden] { display: none; }
+
+    /* camada de motion: faixa infinita, conteúdo duplicado = loop sem emenda */
+    .motion .mq-track { flex-wrap: nowrap; width: max-content; white-space: nowrap; padding: 0; animation: mq 28s linear infinite; }
+    .motion .mq-track > span[aria-hidden] { display: inline; }
+    .motion .mq:hover .mq-track,
+    .motion .mq.is-paused .mq-track { animation-play-state: paused; }
+    @keyframes mq { to { transform: translateX(-50%); } }
+
+    .mq-note { margin: 0; max-width: 46ch; color: var(--color-muted); }
+  </style>
+</head>
+<body>
+  <main class="teach">
+    <header class="teach-head">
+      <p class="eyebrow"><b>tipo</b> · deps css · mobile ok · custo baixo</p>
+      <h1 class="display">Uma faixa. Só uma.</h1>
+      <p class="formula">Quando <em>a lista é larga demais para caber</em>, a <em>faixa</em> faz <em>translateX infinito</em> com <em>28s linear</em>, porque amplitude não pede leitura item a item.</p>
+    </header>
+
+    <section class="stage mq-stage" aria-labelledby="mq-t">
+      <div class="mq-top">
+        <h2 class="mq-count" id="mq-t">Em <span>312</span> mesas de café.</h2>
+        <p class="eyebrow">prova · amplitude, não lista</p>
+      </div>
+
+      <div class="mq" id="mq">
+        <div class="mq-track">
+          <span>Café Lisboa <i>·</i> Padaria Norte <i>·</i> Bar do Porto <i>·</i> Casa Sal <i>·</i> Estúdio Fermento <i>·</i> Tasca 14 <i>·</i> </span>
+          <span aria-hidden="true">Café Lisboa <i>·</i> Padaria Norte <i>·</i> Bar do Porto <i>·</i> Casa Sal <i>·</i> Estúdio Fermento <i>·</i> Tasca 14 <i>·</i> </span>
+        </div>
+      </div>
+
+      <div class="mq-foot">
+        <p class="mq-note">O cursor em cima pausa. Conteúdo duplicado: a faixa anda <code>-50%</code> e recomeça sem emenda.</p>
+        <button type="button" class="btn btn-ghost" id="mq-pause" aria-pressed="false" aria-controls="mq">Pausar faixa</button>
+      </div>
+    </section>
+
+    <div class="lesson">
+      <div>
+        <h2>Usar</h2>
+        <p>Logos de clientes, manifesto, números: quando o que importa é a sensação de muitos, não a leitura de cada um.</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p>Como nav ou lista que precisa ser lida. Nunca duas por página. Nunca junto de horizontal hijack (dois eixos X brigando).</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>CSS puro. Sem <code>.motion</code>, a cópia duplicada some e a faixa vira texto estático com quebra de linha. O botão de pausa atende quem não quer movimento contínuo.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    (function () {
+      var btn = document.getElementById('mq-pause');
+      var mq = document.getElementById('mq');
+      if (!Motion.on()) { btn.hidden = true; return; }
+      btn.addEventListener('click', function () {
+        var paused = btn.getAttribute('aria-pressed') !== 'true';
+        btn.setAttribute('aria-pressed', String(paused));
+        btn.textContent = paused ? 'Retomar faixa' : 'Pausar faixa';
+        mq.classList.toggle('is-paused', paused);
+      });
+    })();
+  </script>
+</body>
+</html>

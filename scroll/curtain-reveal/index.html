@@ -3,73 +3,108 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MOTION lab / Curtain reveal</title>
-  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <title>Curtain reveal · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
   <link rel="stylesheet" href="/_shared/lab.css" />
   <style>
-    .axis {
-      position: fixed; right: 22px; top: 50%; transform: translateY(-50%);
-      z-index: 40; font-family: ui-monospace, monospace; font-size: 10px;
-      letter-spacing: 0.18em; color: var(--accent); writing-mode: vertical-rl;
-      text-transform: uppercase; pointer-events: none;
-    }
-    @media (max-width: 700px) {
-      .axis { display: none; }
-    }
+    .intro, .outro { min-height: 70dvh; padding: 20vh var(--pad) 12vh; display: grid; gap: 20px; align-content: end; }
+    .intro h1 { font-size: clamp(2.6rem, 8vw, 6rem); max-width: 12ch; }
 
-    #scene { position: relative; min-height: 100dvh; }
-    .under {
-      min-height: 100dvh; padding: 22vh 8vw 12vh;
-      background: #1e2016 url("https://picsum.photos/seed/curtain-workshop/1600/1000") center/cover no-repeat;
-      background-blend-mode: multiply;
+    /* palco: o assunto (estado final = default) */
+    #scene { position: relative; min-height: 100dvh; overflow: hidden; background: var(--color-bg); border-block: 1px solid var(--color-line); }
+    .under { position: absolute; inset: 0; display: grid; align-content: end; }
+    .under img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 60%; }
+    .under::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgb(16 9 4 / .1) 30%, rgb(16 9 4 / .88)); }
+    .copy { position: relative; z-index: 1; display: grid; gap: 16px; padding: 0 var(--pad) 10vh; max-width: 44rem; }
+    .copy h2 { font-size: clamp(2.2rem, 6.4vw, 5rem); max-width: 12ch; }
+    .copy h2 em { font-style: normal; color: var(--color-primary); }
+    .copy p { margin: 0; color: var(--color-muted); max-width: 42ch; }
+    .price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 14px; font-family: var(--font-mono); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
+    .price strong { font: 600 clamp(1.6rem, 4vw, 2.4rem)/1 var(--font-display); letter-spacing: -.02em; color: var(--color-ink); text-transform: none; }
+    .price s { color: var(--color-muted); }
+
+    /* cortina: só existe com .motion */
+    .curtain { display: none; }
+    .motion .curtain { position: absolute; inset: 0; z-index: 2; display: grid; grid-template-columns: 1fr 1fr; pointer-events: none; }
+    .leaf {
+      background:
+        repeating-linear-gradient(90deg, rgb(0 0 0 / .28) 0 2px, transparent 2px 22px, rgb(255 237 215 / .03) 22px 26px, transparent 26px 44px),
+        linear-gradient(180deg, var(--color-bg-3), var(--color-bg-2));
+      will-change: transform;
     }
-    .under h1 { font-family: var(--font-d); font-weight:800; letter-spacing:-0.05em; font-size: clamp(2.8rem, 7vw, 5.5rem); line-height:0.92; margin:0 0 16px; max-width: 12ch; }
-    .under p { max-width: 40ch; color: var(--ink); line-height:1.45; }
-    .curtain {
-      position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr;
-      pointer-events: none;
-    }
-    .leaf { background: var(--bg); border: 0; }
-    .leaf-l { border-right: 1px solid var(--line); transform-origin: 0 50%; }
-    .leaf-r { transform-origin: 100% 50%; }
-    @media (prefers-reduced-motion: reduce) {
-      .curtain { display: none; }
-    }
-    
+    .leaf.l { transform-origin: 0 50%; box-shadow: inset -40px 0 60px -30px rgb(0 0 0 / .8); border-right: 1px solid var(--color-primary); }
+    .leaf.r { transform-origin: 100% 50%; box-shadow: inset 40px 0 60px -30px rgb(0 0 0 / .8); }
+    .curtain-cue { position: absolute; inset: 0; display: grid; place-content: center; gap: 14px; text-align: center; }
+    .curtain-cue span:first-child { font: 600 clamp(2.4rem, 9vw, 7rem)/.9 var(--font-display); letter-spacing: -.04em; color: var(--color-ink); }
+    .curtain-cue span:last-child { font-family: var(--font-mono); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--color-muted); }
   </style>
 </head>
-<body class="lab-grain">
-<div class="axis">cortina abre, revela o fundo</div>
-  
-    <section id="scene">
-      <div class="under">
-        <p class="formula">Quando <em>o scroll avanca</em>, as <em>folhas</em> fazem <em>scaleX para 0</em> com <em>scrub none</em>, porque o palco precisa ser revelado, nao cortado por fade.</p>
-        <h1>Abre a oficina.</h1>
-        <p>Cortina e storytelling de revelacao. O que estava atras e o assunto. Usar uma vez. Nao usar em toda secao.</p>
-      </div>
-      <div class="curtain" aria-hidden="true">
-        <div class="leaf leaf-l" id="cl"></div>
-        <div class="leaf leaf-r" id="cr"></div>
-      </div>
-    </section>
-    <div class="lesson lesson--bleed">
-      <p><strong>Nao usar</strong> junto de dive ou hijack. Reduced motion: cortina ausente, conteudo ja visivel.</p>
-    </div>
-    
-  <script src="/_shared/lab.js"></script>
-  <script src="/_shared/nav.js"></script>
-  
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
-  <script>
-  (function () {
+<body>
+  <header class="intro">
+    <p class="eyebrow"><b>scroll</b> · deps gsap · mobile ok · custo baixo</p>
+    <h1 class="display">O pano abre.</h1>
+    <p class="formula">Quando <em>o scroll avança</em>, as <em>folhas</em> fazem <em>scaleX → 0</em> com <em>scrub none</em>, porque o palco precisa ser revelado, não cortado por fade.</p>
+  </header>
 
-    gsap.registerPlugin(ScrollTrigger);
-    if (Lab.reduce()) return;
-    gsap.to("#cl", { scaleX: 0, ease: "none", scrollTrigger: { trigger: "#scene", start: "top top", end: "+=120%", pin: true, scrub: true } });
-    gsap.to("#cr", { scaleX: 0, ease: "none", scrollTrigger: { trigger: "#scene", start: "top top", end: "+=120%", scrub: true } });
-    
-  })();
+  <section id="scene" aria-labelledby="scene-t">
+    <div class="under">
+      <img src="/_shared/media/plate-table.svg" alt="Mesa escura de madeira com um porta-copos redondo de cortiça iluminado por luz lateral quente" width="1600" height="1000" />
+      <div class="copy">
+        <p class="eyebrow">a oferta · lote 07</p>
+        <h2 class="display" id="scene-t">Base nº 7. <em>Cortiça</em> que segura o calor.</h2>
+        <p>Um disco de cortiça prensada, 9 mm, borda chanfrada à mão. A cortina não enfeita: ela entrega o assunto na hora certa.</p>
+        <p class="price"><strong>R$ 89</strong> <s>R$ 120</s> <span>primeira fornada</span></p>
+      </div>
+    </div>
+    <div class="curtain" aria-hidden="true">
+      <div class="leaf l"></div>
+      <div class="leaf r"></div>
+      <div class="curtain-cue"><span>Lote 07</span><span>role para abrir</span></div>
+    </div>
+  </section>
+
+  <section class="outro">
+    <p class="formula">Abriu. <em>Uma cortina por página</em>, no assunto que merece a pausa. O que está atrás já estava montado: sem motion, a cortina simplesmente <em>não existe</em>.</p>
+  </section>
+
+  <div class="lesson lesson--bleed">
+    <div>
+      <h2>Usar</h2>
+      <p>Revelar o produto ou a oferta. Abertura do cta-final ("a oferta"). Combina com kinetic type no título revelado.</p>
+    </div>
+    <div>
+      <h2>Não usar</h2>
+      <p>Em toda seção: vira truque. Junto de z-axis dive ou horizontal hijack (uma câmera por página).</p>
+    </div>
+    <div>
+      <h2>Reduced motion / sem GSAP</h2>
+      <p>Cortina ausente (<code>display:none</code> fora de <code>.motion</code>), sem pin; o assunto aparece direto no estado final.</p>
+    </div>
+  </div>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    withGsap(function (gsap) {
+      var tl = gsap.timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: { trigger: '#scene', start: 'top top', end: '+=120%', pin: true, scrub: true }
+      });
+      tl.to('.leaf.l', { scaleX: 0, duration: 1 }, 0)
+        .to('.leaf.r', { scaleX: 0, duration: 1 }, 0)
+        .to('.curtain-cue', { opacity: 0, duration: .15 }, 0)
+        .fromTo('.under img', { scale: 1.12 }, { scale: 1, duration: 1 }, 0)
+        .fromTo('.under .copy', { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: .35 }, .65);
+    });
   </script>
 </body>
 </html>

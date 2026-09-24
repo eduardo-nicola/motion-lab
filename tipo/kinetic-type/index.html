@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kinetic type · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .kin-stage {
+      display: grid; align-content: space-between; gap: 32px;
+      padding: 24px var(--pad) 28px;
+      background:
+        radial-gradient(60% 70% at 80% 10%, rgb(220 80 0 / .16), transparent 70%),
+        var(--color-bg-2);
+    }
+    .kin-top, .kin-foot { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; align-items: center; }
+    .kin-word {
+      margin: 0;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: clamp(3.2rem, 12vw, 8rem);
+      letter-spacing: -.07em;
+      line-height: .9;
+      color: var(--color-cream);
+    }
+    .kin-sub { margin: 14px 0 0; max-width: 40ch; color: var(--color-muted); }
+    .kin-spec { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
+    .kin-spec li {
+      font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+      padding: 6px 10px; border: 1px solid var(--color-line); color: var(--color-muted);
+    }
+    .kin-spec li b { color: var(--color-ink); font-weight: 500; }
+    .kin-rule { height: 1px; background: var(--color-line); }
+
+    /* camada de motion: só com .motion — sem ela, o título já está montado */
+    .motion .kin-word.is-play span span {
+      display: inline-block;
+      animation: kin-up .7s var(--ease-out) both;
+      animation-delay: var(--d);
+    }
+    @keyframes kin-up { from { opacity: 0; transform: translateY(40px); } }
+  </style>
+</head>
+<body>
+  <main class="teach">
+    <header class="teach-head">
+      <p class="eyebrow"><b>tipo</b> · deps vanilla · mobile ok · custo baixo</p>
+      <h1 class="display">A letra pesa.</h1>
+      <p class="formula">Quando <em>o nome entra</em>, cada <em>letra</em> faz <em>translateY stagger</em> com <em>50ms e 0.7s ease-out</em>, porque o título é o visual, não um H1 sentado.</p>
+    </header>
+
+    <section class="stage kin-stage" aria-labelledby="kin-word">
+      <div class="kin-top">
+        <p class="eyebrow">rolha · coleção de mesa</p>
+        <button type="button" class="btn btn-ghost" id="kin-replay">Tocar de novo</button>
+      </div>
+      <div>
+        <h2 class="kin-word" id="kin-word" data-kinetic>Rolha pousa.</h2>
+        <p class="kin-sub">Cada letra sobe 40px e para. O pai guarda o <code>aria-label</code>; os spans são só desenho.</p>
+      </div>
+      <div class="kin-rule" aria-hidden="true"></div>
+      <ul class="kin-spec" aria-label="Parâmetros da animação">
+        <li>stagger <b>50ms</b></li>
+        <li>duração <b>0.7s</b></li>
+        <li>curva <b>ease-out</b></li>
+        <li>eixo <b>y · 40px</b></li>
+      </ul>
+    </section>
+
+    <div class="lesson">
+      <div>
+        <h2>Usar</h2>
+        <p>Nome de produto ou título de hero em display gigante, no load. O tipo é a peça gráfica principal da dobra.</p>
+        <p>Frase longa: dividir por palavra, não por letra.</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p>Parágrafos, nav, loop infinito. Serif aleatória no meio do sans. Mais de um título cinético por tela.</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>Não depende de GSAP. Sem <code>.motion</code>, o título aparece montado e o botão de repetir some.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    (function () {
+      var el = document.querySelector('[data-kinetic]');
+      var btn = document.getElementById('kin-replay');
+      if (!Motion.on()) { btn.hidden = true; return; }
+      Motion.splitChars(el, 50);
+      function play() {
+        el.classList.remove('is-play');
+        void el.offsetWidth; // reinicia a animação CSS
+        el.classList.add('is-play');
+      }
+      play();
+      btn.addEventListener('click', play);
+    })();
+  </script>
+</body>
+</html>

@@ -3,69 +3,145 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MOTION lab / Stagger</title>
-  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&amp;f[]=satoshi@400,500,700&amp;display=swap" />
+  <title>Stagger · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
   <link rel="stylesheet" href="/_shared/lab.css" />
   <style>
+    .sg-ctrl { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between; }
+    @media (min-width: 768px) { .pair.sg { grid-template-columns: repeat(3, 1fr); } }
+    .sg .col { min-height: 0; }
+    .sg .col h2 { font: 600 clamp(1.6rem, 3.4vw, 2.4rem)/1 var(--font-display); letter-spacing: -.03em; margin: 0; }
+    .sg .col h2 small { font: 11px/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--color-muted); margin-left: 8px; vertical-align: middle; }
+    .sg .col > p:not(.eyebrow) { margin: 0; color: var(--color-muted); font-size: .95rem; }
+    .sg .mid { border-color: var(--color-primary); }
+    .sg .mid .eyebrow { color: var(--color-primary); }
 
-    .col i { display:block; height: 14px; background: var(--accent); margin: 0 0 10px; transform-origin: 0 50%; }
-    .row { display:block; }
-    .mini { color: var(--muted); font-size: 0.85rem; }
-    body:not(.is-reduce) #ok i { transform: scaleX(0); animation: bar 0.6s cubic-bezier(0.16,1,0.3,1) forwards; }
-    #ok i:nth-child(2) { animation-delay: 60ms; }
-    #ok i:nth-child(3) { animation-delay: 120ms; }
-    #ok i:nth-child(4) { animation-delay: 180ms; }
-    #ok i:nth-child(5) { animation-delay: 240ms; }
-    body:not(.is-reduce) #no .row:first-of-type i { transform: scaleX(0); animation: bar 0.6s cubic-bezier(0.16,1,0.3,1) forwards; }
-    body:not(.is-reduce) #no .slow i { transform: scaleX(0); animation: bar 0.6s cubic-bezier(0.16,1,0.3,1) forwards; }
-    #no .slow i:nth-child(1) { animation-delay: 0ms; }
-    #no .slow i:nth-child(2) { animation-delay: 220ms; }
-    #no .slow i:nth-child(3) { animation-delay: 440ms; }
-    #no .slow i:nth-child(4) { animation-delay: 660ms; }
-    @keyframes bar { to { transform: scaleX(1); } }
-    @media (prefers-reduced-motion: reduce) { .col i { transform:none; animation:none; } }
-    
+    .tiles { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .tile {
+      aspect-ratio: 1;
+      background: var(--color-bg-3);
+      border: 1px solid var(--color-line);
+      display: grid; align-content: space-between; padding: 8px;
+      font: 10px/1 var(--font-mono); letter-spacing: .12em; color: var(--color-muted);
+    }
+    .tile i { display: block; width: 36%; aspect-ratio: 1; border-radius: 50%; background: var(--color-cream); opacity: .85; justify-self: end; }
+    .mid .tile i { background: var(--color-primary); }
+    .sg-total { display: flex; justify-content: space-between; gap: 12px; font: 11px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--color-muted); }
+    .sg-total b { color: var(--color-ink); font-weight: 500; }
+    .sg-clock { height: 3px; background: var(--color-line); position: relative; overflow: hidden; }
+    .sg-clock span { position: absolute; inset: 0; background: var(--color-cream); transform-origin: 0 50%; transform: scaleX(1); }
+    .mid .sg-clock span { background: var(--color-primary); }
+
+    /* camada de motion: só com .motion; o estado escondido só existe depois que o JS armou */
+    html:not(.motion) #sg-replay { display: none; }
+    .motion .sg.armed .tile { opacity: 0; transform: translateY(20px); }
+    .motion .sg.armed .sg-clock span { transform: scaleX(0); }
+    .motion .sg.go .tile {
+      animation: sg-up .6s var(--ease-out) both;
+      animation-delay: calc(var(--i) * var(--s));
+    }
+    .motion .sg.go .sg-clock span { animation: sg-clock calc(5 * var(--s) + 600ms) linear both; }
+    @keyframes sg-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+    @keyframes sg-clock { from { transform: scaleX(0); } to { transform: scaleX(1); } }
   </style>
 </head>
-<body class="lab-grain">
-<main class="teach">
-    <div class="teach-head">
-      <h1>60ms e ritmo.</h1>
-      <p class="formula">Quando <em>os itens entram</em>, o <em>certo</em> faz <em>stagger 60ms</em>, porque sequencia e hierarquia. 0ms e parede. 200ms e lama.</p>
+<body>
+  <main class="teach">
+    <header class="teach-head">
+      <p class="eyebrow"><b>timing</b> · deps css · mobile ok · custo baixo</p>
+      <h1 class="display">Sequência é hierarquia.</h1>
+      <p class="formula">Quando <em>os itens entram</em>, <em>eles</em> fazem <em>stagger</em> de <em>60ms</em>, porque sequência é hierarquia. 0ms é parede. 200ms é lama.</p>
+    </header>
+
+    <div class="sg-ctrl">
+      <p class="eyebrow">6 peças · 0.6s ease-out cada · só o intervalo muda</p>
+      <button type="button" class="btn btn-ghost" id="sg-replay">Tocar os três de novo</button>
     </div>
-    
-    <div class="pair">
-      <div class="col ok" id="ok"><p class="tag">certo / 60ms</p><i></i><i></i><i></i><i></i></div>
-      <div class="col no" id="no"><p class="tag">errado / 0ms e 220ms</p>
-        <div class="row"><i></i><i></i><i></i><i></i></div>
-        <p class="mini">acima: todos juntos. abaixo: 220ms</p>
-        <div class="row slow"><i></i><i></i><i></i><i></i></div>
+
+    <section class="pair sg" id="sg" aria-label="Comparação de stagger: 0ms, 60ms e 220ms">
+      <div class="col bad" style="--s: 0ms">
+        <p class="eyebrow">errado · 0ms</p>
+        <h2>Parede.<small>0ms</small></h2>
+        <ul class="tiles" aria-hidden="true">
+          <li class="tile" style="--i:0">01<i></i></li><li class="tile" style="--i:1">02<i></i></li><li class="tile" style="--i:2">03<i></i></li>
+          <li class="tile" style="--i:3">04<i></i></li><li class="tile" style="--i:4">05<i></i></li><li class="tile" style="--i:5">06<i></i></li>
+        </ul>
+        <div class="sg-clock" aria-hidden="true"><span></span></div>
+        <p class="sg-total"><span>última peça</span><b>0.60s</b></p>
+        <p>Tudo junto, sem ordem. O olho não sabe por onde começar.</p>
+      </div>
+
+      <div class="col ok mid" style="--s: 60ms">
+        <p class="eyebrow">certo · 60ms</p>
+        <h2>Ritmo.<small>60ms</small></h2>
+        <ul class="tiles" aria-hidden="true">
+          <li class="tile" style="--i:0">01<i></i></li><li class="tile" style="--i:1">02<i></i></li><li class="tile" style="--i:2">03<i></i></li>
+          <li class="tile" style="--i:3">04<i></i></li><li class="tile" style="--i:4">05<i></i></li><li class="tile" style="--i:5">06<i></i></li>
+        </ul>
+        <div class="sg-clock" aria-hidden="true"><span></span></div>
+        <p class="sg-total"><span>última peça</span><b>0.90s</b></p>
+        <p>Cada peça aponta a próxima. Ordem de leitura sem custo de espera.</p>
+      </div>
+
+      <div class="col bad" style="--s: 220ms">
+        <p class="eyebrow">errado · 220ms</p>
+        <h2>Lama.<small>220ms</small></h2>
+        <ul class="tiles" aria-hidden="true">
+          <li class="tile" style="--i:0">01<i></i></li><li class="tile" style="--i:1">02<i></i></li><li class="tile" style="--i:2">03<i></i></li>
+          <li class="tile" style="--i:3">04<i></i></li><li class="tile" style="--i:4">05<i></i></li><li class="tile" style="--i:5">06<i></i></li>
+        </ul>
+        <div class="sg-clock" aria-hidden="true"><span></span></div>
+        <p class="sg-total"><span>última peça</span><b>1.70s</b></p>
+        <p>A pessoa espera a fila andar. Com 12 cards, seriam 3 segundos de lama.</p>
+      </div>
+    </section>
+
+    <div class="lesson">
+      <div>
+        <h2>Usar</h2>
+        <p>40–80ms: letras em 40ms, cards em 60–70ms. Hero, features, listas. Listas longas: limitar o atraso total com <code>min(var(--i), 8) * 60ms</code>.</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p>0ms (parede, sem ordem) nem 200ms ou mais (lama, a pessoa espera). Stagger em conteúdo que precisa ser lido de uma vez, como tabela de preço.</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>Já visível: sem <code>.motion</code> as peças nascem no lugar, e o estado escondido só existe depois que o script armou a animação. CSS puro, sem GSAP.</p>
       </div>
     </div>
-    <button class="btn btn-ghost" type="button" id="replay" style="margin-top: 24px;">Repetir</button>
-    
-    <div class="lesson">
-
-      <p><strong>Usar</strong> 40-80ms em listas, letras, cards de entrada.</p>
-      <p><strong>Nao usar</strong> stagger de 200ms+ em UI. A pessoa espera. Reduced motion: barras ja visiveis.</p>
-    
-    </div>
   </main>
-  <script src="/_shared/lab.js"></script>
-  <script src="/_shared/nav.js"></script>
-  
-  <script>
-  (function () {
-if (Lab.reduce()) document.body.classList.add('is-reduce');
 
-    var bars = document.querySelectorAll('.col i');
-    document.getElementById('replay').addEventListener('click', function () {
-      if (Lab.reduce()) return;
-      bars.forEach(function (el) { el.style.animation = 'none'; });
-      void document.body.offsetWidth;
-      bars.forEach(function (el) { el.style.animation = ''; });
-    });
-  })();
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    (function () {
+      var pair = document.getElementById('sg');
+      if (!Motion.on()) return;
+      function play() {
+        pair.classList.remove('go');
+        pair.classList.add('armed');
+        void pair.offsetWidth;
+        pair.classList.add('go');
+      }
+      if ('IntersectionObserver' in window) {
+        pair.classList.add('armed');
+        var io = new IntersectionObserver(function (en) {
+          if (en[0].isIntersecting) { play(); io.disconnect(); }
+        }, { threshold: .35 });
+        io.observe(pair);
+      }
+      document.getElementById('sg-replay').addEventListener('click', play);
+    })();
   </script>
 </body>
 </html>

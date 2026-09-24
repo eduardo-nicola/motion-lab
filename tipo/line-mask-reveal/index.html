@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Line mask reveal · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .lm-stage { display: grid; }
+    .lm-bar {
+      display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center;
+      padding: 14px var(--pad);
+      border-bottom: 1px solid var(--color-line);
+    }
+    .lm-block {
+      min-height: 62dvh;
+      display: grid; align-content: center; gap: 22px;
+      padding: 12vh var(--pad);
+      border-bottom: 1px solid var(--color-line);
+    }
+    .lm-block:last-child { border-bottom: 0; }
+    .lm-block:nth-child(odd) { background: var(--color-bg); }
+    .lm-block p.note { margin: 0; max-width: 46ch; color: var(--color-muted); }
+
+    .lm { margin: 0; font: 600 clamp(2rem, 7vw, 5.4rem)/.95 var(--font-display); letter-spacing: -.045em; color: var(--color-cream); }
+    .lm-l { display: block; overflow: hidden; padding-bottom: .08em; }      /* padding evita cortar descendentes */
+    .lm-l > span { display: inline-block; }
+    .lm-l:last-child > span { color: var(--color-primary); }
+
+    /* modo didático: mostra a régua (a máscara) */
+
+    /* camada de motion: só com .motion */
+    .motion .lm-l > span { transform: translateY(105%); transition: transform .8s var(--ease-out); }
+    .motion .lm.in .lm-l > span { transform: none; }
+    .motion .lm.in .lm-l:nth-child(2) > span { transition-delay: 80ms; }
+    .motion .lm.in .lm-l:nth-child(3) > span { transition-delay: 160ms; }
+  </style>
+</head>
+<body>
+  <main class="teach">
+    <header class="teach-head">
+      <p class="eyebrow"><b>tipo</b> · deps vanilla · mobile ok · custo baixo</p>
+      <h1 class="display">Nasce da régua.</h1>
+      <p class="formula">Quando <em>o título entra</em>, cada <em>linha</em> faz <em>translateY 100% → 0 dentro de uma máscara</em> com <em>0.8s ease-out e stagger 80ms</em>, porque o texto parece nascer de trás de uma régua, não flutuar.</p>
+    </header>
+
+    <section class="stage lm-stage" aria-label="Demonstração: três títulos com máscara de linha">
+      <div class="lm-bar">
+        <p class="eyebrow">role dentro da página · cada título revela uma vez</p>
+      </div>
+
+      <div class="lm-block">
+        <p class="eyebrow">01 · manifesto</p>
+        <h2 class="lm" aria-label="Feito para canecas. Construído para mesas.">
+          <span class="lm-l" aria-hidden="true"><span>Feito para canecas.</span></span>
+          <span class="lm-l" aria-hidden="true"><span>Construído para mesas.</span></span>
+        </h2>
+        <p class="note">Duas linhas, quebra controlada no HTML. Sem opacity: o corte é do <code>overflow: hidden</code>.</p>
+      </div>
+
+      <div class="lm-block">
+        <p class="eyebrow">02 · matéria</p>
+        <h2 class="lm" aria-label="Cortiça portuguesa, prensada a frio, cortada à mão.">
+          <span class="lm-l" aria-hidden="true"><span>Cortiça portuguesa,</span></span>
+          <span class="lm-l" aria-hidden="true"><span>prensada a frio,</span></span>
+          <span class="lm-l" aria-hidden="true"><span>cortada à mão.</span></span>
+        </h2>
+        <p class="note">Três linhas: 0, 80 e 160ms. O olho lê de cima para baixo porque a régua sobe nessa ordem.</p>
+      </div>
+
+      <div class="lm-block">
+        <p class="eyebrow">03 · promessa</p>
+        <h2 class="lm" aria-label="Não escorrega. Não mancha. Não pede licença.">
+          <span class="lm-l" aria-hidden="true"><span>Não escorrega.</span></span>
+          <span class="lm-l" aria-hidden="true"><span>Não mancha.</span></span>
+          <span class="lm-l" aria-hidden="true"><span>Não pede licença.</span></span>
+        </h2>
+        <p class="note">O <code>padding-bottom: .08em</code> na máscara salva o “ç” e o “g” de serem cortados.</p>
+      </div>
+    </section>
+
+    <div class="lesson">
+      <div>
+        <h2>Usar</h2>
+        <p>Títulos de seção curtos, com quebras decididas no HTML: hero, features, prova. É a assinatura de sites como Oryzo e Lusion.</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p>Parágrafos longos ou títulos cuja quebra muda muito por largura. Não somar fade: a máscara já é a entrada.</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>Vanilla com <code>Motion.reveal</code>. Sem <code>.motion</code>, as linhas já estão no lugar; o <code>aria-label</code> do título lê a frase inteira.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    (function () {
+      Motion.reveal('.lm', { threshold: .5 });
+    })();
+  </script>
+</body>
+</html>

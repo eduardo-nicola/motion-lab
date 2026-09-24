@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Preloader · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .pl-stage { display: grid; grid-template-rows: 1fr auto; }
+    .pl-view { position: relative; overflow: hidden; min-height: 420px; display: grid; }
+    .pl-hero { position: relative; display: grid; }
+    .pl-hero img { width: 100%; height: 100%; object-fit: cover; grid-area: 1 / 1; min-height: 420px; }
+    .pl-copy {
+      grid-area: 1 / 1; align-self: end;
+      position: relative;
+      padding: 24px 20px 26px;
+      display: grid; gap: 10px;
+      background: linear-gradient(to top, rgb(16 9 4 / .92), rgb(16 9 4 / 0));
+    }
+    .pl-title { font-size: clamp(2.2rem, 7vw, 5rem); max-width: 12ch; }
+    .pl-frame { font: 11px/1 var(--font-mono); letter-spacing: .14em; color: var(--color-muted); text-transform: uppercase; }
+    .pl-frame b { color: var(--color-primary); font-weight: 500; }
+
+    /* cortina: só existe quando o JS decidiu carregar (e só com .motion) */
+    .pl-curtain {
+      display: none;
+      position: absolute; inset: 0;
+      z-index: 2;
+      background: var(--color-bg);
+      padding: 24px 20px;
+      grid-template-rows: auto 1fr auto; gap: 16px;
+    }
+    .pl-curtain .eyebrow b { color: var(--color-primary); }
+    .pl-count { align-self: center; display: flex; align-items: baseline; gap: 6px; }
+    .pl-n { font: 600 clamp(5rem, 22vw, 13rem)/.8 var(--font-display); letter-spacing: -.05em; font-variant-numeric: tabular-nums; }
+    .pl-unit { font: 500 clamp(1.4rem, 4vw, 2.4rem)/1 var(--font-display); color: var(--color-primary); }
+    .pl-rail { height: 3px; background: var(--color-line); }
+    .pl-rail span { display: block; height: 100%; background: var(--color-primary); transform-origin: 0 50%; transform: scaleX(0); }
+    .pl-meta { display: flex; justify-content: space-between; gap: 12px; font: 11px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--color-muted); margin-top: 12px; }
+
+    .pl-bar {
+      border-top: 1px solid var(--color-line);
+      padding: 16px 20px;
+      display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; justify-content: space-between;
+    }
+    .pl-status b { color: var(--color-ink); font-weight: 500; }
+
+    @media (min-width: 768px) {
+      .pl-view, .pl-hero img { min-height: 560px; }
+      .pl-copy { padding: 40px 48px 44px; }
+      .pl-curtain { padding: 36px 48px; }
+      .pl-bar { padding: 18px 48px; }
+    }
+
+    /* camada de motion */
+    html:not(.motion) #pl-replay { display: none; }
+    .motion .pl-view.is-loading .pl-curtain,
+    .motion .pl-view.is-ready .pl-curtain { display: grid; }
+    .motion .pl-view.is-ready .pl-curtain { transform: translateY(-101%); transition: transform .8s var(--ease-out); }
+    /* coreografia do hero gated por .is-ready, não por .motion */
+    .motion .pl-view.is-loading .pl-title,
+    .motion .pl-view.is-loading .pl-copy .eyebrow { opacity: 0; transform: translateY(24px); }
+    .motion .pl-view.is-ready .pl-title { transition: opacity .7s var(--ease-out) .45s, transform .7s var(--ease-out) .45s; }
+    .motion .pl-view.is-ready .pl-copy .eyebrow { transition: opacity .6s var(--ease-out) .35s, transform .6s var(--ease-out) .35s; }
+  </style>
+</head>
+<body>
+  <main class="teach">
+    <header class="teach-head">
+      <p class="eyebrow"><b>gatilhos</b> · deps vanilla · mobile ok · custo baixo</p>
+      <h1 class="display">Só abre com o palco pronto.</h1>
+      <p class="formula">Quando <em>os assets pesados carregam</em>, a <em>cortina de loading</em> faz <em>contagem e saída</em> com <em>0.8s ease-out</em>, porque a coreografia de Load só pode começar com o palco pronto.</p>
+    </header>
+
+    <section class="stage pl-stage" aria-labelledby="pl-t">
+      <div class="pl-view" id="pl-view">
+        <div class="pl-hero">
+          <img id="pl-img" src="/_shared/media/seq/f000.svg" alt="Porta-copos de cortiça Nº 7, primeiro quadro da vista explodida em quatro camadas" width="1600" height="1000" />
+          <div class="pl-copy">
+            <p class="eyebrow">image sequence · <span class="pl-frame">quadro <b id="pl-frame">01</b> / 48</span></p>
+            <h2 class="display pl-title" id="pl-t">Pousa. Levanta. Abre.</h2>
+          </div>
+        </div>
+        <div class="pl-curtain" aria-hidden="true">
+          <p class="eyebrow"><b>carregando</b> · 48 quadros · teto 3.5s</p>
+          <div class="pl-count"><span class="pl-n" id="pl-n">0</span><span class="pl-unit">%</span></div>
+          <div>
+            <div class="pl-rail"><span id="pl-fill"></span></div>
+            <div class="pl-meta"><span id="pl-meta">0 / 48 quadros</span><span id="pl-clock">0.0s</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="pl-bar">
+        <p class="eyebrow pl-status" aria-live="polite">estado: <b id="pl-status">palco pronto</b></p>
+        <button type="button" class="btn btn-ghost" id="pl-replay">Recarregar a demo</button>
+      </div>
+    </section>
+
+    <div class="lesson">
+      <div>
+        <h2>Usar</h2>
+        <p>Só com asset pesado: Image sequence, vídeo, canvas. A contagem é real (quadros carregados), e a saída libera a coreografia de Load.</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p>Página de captura ou landing leve: atrasa LCP e conversão. Nunca sem teto: aos 3.5s a cortina sai, carregada ou não. Nunca cobrindo a página inteira numa demo.</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>Sem preloader: sem <code>.motion</code> a cortina nem existe e o primeiro quadro já está no palco. Vanilla, sem GSAP; os quadros são carregados com <code>new Image()</code>.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    (function () {
+      if (!Motion.on()) return;
+      var N = 48, CAP = 3500;
+      var view = document.getElementById('pl-view');
+      var img = document.getElementById('pl-img');
+      var nEl = document.getElementById('pl-n');
+      var fill = document.getElementById('pl-fill');
+      var meta = document.getElementById('pl-meta');
+      var clock = document.getElementById('pl-clock');
+      var status = document.getElementById('pl-status');
+      var frameEl = document.getElementById('pl-frame');
+      var urls = [];
+      for (var i = 0; i < N; i++) urls.push('/_shared/media/seq/f' + ('00' + i).slice(-3) + '.svg');
+      var token = 0;
+
+      function pad(n) { return ('0' + n).slice(-2); }
+      function setFrame(k) { img.src = urls[k]; frameEl.textContent = pad(k + 1); }
+
+      function playSeq(my) {
+        var t0 = null, cur = 0;
+        (function step(t) {
+          if (my !== token) return;
+          if (t0 === null) t0 = t;
+          var k = Math.min(N - 1, Math.floor((t - t0) / 1000 * 24));
+          if (k !== cur) { cur = k; setFrame(k); }
+          if (k < N - 1) requestAnimationFrame(step);
+        })(performance.now());
+      }
+
+      function run() {
+        var my = ++token, done = 0, finished = false, start = performance.now();
+        setFrame(0);
+        view.classList.remove('is-ready');
+        view.classList.add('is-loading');
+        status.textContent = 'carregando quadros';
+        render(0);
+
+        function render(d) {
+          nEl.textContent = Math.round(d / N * 100);
+          fill.style.transform = 'scaleX(' + d / N + ')';
+          meta.textContent = d + ' / ' + N + ' quadros';
+          clock.textContent = ((performance.now() - start) / 1000).toFixed(1) + 's';
+        }
+        function tick() {
+          if (my !== token) return;
+          done++;
+          render(done);
+          if (done >= N) setTimeout(ready, 260);
+        }
+        function ready() {
+          if (my !== token || finished) return;
+          finished = true;
+          view.classList.remove('is-loading');
+          view.classList.add('is-ready');
+          status.textContent = done >= N ? 'palco pronto' : 'teto de 3.5s: saiu sem esperar';
+          setTimeout(function () { playSeq(my); }, 700);
+        }
+
+        /* carga real dos 48 quadros + latência simulada, para a contagem ser visível mesmo com cache */
+        urls.forEach(function (u, idx) {
+          var im = new Image();
+          im.onload = im.onerror = function () { setTimeout(tick, 300 + idx * 42 + Math.random() * 140); };
+          im.src = u;
+        });
+        setTimeout(ready, CAP);   /* teto: nunca prender a pessoa */
+      }
+
+      var armed = false;
+      function arm() { if (armed) return; armed = true; run(); }
+      if ('IntersectionObserver' in window) {
+        var io = new IntersectionObserver(function (en) {
+          if (en[0].isIntersecting) { arm(); io.disconnect(); }
+        }, { threshold: .3 });
+        io.observe(view);
+      } else arm();
+      document.getElementById('pl-replay').addEventListener('click', function () { armed = true; run(); });
+    })();
+  </script>
+</body>
+</html>

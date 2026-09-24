@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Noise displacement · MOTION lab</title>
+  <script>
+    /* gate .motion: sem ele a página já é o estado final */
+    (function () {
+      var r = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!r) document.documentElement.classList.add('motion');
+    })();
+  </script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%23dc5000%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/_shared/lab.css" />
+  <style>
+    .nd-stage {
+      display: grid; align-content: space-between; gap: 32px;
+      padding: 32px var(--pad);
+      background: radial-gradient(90% 70% at 50% 45%, var(--color-bg-3), var(--color-bg-2) 70%);
+    }
+    .nd-word {
+      margin: 0; text-align: center;
+      font: 700 clamp(2.4rem, 12vw, 11rem)/.85 var(--font-display);
+      letter-spacing: -.05em;
+      color: var(--color-primary);
+      white-space: nowrap;           /* a palavra é um objeto: nunca quebra */
+    }
+    /* filtro só com .motion: sem motion, a palavra fica limpa (filtro-off) */
+    .motion .nd-word { filter: url(#nd-f); }
+
+    .nd-foot { display: grid; gap: 20px; }
+    @media (min-width: 768px) { .nd-foot { grid-template-columns: 1fr auto; align-items: end; } }
+    .nd-foot h2 { font-size: clamp(1.6rem, 4vw, 2.6rem); max-width: 18ch; }
+    .nd-foot p { margin: 8px 0 0; color: var(--color-muted); max-width: 44ch; }
+    .nd-ctrl { display: grid; gap: 8px; min-width: min(100%, 280px); }
+    .nd-ctrl label { font: 500 11px/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--color-muted); }
+    .nd-ctrl output { color: var(--color-ink); }
+    .nd-ctrl input { width: 100%; accent-color: var(--color-primary); }
+    .nd-off { display: none; }
+    html:not(.motion) .nd-ctrl { display: none; }
+    html:not(.motion) .nd-off { display: block; }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <filter id="nd-f">
+      <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" seed="2" result="n">
+        <animate attributeName="baseFrequency" values="0.8;0.95;0.8" dur="8s" repeatCount="indefinite" />
+      </feTurbulence>
+      <feDisplacementMap id="nd-map" in="SourceGraphic" in2="n" scale="6" />
+    </filter>
+  </svg>
+
+  <main class="teach">
+    <header class="teach-head">
+      <p class="eyebrow"><b>palco</b> · deps css · mobile ok · custo médio</p>
+      <h1 class="display">A palavra vira objeto.</h1>
+      <p class="formula">Quando <em>o título precisa de matéria</em>, o <em>SVG filter</em> faz <em>displacement</em> com <em>turbulência lenta (8s)</em>, porque a palavra é objeto no palco, não label.</p>
+    </header>
+
+    <section class="stage nd-stage" aria-labelledby="nd-t">
+      <p class="eyebrow">peça decorativa · aria-hidden · uma instância por página</p>
+      <p class="nd-word" aria-hidden="true">CORTIÇA</p>
+      <div class="nd-foot">
+        <div>
+          <h2 class="display" id="nd-t">Casca viva, prensada a frio.</h2>
+          <p>O título real fica limpo ao lado. Só a palavra-objeto treme: o ruído dá textura de casca sem tocar no texto que se lê.</p>
+        </div>
+        <div class="nd-ctrl">
+          <label for="nd-scale">scale do displacement · <output id="nd-out" for="nd-scale">6</output></label>
+          <input type="range" id="nd-scale" min="0" max="24" step="1" value="6" />
+        </div>
+        <p class="nd-off eyebrow">motion desligado: filtro off, palavra limpa.</p>
+      </div>
+    </section>
+
+    <div class="lesson">
+      <div>
+        <h2>Usar</h2>
+        <p>Uma palavra, um frame. <code>feTurbulence</code> com <code>&lt;animate&gt;</code> em <code>baseFrequency</code> (8s) + <code>feDisplacementMap</code> scale 6, ao lado do h1.</p>
+      </div>
+      <div>
+        <h2>Não usar</h2>
+        <p>Em corpo de texto (quebra a leitura), nem no <code>&lt;h1&gt;</code> real. Filtro SVG animado custa CPU: uma instância por página, nunca em lista.</p>
+      </div>
+      <div>
+        <h2>Reduced motion / sem GSAP</h2>
+        <p>Só CSS/SVG: o <code>filter: url(#…)</code> existe apenas sob <code>.motion</code>. Sem ele, filtro off e a palavra aparece nítida.</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="/_shared/motion-kit.js"></script>
+  <script src="/_shared/nav.js"></script>
+  <script>
+    (function () {
+      var map = document.getElementById('nd-map');
+      var range = document.getElementById('nd-scale');
+      var out = document.getElementById('nd-out');
+      range.addEventListener('input', function () {
+        map.setAttribute('scale', range.value);
+        out.textContent = range.value;
+      });
+    })();
+  </script>
+</body>
+</html>
