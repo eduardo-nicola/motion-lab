@@ -1,0 +1,37 @@
+filters:
+  and:
+    - file.inFolder("03-tecnicas")
+    - tipo == "tecnica"
+views:
+  - type: table
+    name: Todas as técnicas
+    order:
+      - file.name
+      - grupo
+      - gatilho
+      - eixo
+      - deps
+      - custo
+      - mobile
+      - secao
+      - conflita
+  - type: table
+    name: Zero CDN (css + vanilla)
+    filters:
+      or:
+        - deps == "css"
+        - deps == "vanilla"
+    order:
+      - file.name
+      - grupo
+      - deps
+      - secao
+  - type: table
+    name: Seguras no mobile
+    filters:
+      and:
+        - mobile == "ok"
+    order:
+      - file.name
+      - grupo
+      - custo

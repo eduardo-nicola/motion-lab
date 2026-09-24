@@ -1,2 +1,11 @@
 node_modules/
 .DS_Store
+
+# artefatos de teste do navegador
+.playwright-mcp/
+
+# estado local do Claude Code
+.claude/scheduled_tasks.lock
+
+# estado de UI do Obsidian (muda a cada clique)
+core/.obsidian/workspace.json

@@ -1,0 +1,86 @@
+{
+  "collapse-filter": true,
+  "search": "",
+  "showTags": false,
+  "showAttachments": false,
+  "hideUnresolved": false,
+  "showOrphans": true,
+  "collapse-color-groups": true,
+  "colorGroups": [
+    {
+      "query": "path:00-mapa",
+      "color": {
+        "a": 1,
+        "rgb": 15525852
+      }
+    },
+    {
+      "query": "path:01-principios",
+      "color": {
+        "a": 1,
+        "rgb": 14826792
+      }
+    },
+    {
+      "query": "path:02-contrato-mcp",
+      "color": {
+        "a": 1,
+        "rgb": 15903035
+      }
+    },
+    {
+      "query": "path:03-tecnicas/scroll",
+      "color": {
+        "a": 1,
+        "rgb": 5217758
+      }
+    },
+    {
+      "query": "path:03-tecnicas/palco",
+      "color": {
+        "a": 1,
+        "rgb": 9071327
+      }
+    },
+    {
+      "query": "path:03-tecnicas/tipo",
+      "color": {
+        "a": 1,
+        "rgb": 4177807
+      }
+    },
+    {
+      "query": "path:03-tecnicas/pele",
+      "color": {
+        "a": 1,
+        "rgb": 14573480
+      }
+    },
+    {
+      "query": "path:03-tecnicas/gatilhos OR path:03-tecnicas/timing",
+      "color": {
+        "a": 1,
+        "rgb": 10132106
+      }
+    },
+    {
+      "query": "path:04-referencias OR path:05-receitas",
+      "color": {
+        "a": 1,
+        "rgb": 16765286
+      }
+    }
+  ],
+  "collapse-display": true,
+  "showArrow": false,
+  "textFadeMultiplier": 0,
+  "nodeSizeMultiplier": 1,
+  "lineSizeMultiplier": 1,
+  "collapse-forces": true,
+  "centerStrength": 0.518713248970312,
+  "repelStrength": 10,
+  "linkStrength": 1,
+  "linkDistance": 250,
+  "scale": 1.428001487132027,
+  "close": true
+}
